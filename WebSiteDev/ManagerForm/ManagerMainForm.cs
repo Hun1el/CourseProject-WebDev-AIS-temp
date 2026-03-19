@@ -34,6 +34,7 @@ namespace WebSiteDev.ManagerForm
 
         public void LoadControl(UserControl control)
         {
+            FormControl.ResetFormSize(this);
             pictureBox2.Visible = false;
             label1.Visible = false;
             label2.Visible = false;

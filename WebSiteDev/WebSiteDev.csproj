@@ -112,6 +112,7 @@
       <DependentUpon>BucketForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Data.cs" />
+    <Compile Include="DataDelete.cs" />
     <Compile Include="DataManipulation.cs" />
     <Compile Include="DataUpdate.cs" />
     <Compile Include="DirectorForm\DirectorMainForm.cs">

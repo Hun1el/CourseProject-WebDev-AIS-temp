@@ -140,5 +140,31 @@ namespace WebSiteDev.AdminForm
                 }
             }
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (selectedStatusID == -1)
+            {
+                MessageBox.Show("Выберите статус для удаления!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите удалить статус?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataDelete.DeleteStatus(selectedStatusID))
+            {
+                MessageBox.Show("Статус успешно удален!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                selectedStatusID = -1;
+                selectedRowIndex = -1;
+                textBox2.Clear();
+                GetDate();
+                dataGridView1.ClearSelection();
+            }
+        }
     }
 }

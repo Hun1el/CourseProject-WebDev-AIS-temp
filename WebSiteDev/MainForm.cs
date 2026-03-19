@@ -13,14 +13,16 @@ namespace WebSiteDev
     {
         private string fullName;
         private string roleName;
+        private int userID;
         private Button currentSelectedButton = null;
         private UserControl currentControl = null;
 
-        public MainForm(string fullName, string roleName)
+        public MainForm(string fullName, string roleName, int userID = 0)
         {
             InitializeComponent();
             this.fullName = fullName;
             this.roleName = roleName;
+            this.userID = userID;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -31,6 +33,7 @@ namespace WebSiteDev
 
         private void LoadControl(UserControl control)
         {
+            FormControl.ResetFormSize(this);
             pictureBox2.Visible = false;
             label1.Visible = false;
             label2.Visible = false;
@@ -56,7 +59,7 @@ namespace WebSiteDev
                 return;
             }
 
-            LoadControl(new AdminForm.UsersControl());
+            LoadControl(new AdminForm.UsersControl(userID));
             this.Text = "Пользователи";
             SelectButton(button1);
         }

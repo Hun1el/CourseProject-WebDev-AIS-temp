@@ -144,7 +144,7 @@ namespace WebSiteDev.ManagerForm
                 {
                     Text = "Редактировать",
                     Size = new Size(200, 50),
-                    Location = new Point(670, 240),
+                    Location = new Point(665, 180),
                     BackColor = Color.FromArgb(45, 156, 219),
                     FlatStyle = FlatStyle.Flat,
                     ForeColor = Color.White,
@@ -156,10 +156,10 @@ namespace WebSiteDev.ManagerForm
                 {
                     Text = "Удалить",
                     Size = new Size(200, 50),
-                    Location = new Point(670, 180),
-                    BackColor = Color.FromArgb(45, 156, 219),
+                    Location = new Point(665, 240),
+                    BackColor = Color.Crimson,
                     FlatStyle = FlatStyle.Flat,
-                    ForeColor = Color.Red,
+                    ForeColor = Color.White,
                     Tag = productID
                 };
                 button2.Click += button7_Click;
@@ -244,7 +244,7 @@ namespace WebSiteDev.ManagerForm
                 Location = new Point(285, 215),
                 Size = new Size(100, 30),
                 Font = priceFont,
-                MaxLength = 6
+                MaxLength = 10
             };
 
             Button button1 = new Button
@@ -288,8 +288,8 @@ namespace WebSiteDev.ManagerForm
 
         private void button6_Click(object sender, EventArgs e)
         {
-            Button btn = sender as Button;
-            object[] data = btn.Tag as object[];
+            Button button = sender as Button;
+            object[] data = button.Tag as object[];
 
             int productID = (int)data[0];
             TextBox textBox1 = data[1] as TextBox;
@@ -372,8 +372,8 @@ namespace WebSiteDev.ManagerForm
 
         private void button7_Click(object sender, EventArgs e)
         {
-            Button btn = sender as Button;
-            int productID = Convert.ToInt32(btn.Tag);
+            Button button = sender as Button;
+            int productID = Convert.ToInt32(button.Tag);
 
             var result = MessageBox.Show("Вы действительно хотите удалить услугу?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -382,24 +382,11 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
-            using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+            if (DataDelete.DeleteProduct(productID))
             {
-                try
-                {
-                    con.Open();
-                    MySqlCommand cmd = new MySqlCommand("DELETE FROM Product WHERE ProductID = " + productID, con);
-
-                    if (cmd.ExecuteNonQuery() > 0)
-                    {
-                        MessageBox.Show("Услуга удалена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        GetDate();
-                        EnableLazyLoading();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                MessageBox.Show("Услуга удалена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GetDate();
+                EnableLazyLoading();
             }
         }
 
