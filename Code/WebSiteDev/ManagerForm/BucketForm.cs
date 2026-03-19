@@ -535,7 +535,6 @@ namespace WebSiteDev
                         DateTime orderCompDate = dateTimePicker1.Value;
 
                         decimal totalCost = 0;
-
                         foreach (var item in ProductControl.CurrentOrder.Items)
                         {
                             totalCost += item.BasePrice * item.Quantity;
@@ -548,12 +547,10 @@ namespace WebSiteDev
                         {
                             discount += totalCost * 0.05m;
                         }
-
                         if (checkbox3.Checked)
                         {
                             discount += totalCost * 0.07m;
                         }
-
                         if (checkbox2.Checked)
                         {
                             surcharge += totalCost * 0.15m;
@@ -561,31 +558,41 @@ namespace WebSiteDev
 
                         decimal finalTotal = totalCost - discount + surcharge;
 
-                        string totalCostStr = finalTotal.ToString().Replace(",", ".");
-                        string discountStr = discount.ToString().Replace(",", ".");
-                        string surchargeStr = surcharge.ToString().Replace(",", ".");
-
-                        string insertOrderQuery = "INSERT INTO `Order` (UserID, ClientID, OrderDate, OrderCompDate, StatusID, OrderCost, Discount, Surcharge) " +
-                        "VALUES (" + userID + ", " + clientID + ", '" + orderDate.ToString("yyyy-MM-dd") + "', '" +
-                        orderCompDate.ToString("yyyy-MM-dd") + "', 1, " + totalCostStr + ", " + discountStr + ", " + surchargeStr + ")";
+                        string insertOrderQuery = @"INSERT INTO `Order` 
+                    (UserID, ClientID, OrderDate, OrderCompDate, StatusID, OrderCost, Discount, Surcharge) 
+                    VALUES 
+                    (@UserID, @ClientID, @OrderDate, @OrderCompDate, @StatusID, @OrderCost, @Discount, @Surcharge)";
 
                         MySqlCommand cmdOrder = new MySqlCommand(insertOrderQuery, con, transaction);
+                        cmdOrder.Parameters.AddWithValue("@UserID", userID);
+                        cmdOrder.Parameters.AddWithValue("@ClientID", clientID);
+                        cmdOrder.Parameters.AddWithValue("@OrderDate", orderDate.Date);
+                        cmdOrder.Parameters.AddWithValue("@OrderCompDate", orderCompDate.Date);
+                        cmdOrder.Parameters.AddWithValue("@StatusID", 1);
+                        cmdOrder.Parameters.AddWithValue("@OrderCost", finalTotal);
+                        cmdOrder.Parameters.AddWithValue("@Discount", discount);
+                        cmdOrder.Parameters.AddWithValue("@Surcharge", surcharge);
                         cmdOrder.ExecuteNonQuery();
 
                         MySqlCommand cmdGetOrderID = new MySqlCommand("SELECT LAST_INSERT_ID()", con, transaction);
                         createdOrderID = Convert.ToInt32(cmdGetOrderID.ExecuteScalar());
 
+                        string insertProductQuery = @"INSERT INTO orderproduct 
+                    (OrderID, ProductID, ProductCount, ProductPrice) 
+                    VALUES 
+                    (@OrderID, @ProductID, @ProductCount, @ProductPrice)";
+
                         foreach (var item in ProductControl.CurrentOrder.Items)
                         {
-                            string insertProductQuery = "INSERT INTO orderproduct (OrderID, ProductID, ProductCount) " +
-                                                        "VALUES (" + createdOrderID + ", " + item.ProductID + ", " + item.Quantity + ")";
-
                             MySqlCommand cmdProduct = new MySqlCommand(insertProductQuery, con, transaction);
+                            cmdProduct.Parameters.AddWithValue("@OrderID", createdOrderID);
+                            cmdProduct.Parameters.AddWithValue("@ProductID", item.ProductID);
+                            cmdProduct.Parameters.AddWithValue("@ProductCount", item.Quantity);
+                            cmdProduct.Parameters.AddWithValue("@ProductPrice", item.BasePrice);
                             cmdProduct.ExecuteNonQuery();
                         }
 
                         transaction.Commit();
-
                         return true;
                     }
                     catch (Exception ex)

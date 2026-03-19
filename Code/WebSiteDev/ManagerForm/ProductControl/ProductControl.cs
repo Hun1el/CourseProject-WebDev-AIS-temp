@@ -78,8 +78,8 @@ namespace WebSiteDev.ManagerForm
 
                 MySqlDataAdapter da = new MySqlDataAdapter(@"SELECT p.ProductID, p.ProductName, p.ProductDescription, p.ProductPhoto,
                     c.CategoryName AS Category, p.BasePrice, p.CategoryID FROM Product p JOIN Category c ON p.CategoryID = c.CategoryID", con);
-                
-                DataTable dt = new DataTable();  
+
+                DataTable dt = new DataTable();
                 da.Fill(dt);
 
                 dataManipulation = new DataManipulation(dt);
@@ -113,7 +113,6 @@ namespace WebSiteDev.ManagerForm
             LoadNextBatch();
         }
 
-
         private ProductCard CreateProductCard(DataRowView row)
         {
             ProductCard card = new ProductCard();
@@ -126,12 +125,29 @@ namespace WebSiteDev.ManagerForm
             }
 
             card.InitializeCard(row, userRole);
+
+            int productID = Convert.ToInt32(row["ProductID"]);
+            bool isInCart = IsProductInCart(productID);
+            card.UpdateAddToCartButtonState(isInCart, userRole);
+
             card.EditButtonClicked += Card_EditButtonClicked;
             card.DeleteButtonClicked += Card_DeleteButtonClicked;
             card.AddToCartClicked += Card_AddToCartClicked;
             card.CancelEditClicked += Card_CancelEditClicked;
 
             return card;
+        }
+
+        private bool IsProductInCart(int productID)
+        {
+            foreach (var item in CurrentOrder.Items)
+            {
+                if (item.ProductID == productID)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void Card_EditButtonClicked(object sender, EventArgs e)
@@ -147,17 +163,91 @@ namespace WebSiteDev.ManagerForm
         private void Card_AddToCartClicked(object sender, EventArgs e)
         {
             ProductCard card = sender as ProductCard;
-            MouseEventArgs me = e as MouseEventArgs;
 
-            if (me == null || me.Button != MouseButtons.Right || userRole != "Менеджер")
+            if (card == null)
             {
                 return;
             }
 
+            if (userRole != "Менеджер")
+            {
+                return;
+            }
+
+            MouseEventArgs me = e as MouseEventArgs;
             selectedCard = card;
-            contextMenuStrip1.Show(Control.MousePosition);
+
+            if (me != null && me.Button == MouseButtons.Left)
+            {
+                AddToCartDirect(card);
+                return;
+            }
+
+            if (me != null && me.Button == MouseButtons.Right)
+            {
+                contextMenuStrip1.Show(Control.MousePosition);
+            }
         }
 
+        private void AddToCartDirect(ProductCard card)
+        {
+            if (card == null)
+            {
+                return;
+            }
+
+            DataRowView row = card.RowData;
+            int productID = Convert.ToInt32(row["ProductID"]);
+            string productName = row["ProductName"].ToString();
+            decimal basePrice = Convert.ToDecimal(row["BasePrice"]);
+
+            foreach (OrderItem item in CurrentOrder.Items)
+            {
+                if (item.ProductID == productID)
+                {
+                    MessageBox.Show("Товар \"" + productName + "\" уже в корзине.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            decimal currentTotal = 0;
+            foreach (OrderItem item in CurrentOrder.Items)
+            {
+                currentTotal += item.BasePrice * item.Quantity;
+            }
+
+            decimal newTotal = currentTotal + basePrice;
+            decimal newTotalWithSurcharge = Math.Round(newTotal * 1.15m, 2);
+            decimal maxLimit = 9999999999.99m;
+
+            if (newTotalWithSurcharge > maxLimit)
+            {
+                MessageBox.Show(
+                    "Невозможно добавить товар!\n\n" +
+                    "Сумма заказа с учётом надбавки 15% превысит допустимый лимит заказа (9 999 999 999.99 руб.).\n" +
+                    "Текущая сумма: " + currentTotal.ToString("N2") + " руб.\n" +
+                    "Будет после добавления: " + newTotal.ToString("N2") + " руб. (без надбавки)\n" +
+                    "С учётом надбавки: " + newTotalWithSurcharge.ToString("N2") + " руб.",
+                    "Превышение лимита",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
+            }
+
+            OrderItem newItem = new OrderItem();
+            newItem.ProductID = productID;
+            newItem.ProductName = productName;
+            newItem.BasePrice = basePrice;
+            newItem.CategoryName = row["Category"].ToString();
+            newItem.Quantity = 1;
+            newItem.ProductPhoto = row["ProductPhoto"].ToString();
+
+            CurrentOrder.Items.Add(newItem);
+
+            card.UpdateAddToCartButtonState(true, "Менеджер");
+            UpdateOrderButtonVisibility();
+        }
         private void Card_CancelEditClicked(object sender, EventArgs e)
         {
             ProductCard card = sender as ProductCard;
@@ -333,8 +423,6 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
-
-
         private bool ValidateProductData(TextBox name, TextBox description, TextBox rubles, NumericUpDown kopecks, ComboBox category)
         {
             if (name == null || description == null || rubles == null || kopecks == null || category == null)
@@ -430,7 +518,6 @@ namespace WebSiteDev.ManagerForm
 
             decimal newTotal = currentTotal + basePrice;
             decimal newTotalWithSurcharge = Math.Round(newTotal * 1.15m, 2);
-
             decimal maxLimit = 9999999999.99m;
 
             if (newTotalWithSurcharge > maxLimit)
@@ -458,6 +545,8 @@ namespace WebSiteDev.ManagerForm
             newItem.ProductPhoto = row["ProductPhoto"].ToString();
 
             CurrentOrder.Items.Add(newItem);
+
+            selectedCard.UpdateAddToCartButtonState(true, "Менеджер");
             UpdateOrderButtonVisibility();
             contextMenuStrip1.Close();
         }

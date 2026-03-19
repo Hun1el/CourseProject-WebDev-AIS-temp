@@ -55,6 +55,13 @@ namespace WebSiteDev.AddForm
             }
         }
 
+        // ✅ НОВЫЙ МЕТОД - получить путь к папке Images в AppData
+        private string GetImagesFolderPath()
+        {
+            string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            return Path.Combine(appData, "WebShop", "Images");
+        }
+
         private void button3_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -203,12 +210,15 @@ namespace WebSiteDev.AddForm
             {
                 string fileName = Path.GetFileNameWithoutExtension(SelectedFileName);
                 string extension = Path.GetExtension(SelectedFileName);
-                string projectPath = AppDomain.CurrentDomain.BaseDirectory;
-                string imagesFolder = Path.GetFullPath(Path.Combine(projectPath, @"..\..\Images"));
 
-                if (!Directory.Exists(imagesFolder))
+                // ✅ ИСПОЛЬЗУЕМ APPDATA ВМЕСТО Program Files
+                string imagesFolder = GetImagesFolderPath();
+                // C:\Users\[Username]\AppData\Roaming\WebShop\Images
+
+                // ✅ Создаём папку с правами если её нет
+                if (!FolderPermissions.CreateFolderWithFullAccess(imagesFolder))
                 {
-                    Directory.CreateDirectory(imagesFolder);
+                    return;
                 }
 
                 try
@@ -255,6 +265,16 @@ namespace WebSiteDev.AddForm
                         File.Copy(SelectedFileName, destPath, false);
                         ProductPhoto = Path.GetFileName(destPath);
                     }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    MessageBox.Show(
+                        "Нет прав доступа к папке изображений!\n\n" +
+                        "Запустите программу от имени администратора.",
+                        "Ошибка доступа",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
                 }
                 catch (Exception ex)
                 {

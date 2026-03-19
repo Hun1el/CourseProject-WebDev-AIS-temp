@@ -15,6 +15,7 @@ namespace WebSiteDev
         {
             this.Text = "Описание: " + productName;
             textBox1.Text = description;
+            textBox1.Select(0, 0);
         }
 
         private void button1_Click(object sender, EventArgs e)

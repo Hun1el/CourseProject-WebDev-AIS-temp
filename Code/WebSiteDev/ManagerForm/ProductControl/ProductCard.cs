@@ -13,7 +13,6 @@ namespace WebSiteDev
         public event EventHandler CancelEditClicked;
         public event EventHandler SaveButtonClicked;
         private string originalImagePath;
-        private ToolTip toolTip1;
 
         public DataRowView RowData { get; set; }
 
@@ -34,16 +33,8 @@ namespace WebSiteDev
             label1.Text = productName;
             label2.Text = productDesc;
 
-            if (productDesc.Length > 285)
-            {
-                button5.Visible = true;
-            }
-            else
-            {
-                button5.Visible = false;
-            }
-
-            label3.Text = "Категория: " + row["Category"];
+            string categoryName = row["Category"].ToString();
+            label3.Text = "Категория: " + categoryName;
 
             decimal price = Convert.ToDecimal(row["BasePrice"]);
             label4.Text = "Цена: " + price.ToString("0.00") + " руб.";
@@ -52,22 +43,46 @@ namespace WebSiteDev
             {
                 button1.Visible = false;
                 button2.Visible = false;
+                button6.Visible = true;
             }
             else
             {
                 button1.Text = "Редактировать";
                 button2.Text = "Удалить";
+                button1.Visible = true;
+                button2.Visible = true;
+                button6.Visible = false;
+            }
+
+            if (productDesc.Length > 285)
+            {
+                button5.Visible = true;
+            }
+            else
+            {
+                button5.Visible = false;
             }
         }
 
+
         private void button5_Click(object sender, EventArgs e)
         {
-            string productName = RowData["ProductName"].ToString();
             string productDesc = RowData["ProductDescription"].ToString();
 
-            DescriptionProduct descForm = new DescriptionProduct();
-            descForm.SetDescription(productName, productDesc);
-            descForm.ShowDialog();
+            if (productDesc.Length > 285)
+            {
+                DescriptionProduct descForm = new DescriptionProduct();
+                descForm.SetDescription(RowData["ProductName"].ToString(), productDesc);
+                descForm.ShowDialog();
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (AddToCartClicked != null)
+            {
+                AddToCartClicked(this, new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -167,6 +182,7 @@ namespace WebSiteDev
             button1.Visible = false;
             button2.Visible = false;
             button5.Visible = false;
+            button6.Visible = false;
 
             textBox1.Visible = true;
             textBox2.Visible = true;
@@ -208,6 +224,19 @@ namespace WebSiteDev
         public ImageControl GetImageControl()
         {
             return imageControl1;
+        }
+        public void UpdateAddToCartButtonState(bool isProductInCart, string userRole)
+        {
+            if (userRole != "Менеджер")
+            {
+                return;
+            }
+
+            button6.Enabled = true;
+            if (isProductInCart)
+            {
+                button6.Enabled = false;
+            }
         }
 
         private void ProductCard_MouseDown(object sender, MouseEventArgs e)

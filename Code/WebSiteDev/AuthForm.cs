@@ -18,6 +18,8 @@ namespace WebSiteDev
         public AuthForm()
         {
             InitializeComponent();
+
+            FolderPermissions.InitializeImagesFolder();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -86,13 +88,53 @@ namespace WebSiteDev
                         }
                     }
                 }
+                catch (MySqlException mySqlEx)
+                {
+                    HandleDatabaseError(mySqlEx);
+                    textBox1.Text = "";
+                    textBox2.Text = "";
+                }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка подключения к базе данных:\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Неожиданная ошибка:\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     textBox1.Text = "";
                     textBox2.Text = "";
                 }
             }
+        }
+
+        private void HandleDatabaseError(MySqlException ex)
+        {
+            string errorMessage = "";
+
+            switch (ex.Number)
+            {
+                case 0:
+                    errorMessage = "Не удаётся подключиться к серверу базы данных.\n\nПроверьте:\n• Адрес хоста\n• Доступность сервера";
+                    break;
+
+                case 1045:
+                    errorMessage = "Ошибка доступа отклонена!\n\nПроверьте:\n• Имя пользователя\n• Пароль";
+                    break;
+
+                case 1049:
+                    errorMessage = "База данных не найдена!\n\nПроверьте имя базы данных в настройках.";
+                    break;
+
+                case 2003:
+                    errorMessage = "Не удаётся подключиться к MySQL серверу.\n\nПроверьте:\n• IP адрес хоста\n• Работает ли сервер MySQL";
+                    break;
+
+                case 2006:
+                    errorMessage = "MySQL сервер отключен.\n\nПожалуйста, проверьте состояние сервера.";
+                    break;
+
+                default:
+                    errorMessage = $"Ошибка базы данных (код: {ex.Number}):\n{ex.Message}";
+                    break;
+            }
+
+            MessageBox.Show(errorMessage, "Ошибка подключения", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void button2_Click(object sender, EventArgs e)

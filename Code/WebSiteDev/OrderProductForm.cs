@@ -32,29 +32,31 @@ namespace WebSiteDev
                     con.Open();
 
                     string orderDataQuery = @"SELECT 
-                o.OrderDate, 
-                o.OrderCompDate,
-                CONCAT(u.Surname, ' ', u.FirstName, ' ', u.MiddleName) AS UserName,
-                CONCAT(c.Surname, ' ', c.FirstName, ' ', c.MiddleName) AS ClientName
-                FROM `Order` o
-                LEFT JOIN Users u ON o.UserID = u.UserID
-                LEFT JOIN Clients c ON o.ClientID = c.ClientID
-                WHERE o.OrderID = " + orderID;
+                        o.OrderDate, 
+                        o.OrderCompDate,
+                        CONCAT(u.Surname, ' ', u.FirstName, ' ', u.MiddleName) AS UserName,
+                        CONCAT(c.Surname, ' ', c.FirstName, ' ', c.MiddleName) AS ClientName
+                        FROM `Order` o
+                        LEFT JOIN Users u ON o.UserID = u.UserID
+                        LEFT JOIN Clients c ON o.ClientID = c.ClientID
+                        WHERE o.OrderID = @OrderID";
 
                     MySqlCommand orderDataCmd = new MySqlCommand(orderDataQuery, con);
+                    orderDataCmd.Parameters.AddWithValue("@OrderID", orderID);
                     MySqlDataReader orderDataReader = orderDataCmd.ExecuteReader();
 
                     if (orderDataReader.Read())
                     {
-                        label8.Text = $"Дата заказа: {Convert.ToDateTime(orderDataReader["OrderDate"]).ToString("dd.MM.yyyy")}";
-                        label7.Text = $"Срок выполнения: {Convert.ToDateTime(orderDataReader["OrderCompDate"]).ToString("dd.MM.yyyy")}";
-                        label6.Text = $"Сотрудник: {orderDataReader["UserName"].ToString()}";
-                        label9.Text = $"Клиент: {orderDataReader["ClientName"].ToString()}";
+                        label8.Text = $"Дата заказа: {Convert.ToDateTime(orderDataReader["OrderDate"]):dd.MM.yyyy}";
+                        label7.Text = $"Срок выполнения: {Convert.ToDateTime(orderDataReader["OrderCompDate"]):dd.MM.yyyy}";
+                        label6.Text = $"Сотрудник: {orderDataReader["UserName"]}";
+                        label9.Text = $"Клиент: {orderDataReader["ClientName"]}";
                     }
                     orderDataReader.Close();
 
-                    string discountQuery = "SELECT Discount, Surcharge FROM `Order` WHERE OrderID = " + orderID;
+                    string discountQuery = "SELECT Discount, Surcharge FROM `Order` WHERE OrderID = @OrderID";
                     MySqlCommand discountCmd = new MySqlCommand(discountQuery, con);
+                    discountCmd.Parameters.AddWithValue("@OrderID", orderID);
                     MySqlDataReader discountReader = discountCmd.ExecuteReader();
 
                     decimal totalDiscount = 0;
@@ -77,14 +79,15 @@ namespace WebSiteDev
                     }
                     discountReader.Close();
 
-                    string query = @"SELECT p.ProductID, p.ProductName, p.ProductPhoto, p.BasePrice, 
-                                    c.CategoryName, op.ProductCount
+                    string query = @"SELECT p.ProductID, p.ProductName, p.ProductPhoto, 
+                                    c.CategoryName, op.ProductCount, op.ProductPrice
                                     FROM orderproduct op
                                     INNER JOIN product p ON op.ProductID = p.ProductID
                                     INNER JOIN category c ON p.CategoryID = c.CategoryID
-                                    WHERE op.OrderID = " + orderID;
+                                    WHERE op.OrderID = @OrderID";
 
                     MySqlCommand cmd = new MySqlCommand(query, con);
+                    cmd.Parameters.AddWithValue("@OrderID", orderID);
                     MySqlDataReader reader = cmd.ExecuteReader();
 
                     decimal totalBasePrice = 0;
@@ -93,16 +96,25 @@ namespace WebSiteDev
                     while (reader.Read())
                     {
                         itemCount++;
-                        decimal basePrice = Convert.ToDecimal(reader["BasePrice"]);
-                        int quantity = Convert.ToInt32(reader["ProductCount"]);
 
-                        totalBasePrice += basePrice * quantity;
+                        decimal productPrice = 0;
+                        if (reader["ProductPrice"] != DBNull.Value)
+                        {
+                            productPrice = Convert.ToDecimal(reader["ProductPrice"]);
+                        }
+                        else
+                        {
+                            productPrice = 0;
+                        }
+
+                        int quantity = Convert.ToInt32(reader["ProductCount"]);
+                        totalBasePrice += productPrice * quantity;
 
                         Panel productPanel = CreateProductPanel(
                             reader["ProductName"].ToString(),
                             reader["CategoryName"].ToString(),
                             reader["ProductPhoto"].ToString(),
-                            basePrice,
+                            productPrice,
                             quantity
                         );
                         flowLayoutPanel1.Controls.Add(productPanel);
@@ -225,7 +237,7 @@ namespace WebSiteDev
 
             Label labelPrice = new Label
             {
-                Text = $"Цена: {price} руб.",
+                Text = $"Цена: {price:F2} руб.",
                 Font = new Font("Microsoft Sans Serif", 11),
                 Location = new Point(120, 65),
                 Size = new Size(180, 20),

@@ -160,6 +160,19 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            if (!IsExcelInstalled())
+            {
+                MessageBox.Show(
+                    "Microsoft Excel не установлен на вашем компьютере!\n\n" +
+                    "Для создания отчёта требуется установленное приложение Microsoft Office Excel.\n\n" +
+                    "Пожалуйста, установите Microsoft Office и повторите попытку.",
+                    "Ошибка",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
+            }
+
             string message = "Вы хотите создать отчёт со следующими параметрами:\n\n";
             message = message + "Период: с " + dateTimePicker1.Value.ToString("dd.MM.yyyy") + " по " + dateTimePicker2.Value.ToString("dd.MM.yyyy") + "\n";
 
@@ -229,6 +242,31 @@ namespace WebSiteDev.ManagerForm
                 selectedStatus,
                 selectedSort
             );
+        }
+
+        private bool IsExcelInstalled()
+        {
+            try
+            {
+                Type excelType = Type.GetTypeFromProgID("Excel.Application");
+                if (excelType == null)
+                {
+                    return false;
+                }
+
+                object excelApp = Activator.CreateInstance(excelType);
+                if (excelApp != null)
+                {
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+                    return true;
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)

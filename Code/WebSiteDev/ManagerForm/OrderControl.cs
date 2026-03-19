@@ -464,6 +464,19 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            if (!IsWordInstalled())
+            {
+                MessageBox.Show(
+                    "Microsoft Word не установлен на вашем компьютере!\n\n" +
+                    "Для создания чека требуется установленное приложение Microsoft Office Word.\n\n" +
+                    "Пожалуйста, установите Microsoft Office и повторите попытку.",
+                    "Ошибка",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
+            }
+
             int orderID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["OrderID"].Value);
             string clientName = dataSecurity.GetOriginalClientName(orderID);
 
@@ -491,6 +504,31 @@ namespace WebSiteDev.ManagerForm
             }
 
             Doc.CheckWord.CreateCheck(orderID);
+        }
+
+        private bool IsWordInstalled()
+        {
+            try
+            {
+                Type wordType = Type.GetTypeFromProgID("Word.Application");
+                if (wordType == null)
+                {
+                    return false;
+                }
+
+                object wordApp = Activator.CreateInstance(wordType);
+                if (wordApp != null)
+                {
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(wordApp);
+                    return true;
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

@@ -19,6 +19,12 @@ namespace WebSiteDev
             InitializeComponent();
         }
 
+        private string GetImagesFolderPath()
+        {
+            string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            return Path.Combine(appData, "WebShop", "Images");
+        }
+
         public void ShowChangeButton(bool show)
         {
             button1.Visible = show;
@@ -63,8 +69,7 @@ namespace WebSiteDev
 
                         if (!string.IsNullOrEmpty(CurrentImagePath))
                         {
-                            string projectPath = AppDomain.CurrentDomain.BaseDirectory;
-                            string imagesFolder = Path.GetFullPath(Path.Combine(projectPath, @"..\..\Images"));
+                            string imagesFolder = GetImagesFolderPath();
                             string oldFullPath = Path.Combine(imagesFolder, CurrentImagePath);
 
                             if (File.Exists(oldFullPath))
@@ -115,14 +120,14 @@ namespace WebSiteDev
 
             string fileName = Path.GetFileNameWithoutExtension(selectedImagePath);
             string extension = Path.GetExtension(selectedImagePath);
-            string projectPath = AppDomain.CurrentDomain.BaseDirectory;
-            string imagesFolder = Path.GetFullPath(Path.Combine(projectPath, @"..\..\Images"));
+            string imagesFolder = GetImagesFolderPath();
 
             try
             {
-                if (!Directory.Exists(imagesFolder))
+                if (!FolderPermissions.CreateFolderWithFullAccess(imagesFolder))
                 {
-                    Directory.CreateDirectory(imagesFolder);
+                    MessageBox.Show("Ошибка: не удалось создать папку для изображений!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
 
                 byte[] newImageBytes = File.ReadAllBytes(selectedImagePath);
@@ -187,6 +192,15 @@ namespace WebSiteDev
                     originalImage = new Bitmap(pictureBox1.Image);
                 }
             }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show(
+                    "Нет прав доступа к папке изображений!\n\n" +
+                    "Запустите программу от имени администратора.",
+                    "Ошибка доступа",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка сохранения: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -210,8 +224,8 @@ namespace WebSiteDev
                 return;
             }
 
-            string projectPath = AppDomain.CurrentDomain.BaseDirectory;
-            string imagePath = Path.Combine(projectPath, @"..\..\Images", photoName);
+            string imagesFolder = GetImagesFolderPath();
+            string imagePath = Path.Combine(imagesFolder, photoName);
 
             if (File.Exists(imagePath))
             {

@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>AppIcon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="MySql.Data">
       <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files (x86)\MySQL\MySQL Installer for Windows\MySql.Data.dll</HintPath>
@@ -108,6 +111,7 @@
     <Compile Include="Data\DataSecurity.cs" />
     <Compile Include="Doc\CheckWord.cs" />
     <Compile Include="Doc\ExcelReport.cs" />
+    <Compile Include="FolderPermissions.cs" />
     <Compile Include="ManagerForm\BucketForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -324,9 +328,11 @@
   <ItemGroup>
     <None Include="Resources\setting.png" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="DirectorForm\Documents\" />
-    <Folder Include="Images\" />
+    <None Update="Images\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\no_image.png" />
@@ -339,6 +345,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Random_password2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AppIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -159,6 +159,9 @@
             //
             // button2
             //
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.ForeColor = System.Drawing.Color.White;
             this.button2.Location = new System.Drawing.Point(191, 5);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(100, 35);
@@ -223,7 +226,7 @@
             this.contextMenuStrip1.Size = new System.Drawing.Size(184, 26);
             this.contextMenuStrip1.Click += this.contextMenuStrip1_Click;
             //
-            // textBox2, textBox3, textBox4 (not used)
+            // textBox2, textBox3, textBox4
             //
             this.textBox2.Location = new System.Drawing.Point(0, 0);
             this.textBox2.Name = "textBox2";
