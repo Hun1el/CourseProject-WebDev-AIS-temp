@@ -16,6 +16,8 @@ namespace WebSiteDev.AdminForm
 {
     public partial class RoleControl : UserControl
     {
+        private DataManipulation dataManipulation;
+
         public RoleControl()
         {
             InitializeComponent();
@@ -23,7 +25,6 @@ namespace WebSiteDev.AdminForm
         }
 
         public bool update = false;
-        string search = "";
 
         void GetDate()
         {
@@ -43,18 +44,15 @@ namespace WebSiteDev.AdminForm
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["RoleID"].Visible = false;
                 dataGridView1.Columns["RoleName"].HeaderText = "Роль";
+
+                dataManipulation = new DataManipulation(dt);
             }
 
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            search = textBox1.Text;
-        }
-
-        private void textBox1_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = null;
+            dataManipulation.ApplySearchRole(textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -96,6 +94,11 @@ namespace WebSiteDev.AdminForm
         {
             AddRoleForm addRoleForm = new AddRoleForm();
             addRoleForm.ShowDialog();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            dataManipulation.ResetFilters(textSearch: textBox1);
         }
     }
 }

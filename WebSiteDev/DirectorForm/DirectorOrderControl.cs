@@ -15,13 +15,20 @@ namespace WebSiteDev.ManagerForm
 {
     public partial class DirectorOrderControl : UserControl
     {
+        private DataManipulation dataManipulation;
+
         public DirectorOrderControl()
         {
             InitializeComponent();
             GetDate();
         }
         public bool update = false;
-        string search = "";
+
+        private void DirectorOrderControl_Load(object sender, EventArgs e)
+        {
+            comboBox1.SelectedIndex = 0;
+            comboBox3.SelectedIndex = 0;
+        }
 
         void GetDate()
         {
@@ -30,7 +37,21 @@ namespace WebSiteDev.ManagerForm
 
                 con.Open();
 
-                MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Order`", con);
+                MySqlCommand cmd = new MySqlCommand(@"
+            SELECT 
+                o.OrderID,
+                CONCAT(c.Surname, ' ', c.FirstName, ' ', c.MiddleName) AS ClientName,
+                CONCAT(u.Surname, ' ', u.FirstName, ' ', u.MiddleName) AS UserName,
+                o.OrderDate,
+                o.OrderCompDate,
+                p.ProductName,
+                s.StatusName,
+                o.OrderCost
+            FROM `Order` o
+            LEFT JOIN Clients c ON o.ClientID = c.ClientID
+            LEFT JOIN Users u ON o.UserID = u.UserID
+            LEFT JOIN Product p ON o.ProductID = p.ProductID
+            LEFT JOIN Status s ON o.StatusID = s.StatusID", con);
                 cmd.ExecuteNonQuery();
 
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
@@ -39,26 +60,22 @@ namespace WebSiteDev.ManagerForm
                 da.Fill(dt);
 
                 dataGridView1.DataSource = dt;
-                dataGridView1.Columns["OrderID"].Visible = false;
-                dataGridView1.Columns["ClientID"].HeaderText = "Клиент";
-                dataGridView1.Columns["UserID"].HeaderText = "Сотрудник";
+                dataGridView1.Columns["OrderID"].HeaderText = "Номер заказа";
+                dataGridView1.Columns["ClientName"].HeaderText = "Клиент";
+                dataGridView1.Columns["UserName"].HeaderText = "Сотрудник";
                 dataGridView1.Columns["OrderDate"].HeaderText = "Дата заказа";
                 dataGridView1.Columns["OrderCompDate"].HeaderText = "Срок выполнения заказа";
-                dataGridView1.Columns["ProductID"].HeaderText = "Товар";
-                dataGridView1.Columns["StatusID"].HeaderText = "Статус";
+                dataGridView1.Columns["ProductName"].HeaderText = "Товар";
+                dataGridView1.Columns["StatusName"].HeaderText = "Статус";
                 dataGridView1.Columns["OrderCost"].HeaderText = "Итоговая цена";
-            }
 
+                dataManipulation = new DataManipulation(dt);
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            search = textBox1.Text;
-        }
-
-        private void textBox1_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = null;
+            dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -99,6 +116,21 @@ namespace WebSiteDev.ManagerForm
         private void button2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            dataManipulation.ResetFilters(comboBox3, comboBox1, textBox1);
         }
     }
 }
