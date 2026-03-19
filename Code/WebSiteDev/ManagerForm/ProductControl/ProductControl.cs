@@ -118,6 +118,15 @@ namespace WebSiteDev.ManagerForm
         /// </summary>
         private void RefreshData()
         {
+            foreach (Control control in flowPanel.Controls)
+            {
+                if (control is ProductCard card)
+                {
+                    card.Dispose();
+                }
+            }
+            flowPanel.Controls.Clear();
+
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
                 con.Open();
@@ -885,6 +894,33 @@ namespace WebSiteDev.ManagerForm
 
                 card.UpdateAddToCartButtonState(isInCart, userRole);
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Освобождаем все изображения в карточках
+                foreach (Control control in flowPanel.Controls)
+                {
+                    if (control is ProductCard card)
+                    {
+                        card.Dispose();
+                    }
+                }
+                flowPanel.Controls.Clear();
+
+                if (dataManipulation != null)
+                {
+                    dataManipulation = null;
+                }
+
+                // Принудительная сборка мусора
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

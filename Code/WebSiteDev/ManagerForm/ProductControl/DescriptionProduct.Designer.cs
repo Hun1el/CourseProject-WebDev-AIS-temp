@@ -59,6 +59,7 @@
             this.Text = "Описание услуги";
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         private System.Windows.Forms.TextBox textBox1;

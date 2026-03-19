@@ -655,7 +655,7 @@ public class DataManipulation
     }
 
     /// <summary>
-    /// Обновляет Label с количеством отображаемых записей после фильтрации
+    /// Обновляет количество отображаемых записей после фильтрации
     /// </summary>
     public void UpdateRecordCountLabel(Label label)
     {

@@ -150,7 +150,7 @@ namespace WebSiteDev
                 Text = item.ProductName,
                 Font = new Font("Comic Sans Serif", 18, FontStyle.Bold),
                 Location = new Point(175, 10),
-                Size = new Size(380, 25),
+                Size = new Size(700, 25),
                 ForeColor = Color.Black,
                 AutoSize = false
             };
