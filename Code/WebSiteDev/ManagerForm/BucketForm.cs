@@ -6,6 +6,9 @@ using WebSiteDev.ManagerForm;
 
 namespace WebSiteDev
 {
+    /// <summary>
+    /// Форма оформления заказа - управление корзиной скидками и надбавками
+    /// </summary>
     public partial class BucketForm : Form
     {
         private DataManipulation dataManipulation;
@@ -29,6 +32,7 @@ namespace WebSiteDev
             dateTimePicker1.Value = dateTimeNow.AddDays(7);
             dateTimePicker1.MinDate = dateTimeNow.AddDays(3);
 
+            // Отключение автоматическое изменение состояния чекбоксов (управляем вручную)
             checkbox1.AutoCheck = false;
             checkbox2.AutoCheck = false;
             checkbox3.AutoCheck = false;
@@ -36,6 +40,9 @@ namespace WebSiteDev
             LoadCartItems();
         }
 
+        /// <summary>
+        /// Выбирает текущего пользователя если он передан
+        /// </summary>
         private void SelectCurrentUser()
         {
             if (ProductControl.CurrentUserID > 0)
@@ -45,6 +52,9 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Загружает и отображает товары из корзины в панели
+        /// </summary>
         private void LoadCartItems()
         {
             flowLayoutPanel1.Controls.Clear();
@@ -68,6 +78,7 @@ namespace WebSiteDev
                 button2.Enabled = true;
                 button3.Enabled = true;
 
+                // Создаём панель для каждого товара в корзине
                 foreach (var item in ProductControl.CurrentOrder.Items)
                 {
                     Panel itemPanel = CreateCartItemPanel(item);
@@ -85,6 +96,9 @@ namespace WebSiteDev
             CheckQuantityDiscount();
         }
 
+        /// <summary>
+        /// Создаёт панель с информацией о товаре в корзине (фото, цена, скидки)
+        /// </summary>
         private Panel CreateCartItemPanel(ProductControl.OrderItem item)
         {
             Panel panel = new Panel
@@ -96,6 +110,7 @@ namespace WebSiteDev
                 ForeColor = Color.Black
             };
 
+            // Загружаем изображение товара
             PictureBox pic = new PictureBox
             {
                 Size = new Size(135, 135),
@@ -107,8 +122,7 @@ namespace WebSiteDev
 
             if (!string.IsNullOrEmpty(item.ProductPhoto))
             {
-                string projectPath = AppDomain.CurrentDomain.BaseDirectory;
-                string imagePath = System.IO.Path.Combine(projectPath, @"..\..\Images", item.ProductPhoto);
+                string imagePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WebShop", "Images", item.ProductPhoto);
                 if (System.IO.File.Exists(imagePath))
                 {
                     try
@@ -121,8 +135,8 @@ namespace WebSiteDev
                             }
                         }
                     }
-                    catch 
-                    { 
+                    catch
+                    {
 
                     }
                 }
@@ -130,6 +144,7 @@ namespace WebSiteDev
 
             panel.Controls.Add(pic);
 
+            // Название товара
             Label labelName = new Label
             {
                 Text = item.ProductName,
@@ -141,6 +156,7 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelName);
 
+            // Категория
             Label labelCategory = new Label
             {
                 Text = $"Категория: {item.CategoryName}",
@@ -152,6 +168,7 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelCategory);
 
+            // Количество
             Label labelQuantity = new Label
             {
                 Text = $"Кол-во: {item.Quantity}",
@@ -162,6 +179,7 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelQuantity);
 
+            // Рассчитываем скидки и надбавки
             decimal itemBasePrice = item.BasePrice * item.Quantity;
             decimal itemDiscount = 0;
             decimal itemSurcharge = 0;
@@ -184,6 +202,7 @@ namespace WebSiteDev
 
             decimal itemFinalPrice = itemBasePrice - itemDiscount + itemSurcharge;
 
+            // Отображаем цену с учётом скидок/надбавок
             if (itemDiscount > 0 || itemSurcharge > 0)
             {
                 Label labelOldPrice = new Label
@@ -248,6 +267,7 @@ namespace WebSiteDev
                 panel.Controls.Add(labelPrice);
             }
 
+            // Итоговая сумма за товар
             decimal subtotalPrice;
             if (itemDiscount > 0 || itemSurcharge > 0)
             {
@@ -269,6 +289,7 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelSubtotal);
 
+            // Кнопка удалить товар из корзины
             Button buttonRemove = new Button
             {
                 Text = "Удалить",
@@ -288,12 +309,40 @@ namespace WebSiteDev
             return panel;
         }
 
+        /// <summary>
+        /// Удаляет товар из корзины по ID
+        /// </summary>
         private void button4_Click(object sender, EventArgs e)
         {
             Button button = sender as Button;
-            if (button != null && button.Tag is int)
+
+            if (button == null)
             {
-                int productID = Convert.ToInt32(button.Tag);
+                return;
+            }
+
+            if (button.Tag is int == false)
+            {
+                return;
+            }
+
+            int productID = Convert.ToInt32(button.Tag);
+
+            string productName = "";
+
+            for (int i = 0; i < ProductControl.CurrentOrder.Items.Count; i++)
+            {
+                if (ProductControl.CurrentOrder.Items[i].ProductID == productID)
+                {
+                    productName = ProductControl.CurrentOrder.Items[i].ProductName;
+                    break;
+                }
+            }
+
+            var result = MessageBox.Show("Вы уверены, что хотите удалить услугу \"" + productName + "\" из корзины?", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
                 RemoveItem(productID);
             }
         }
@@ -312,6 +361,9 @@ namespace WebSiteDev
             UpdateTotal();
         }
 
+        /// <summary>
+        /// Проверяет постоянного ли клиента (более 3 заказов) - если да, применяет скидку 5%
+        /// </summary>
         private void CheckLoyalClient()
         {
             if (comboBox1.SelectedIndex > 0 && comboBox1.SelectedValue != null)
@@ -319,7 +371,7 @@ namespace WebSiteDev
                 int clientID = Convert.ToInt32(comboBox1.SelectedValue);
                 int orderCount = GetClientOrderCount(clientID);
 
-                if (orderCount > 5)
+                if (orderCount > 3)
                 {
                     checkbox1.Enabled = true;
                     checkbox1.Checked = true;
@@ -339,6 +391,9 @@ namespace WebSiteDev
             checkbox1.AutoCheck = false;
         }
 
+        /// <summary>
+        /// Проверяет срочность заказа (менее 7 дней) - если срочно, применяет надбавку 15%
+        /// </summary>
         private void CheckUrgency()
         {
             DateTime selectedDate = dateTimePicker1.Value.Date;
@@ -358,6 +413,9 @@ namespace WebSiteDev
             checkbox2.AutoCheck = false;
         }
 
+        /// <summary>
+        /// Проверяет количество товаров (3+) - если много, применяет скидку 7%
+        /// </summary>
         private void CheckQuantityDiscount()
         {
             int uniqueProductCount = ProductControl.CurrentOrder.Items.Count;
@@ -376,6 +434,9 @@ namespace WebSiteDev
             checkbox3.AutoCheck = false;
         }
 
+        /// <summary>
+        /// Получает количество заказов клиента из БД
+        /// </summary>
         private int GetClientOrderCount(int clientID)
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -394,6 +455,9 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Рассчитывает и обновляет итоговую сумму с учётом всех скидок и надбавок
+        /// </summary>
         private void UpdateTotal()
         {
             decimal total = 0;
@@ -409,7 +473,7 @@ namespace WebSiteDev
             decimal surcharge = 0;
             string discountInfo = "";
 
-            // Скидка постоянного клиента
+            // Скидка постоянного клиента 5%
             if (checkbox1.Checked)
             {
                 decimal loyalDiscount = total * 0.05m;
@@ -417,7 +481,7 @@ namespace WebSiteDev
                 discountInfo += $"Скидка постоянного клиента: -{loyalDiscount:F2} руб. (5%)\n";
             }
 
-            // Скидка от количества товаров
+            // Скидка за количество товаров 7%
             if (checkbox3.Checked)
             {
                 decimal quantityDiscount = total * 0.07m;
@@ -425,7 +489,7 @@ namespace WebSiteDev
                 discountInfo += $"Скидка за количество: -{quantityDiscount:F2} руб. (7%)\n";
             }
 
-            // Надбавка за срочность
+            // Надбавка за срочность 15%
             if (checkbox2.Checked)
             {
                 decimal urgencySurcharge = total * 0.15m;
@@ -465,6 +529,9 @@ namespace WebSiteDev
             this.Close();
         }
 
+        /// <summary>
+        /// Оформить заказ - создаёт заказ в БД и опционально печатает чек
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
             if (comboBox1.SelectedIndex == 0)
@@ -510,6 +577,9 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Создаёт заказ и добавляет товары в БД с использованием транзакции
+        /// </summary>
         private bool CreateOrderWithProducts(out int createdOrderID)
         {
             createdOrderID = 0;
@@ -534,6 +604,7 @@ namespace WebSiteDev
                         DateTime orderDate = DateTime.Now;
                         DateTime orderCompDate = dateTimePicker1.Value;
 
+                        // Рассчитываем общую стоимость
                         decimal totalCost = 0;
                         foreach (var item in ProductControl.CurrentOrder.Items)
                         {
@@ -558,6 +629,7 @@ namespace WebSiteDev
 
                         decimal finalTotal = totalCost - discount + surcharge;
 
+                        // Создаём заказ в БД
                         string insertOrderQuery = @"INSERT INTO `Order` 
                     (UserID, ClientID, OrderDate, OrderCompDate, StatusID, OrderCost, Discount, Surcharge) 
                     VALUES 
@@ -574,9 +646,11 @@ namespace WebSiteDev
                         cmdOrder.Parameters.AddWithValue("@Surcharge", surcharge);
                         cmdOrder.ExecuteNonQuery();
 
+                        // Получаем ID созданного заказа
                         MySqlCommand cmdGetOrderID = new MySqlCommand("SELECT LAST_INSERT_ID()", con, transaction);
                         createdOrderID = Convert.ToInt32(cmdGetOrderID.ExecuteScalar());
 
+                        // Добавляем товары в заказ
                         string insertProductQuery = @"INSERT INTO orderproduct 
                     (OrderID, ProductID, ProductCount, ProductPrice) 
                     VALUES 
@@ -610,6 +684,9 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Кнопка очистить корзину
+        /// </summary>
         private void button3_Click(object sender, EventArgs e)
         {
             var result = MessageBox.Show("Очистить корзину?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);

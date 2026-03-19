@@ -7,6 +7,9 @@ using WebSiteDev;
 
 namespace WebSiteDev
 {
+    /// <summary>
+    /// Контрол для управления изображениями товара - загрузка, сохранение и отображение фото
+    /// </summary>
     public partial class ImageControl : UserControl
     {
         private string selectedImagePath;
@@ -19,22 +22,32 @@ namespace WebSiteDev
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Получает путь к папке с изображениями в AppData
+        /// </summary>
         private string GetImagesFolderPath()
         {
             string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             return Path.Combine(appData, "WebShop", "Images");
         }
 
+        /// <summary>
+        /// Показывает или скрывает кнопку для изменения изображения
+        /// </summary>
         public void ShowChangeButton(bool show)
         {
             button1.Visible = show;
         }
 
+        /// <summary>
+        /// Инициализирует контрол - загружает текущее изображение товара
+        /// </summary>
         public void InitializeImage(string currentImagePath)
         {
             CurrentImagePath = currentImagePath;
             LoadImage(currentImagePath);
 
+            // Сохраняем оригинальное изображение для возможности отката изменений
             if (pictureBox1.Image != null)
             {
                 originalImage = new Bitmap(pictureBox1.Image);
@@ -45,6 +58,9 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Кнопка изменить - открывает диалог выбора файла и загружает новое изображение
+        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -58,6 +74,7 @@ namespace WebSiteDev
 
                     try
                     {
+                        // Проверяем размер файла - не более 2 МБ
                         FileInfo fileInfo = new FileInfo(sourcePath);
                         if (fileInfo.Length > 2 * 1024 * 1024)
                         {
@@ -67,6 +84,7 @@ namespace WebSiteDev
 
                         byte[] newImageBytes = File.ReadAllBytes(sourcePath);
 
+                        // Сравниваем новое изображение со старым чтобы избежать дублей
                         if (!string.IsNullOrEmpty(CurrentImagePath))
                         {
                             string imagesFolder = GetImagesFolderPath();
@@ -76,6 +94,7 @@ namespace WebSiteDev
                             {
                                 byte[] oldImageBytes = File.ReadAllBytes(oldFullPath);
 
+                                // Сравниваем побайтово - если идентичны, отменяем операцию
                                 if (oldImageBytes.Length == newImageBytes.Length)
                                 {
                                     bool isIdentical = true;
@@ -97,6 +116,7 @@ namespace WebSiteDev
                             }
                         }
 
+                        // Загружаем выбранное изображение во временное хранилище
                         selectedImagePath = sourcePath;
                         Image tempImage = Image.FromFile(sourcePath);
                         pictureBox1.Image = tempImage;
@@ -109,13 +129,18 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Сохраняет выбранное изображение в папку и обновляет путь в БД
+        /// </summary>
         public void SaveImage(int productID)
         {
+            // Если изображение не было выбрано - выходим
             if (string.IsNullOrEmpty(selectedImagePath))
             {
                 return;
             }
 
+            // Очищаем PictureBox чтобы освободить файл для копирования
             pictureBox1.Image = null;
 
             string fileName = Path.GetFileNameWithoutExtension(selectedImagePath);
@@ -124,6 +149,7 @@ namespace WebSiteDev
 
             try
             {
+                // Создаём папку для изображений если её нет
                 if (!FolderPermissions.CreateFolderWithFullAccess(imagesFolder))
                 {
                     MessageBox.Show("Ошибка: не удалось создать папку для изображений!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -134,11 +160,13 @@ namespace WebSiteDev
                 string destPath = Path.Combine(imagesFolder, fileName + extension);
                 string finalFileName = fileName + extension;
 
+                // Если файл уже существует - проверяем содержимое или генерируем новое имя
                 if (File.Exists(destPath))
                 {
                     byte[] existingImageBytes = File.ReadAllBytes(destPath);
                     bool isIdentical = false;
 
+                    // Сравниваем файлы побайтово
                     if (existingImageBytes.Length == newImageBytes.Length)
                     {
                         isIdentical = true;
@@ -152,12 +180,14 @@ namespace WebSiteDev
                         }
                     }
 
+                    // Если идентичны - используем существующий файл
                     if (isIdentical)
                     {
                         finalFileName = Path.GetFileName(destPath);
                     }
                     else
                     {
+                        // Если различаются - добавляем номер к имени файла
                         int n = 1;
                         while (File.Exists(destPath))
                         {
@@ -170,9 +200,11 @@ namespace WebSiteDev
                 }
                 else
                 {
+                    // Копируем новый файл в папку изображений
                     File.Copy(selectedImagePath, destPath, false);
                 }
 
+                // Обновляем путь к фото в БД
                 using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
                 {
                     con.Open();
@@ -183,6 +215,7 @@ namespace WebSiteDev
                     }
                 }
 
+                // Загружаем сохранённое изображение и обновляем оригинал
                 LoadImage(finalFileName);
                 CurrentImagePath = finalFileName;
                 selectedImagePath = null;
@@ -207,16 +240,23 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Отменяет редактирование - восстанавливает оригинальное изображение
+        /// </summary>
         public void CancelEdit()
         {
             selectedImagePath = null;
 
+            // Восстанавливаем оригинальное изображение если оно было сохранено
             if (originalImage != null)
             {
                 pictureBox1.Image = new Bitmap(originalImage);
             }
         }
 
+        /// <summary>
+        /// Загружает изображение товара из папки или показывает изображение по умолчанию
+        /// </summary>
         public void LoadImage(string photoName)
         {
             if (string.IsNullOrEmpty(photoName))
@@ -231,6 +271,7 @@ namespace WebSiteDev
             {
                 try
                 {
+                    // Читаем файл в MemoryStream чтобы избежать блокировки файла
                     byte[] imageBytes = File.ReadAllBytes(imagePath);
                     using (MemoryStream ms = new MemoryStream(imageBytes))
                     {
@@ -239,20 +280,28 @@ namespace WebSiteDev
                 }
                 catch
                 {
+                    // Если ошибка при загрузке - показываем изображение по умолчанию
                     pictureBox1.Image = Properties.Resources.no_image;
                 }
             }
             else
             {
+                // Если файл не найден - показываем изображение по умолчанию
                 pictureBox1.Image = Properties.Resources.no_image;
             }
         }
 
+        /// <summary>
+        /// Перенаправляет событие клика с PictureBox на контрол
+        /// </summary>
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             this.OnMouseDown(e);
         }
 
+        /// <summary>
+        /// Обработчик события клика на контрол
+        /// </summary>
         private void ImageControl_MouseDown(object sender, MouseEventArgs e)
         {
 

@@ -5,10 +5,16 @@ using System.Windows.Forms;
 
 namespace WebSiteDev
 {
+    /// <summary>
+    /// Форма для просмотра состава заказа - отображает все товары в заказе с их характеристиками
+    /// </summary>
     public partial class OrderProductForm : Form
     {
         private int orderID;
 
+        /// <summary>
+        /// Конструктор - инициализирует форму с ID заказа
+        /// </summary>
         public OrderProductForm(int orderID)
         {
             InitializeComponent();
@@ -31,6 +37,7 @@ namespace WebSiteDev
                 {
                     con.Open();
 
+                    // Получаем основную информацию о заказе
                     string orderDataQuery = @"SELECT 
                         o.OrderDate, 
                         o.OrderCompDate,
@@ -45,6 +52,7 @@ namespace WebSiteDev
                     orderDataCmd.Parameters.AddWithValue("@OrderID", orderID);
                     MySqlDataReader orderDataReader = orderDataCmd.ExecuteReader();
 
+                    // Выводим информацию о дате, сотруднике и клиенте
                     if (orderDataReader.Read())
                     {
                         label8.Text = $"Дата заказа: {Convert.ToDateTime(orderDataReader["OrderDate"]):dd.MM.yyyy}";
@@ -54,6 +62,7 @@ namespace WebSiteDev
                     }
                     orderDataReader.Close();
 
+                    // Получаем скидку и надбавку для заказа
                     string discountQuery = "SELECT Discount, Surcharge FROM `Order` WHERE OrderID = @OrderID";
                     MySqlCommand discountCmd = new MySqlCommand(discountQuery, con);
                     discountCmd.Parameters.AddWithValue("@OrderID", orderID);
@@ -79,6 +88,7 @@ namespace WebSiteDev
                     }
                     discountReader.Close();
 
+                    // Получаем все товары в заказе
                     string query = @"SELECT p.ProductID, p.ProductName, p.ProductPhoto, 
                                     c.CategoryName, op.ProductCount, op.ProductPrice
                                     FROM orderproduct op
@@ -93,10 +103,12 @@ namespace WebSiteDev
                     decimal totalBasePrice = 0;
                     int itemCount = 0;
 
+                    // Создаём панели для каждого товара
                     while (reader.Read())
                     {
                         itemCount++;
 
+                        // Получаем цену товара
                         decimal productPrice = 0;
                         if (reader["ProductPrice"] != DBNull.Value)
                         {
@@ -110,6 +122,7 @@ namespace WebSiteDev
                         int quantity = Convert.ToInt32(reader["ProductCount"]);
                         totalBasePrice += productPrice * quantity;
 
+                        // Создаём панель с информацией о товаре
                         Panel productPanel = CreateProductPanel(
                             reader["ProductName"].ToString(),
                             reader["CategoryName"].ToString(),
@@ -122,8 +135,10 @@ namespace WebSiteDev
 
                     reader.Close();
 
+                    // Обновляем итоговую информацию
                     UpdateSummaryPanel(totalBasePrice, totalDiscount, totalSurcharge);
 
+                    // Если товаров нет - показываем сообщение
                     if (itemCount == 0)
                     {
                         Label emptyLabel = new Label
@@ -144,10 +159,15 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Обновляет итоговую информацию о стоимости - сумму, скидку, надбавку
+        /// </summary>
         private void UpdateSummaryPanel(decimal totalBasePrice, decimal discount, decimal surcharge)
         {
+            // Выводим сумму товаров
             label2.Text = $"Сумма товаров: {totalBasePrice:F2} руб.";
 
+            // Показываем скидку если она есть
             if (discount > 0)
             {
                 label3.Text = $"Скидка: -{discount:F2} руб.";
@@ -158,6 +178,7 @@ namespace WebSiteDev
                 label3.Visible = false;
             }
 
+            // Показываем надбавку если она есть
             if (surcharge > 0)
             {
                 label4.Text = $"Надбавка: +{surcharge:F2} руб.";
@@ -168,10 +189,14 @@ namespace WebSiteDev
                 label4.Visible = false;
             }
 
+            // Рассчитываем и выводим итоговую сумму
             decimal finalTotal = totalBasePrice - discount + surcharge;
             label5.Text = $"Итого: {finalTotal:F2} руб.";
         }
 
+        /// <summary>
+        /// Создаёт панель с информацией о товаре - название, категория, цена, количество, фото
+        /// </summary>
         private Panel CreateProductPanel(string productName, string categoryName, string photoPath, decimal price, int quantity)
         {
             Panel panel = new Panel
@@ -182,6 +207,7 @@ namespace WebSiteDev
                 Margin = new Padding(5)
             };
 
+            // Загружаем и выводим фото товара
             PictureBox pic = new PictureBox
             {
                 Size = new Size(100, 100),
@@ -191,10 +217,10 @@ namespace WebSiteDev
                 BorderStyle = BorderStyle.FixedSingle
             };
 
+            // Пытаемся загрузить изображение товара из папки
             if (!string.IsNullOrEmpty(photoPath))
             {
-                string projectPath = AppDomain.CurrentDomain.BaseDirectory;
-                string imagePath = System.IO.Path.Combine(projectPath, @"..\..\Images", photoPath);
+                string imagePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WebShop", "Images", photoPath);
                 if (System.IO.File.Exists(imagePath))
                 {
                     try
@@ -213,6 +239,7 @@ namespace WebSiteDev
 
             panel.Controls.Add(pic);
 
+            // Название товара
             Label labelName = new Label
             {
                 Text = productName,
@@ -224,6 +251,7 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelName);
 
+            // Категория
             Label labelCategory = new Label
             {
                 Text = $"Категория: {categoryName}",
@@ -235,6 +263,7 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelCategory);
 
+            // Цена за единицу
             Label labelPrice = new Label
             {
                 Text = $"Цена: {price:F2} руб.",
@@ -246,6 +275,7 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelPrice);
 
+            // Количество товара
             Label labelQuantity = new Label
             {
                 Text = $"Количество: {quantity} шт.",
@@ -257,8 +287,10 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelQuantity);
 
+            // Рассчитываем сумму товара
             decimal baseTotal = price * quantity;
 
+            // Итоговая сумма за товар
             Label labelSubtotal = new Label
             {
                 Text = $"Сумма: {baseTotal:F2} руб.",
@@ -274,6 +306,9 @@ namespace WebSiteDev
             return panel;
         }
 
+        /// <summary>
+        /// Кнопка "Закрыть" - закрывает форму
+        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
             this.Close();

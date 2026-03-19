@@ -1,17 +1,13 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WebSiteDev.AddForm
 {
+    /// <summary>
+    /// Форма для добавления нового клиента в систему
+    /// Включает заполнение ФИО, email и номера телефона
+    /// </summary>
     public partial class AddClientsForm : Form
     {
         public AddClientsForm()
@@ -24,74 +20,105 @@ namespace WebSiteDev.AddForm
             comboBox1.SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// Кнопка отмена - закрывает форму
+        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
+        /// <summary>
+        /// Применяет форматирование первой буквы при вводе фамилии
+        /// </summary>
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             InputRest.FirstLetter(textBox2);
         }
 
+        /// <summary>
+        /// Применяет форматирование первой буквы при вводе имени
+        /// </summary>
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             InputRest.FirstLetter(textBox3);
         }
 
+        /// <summary>
+        /// Применяет форматирование первой буквы при вводе отчества
+        /// </summary>
         private void textBox4_TextChanged(object sender, EventArgs e)
         {
             InputRest.FirstLetter(textBox4);
         }
 
+        /// <summary>
+        /// Ограничивает ввод фамилии только русскими буквами и дефисом
+        /// </summary>
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyRussianAndDash(e, textBox2);
         }
 
+        /// <summary>
+        /// Ограничивает ввод имени только русскими буквами и дефисом
+        /// </summary>
         private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyRussianAndDash(e, textBox3);
         }
 
+        /// <summary>
+        /// Ограничивает ввод отчества только русскими буквами
+        /// </summary>
         private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyRussian(e);
         }
 
+        /// <summary>
+        /// Ограничивает ввод email допустимыми символами
+        /// </summary>
         private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.EmailInput(e);
         }
 
+        /// <summary>
+        /// Кнопка добавить - проверяет данные и добавляет клиента в БД
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
+            // Получаем все введённые данные
             string SurName = textBox2.Text.Trim();
             string FirstName = textBox3.Text.Trim();
             string MiddleName = textBox4.Text.Trim();
             string EmailName = textBox5.Text.Trim();
 
-
             string PhoneNumber = maskedTextBox1.Text.Trim();
 
+            // Проверяем что обязательные поля заполнены
             if (SurName == "" || FirstName == "" || comboBox1.SelectedIndex <= 0 || PhoneNumber == "")
             {
                 MessageBox.Show("Заполните все обязательные поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            // Проверяем выбор домена email
             if (comboBox1.SelectedIndex <= 0)
             {
                 MessageBox.Show("Выберите домен электронной почты!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            // Проверяем корректность номера телефона
             if (!maskedTextBox1.MaskFull)
             {
                 MessageBox.Show("Введите корректный номер телефона!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            // Формируем полный email из введённой части и выбранного домена
             string EmailDomain = comboBox1.SelectedItem.ToString();
             string FullEmail = EmailName + EmailDomain;
 
@@ -101,6 +128,7 @@ namespace WebSiteDev.AddForm
                 {
                     con.Open();
 
+                    // Проверяем что клиент с таким email не существует
                     string checkEmailQuery = "SELECT COUNT(*) FROM Clients WHERE Email = '" + FullEmail + "'";
                     using (MySqlCommand checkEmailCmd = new MySqlCommand(checkEmailQuery, con))
                     {
@@ -113,6 +141,7 @@ namespace WebSiteDev.AddForm
                         }
                     }
 
+                    // Проверяем что клиент с таким номером телефона не существует
                     string checkPhoneQuery = "SELECT COUNT(*) FROM Clients WHERE PhoneNumber = '" + PhoneNumber + "'";
                     using (MySqlCommand checkPhoneCmd = new MySqlCommand(checkPhoneQuery, con))
                     {
@@ -125,7 +154,7 @@ namespace WebSiteDev.AddForm
                         }
                     }
 
-
+                    // Добавляем нового клиента в таблицу
                     string insertQuery = "INSERT INTO Clients (Surname, FirstName, MiddleName, Email, PhoneNumber) " +
                                          "VALUES ('" + SurName + "', '" + FirstName + "', '" + MiddleName + "', '" + FullEmail + "', '" + PhoneNumber + "')";
                     using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, con))
@@ -133,6 +162,7 @@ namespace WebSiteDev.AddForm
                         insertCmd.ExecuteNonQuery();
                     }
 
+                    // Показываем сообщение об успехе и очищаем все поля
                     MessageBox.Show("Клиент успешно добавлен!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     textBox2.Clear();
                     textBox3.Clear();
@@ -144,6 +174,7 @@ namespace WebSiteDev.AddForm
             }
             catch (Exception ex)
             {
+                // Обработка исключений при работе с БД
                 MessageBox.Show("Ошибка при добавлении клиента:\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
