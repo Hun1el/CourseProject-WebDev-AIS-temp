@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace WebSiteDev.Doc
 {
@@ -20,11 +19,16 @@ namespace WebSiteDev.Doc
                 return;
             }
 
+            dynamic app = null;
+            dynamic doc = null;
+
             try
             {
-                Word.Application app = new Word.Application();
+                Type wordAppType = Type.GetTypeFromProgID("Word.Application");
+                app = Activator.CreateInstance(wordAppType);
                 app.Visible = false;
-                Word.Document doc = app.Documents.Add();
+
+                doc = app.Documents.Add();
 
                 float baseHeight = 236.8f;
 
@@ -79,12 +83,12 @@ namespace WebSiteDev.Doc
                                 if (surcharge > 0) hasSurcharge = true;
                             }
 
-                            Word.Paragraph p1 = doc.Paragraphs.Add();
+                            dynamic p1 = doc.Paragraphs.Add();
                             p1.Range.Text = "ЧЕК ЗАКАЗА № " + r["OrderID"].ToString();
                             p1.Range.Font.Name = "Times New Roman";
                             p1.Range.Font.Size = 9;
                             p1.Range.Font.Bold = 1;
-                            p1.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                            p1.Alignment = GetWdAlignParagraphCenter();
                             p1.SpaceBefore = 2;
                             p1.SpaceAfter = 3;
                             p1.Range.InsertParagraphAfter();
@@ -92,60 +96,60 @@ namespace WebSiteDev.Doc
                             DateTime dt1 = Convert.ToDateTime(r["OrderDate"]);
                             DateTime dt2 = Convert.ToDateTime(r["OrderCompDate"]);
 
-                            Word.Paragraph p2 = doc.Paragraphs.Add();
+                            dynamic p2 = doc.Paragraphs.Add();
                             p2.Range.Text = "Дата заказа: " + dt1.ToString("dd.MM.yyyy") + "         " + "Срок выполнения: " + dt2.ToString("dd.MM.yyyy");
                             p2.Range.Font.Name = "Times New Roman";
                             p2.Range.Font.Size = 6;
                             p2.Range.Font.Bold = 0;
-                            p2.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                            p2.Alignment = GetWdAlignParagraphCenter();
                             p2.SpaceBefore = 6;
                             p2.SpaceAfter = 0;
                             p2.Range.InsertParagraphAfter();
 
-                            Word.Paragraph p3 = doc.Paragraphs.Add();
+                            dynamic p3 = doc.Paragraphs.Add();
                             p3.Range.Text = "Клиент: " + r["ClientName"].ToString();
                             p3.Range.Font.Name = "Times New Roman";
                             p3.Range.Font.Size = 6;
                             p3.Range.Font.Bold = 0;
-                            p3.Alignment = Word.WdParagraphAlignment.wdAlignParagraphLeft;
+                            p3.Alignment = GetWdAlignParagraphLeft();
                             p3.SpaceBefore = 10;
                             p3.SpaceAfter = 2;
                             p3.Range.InsertParagraphAfter();
 
-                            Word.Paragraph line2 = doc.Paragraphs.Add();
+                            dynamic line2 = doc.Paragraphs.Add();
                             line2.Range.Text = "__________________________________________________________________";
                             line2.Range.Font.Name = "Times New Roman";
                             line2.Range.Font.Size = 6;
-                            line2.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                            line2.Alignment = GetWdAlignParagraphCenter();
                             line2.SpaceBefore = 0;
                             line2.SpaceAfter = 0;
                             line2.Range.InsertParagraphAfter();
 
-                            Word.Paragraph p4 = doc.Paragraphs.Add();
+                            dynamic p4 = doc.Paragraphs.Add();
                             p4.Range.Text = "Сотрудник: " + r["UserName"].ToString();
                             p4.Range.Font.Name = "Times New Roman";
                             p4.Range.Font.Size = 6;
                             p4.Range.Font.Bold = 0;
-                            p4.Alignment = Word.WdParagraphAlignment.wdAlignParagraphLeft;
+                            p4.Alignment = GetWdAlignParagraphLeft();
                             p4.SpaceBefore = 0;
                             p4.SpaceAfter = 0;
                             p4.Range.InsertParagraphAfter();
 
-                            Word.Paragraph p5 = doc.Paragraphs.Add();
+                            dynamic p5 = doc.Paragraphs.Add();
                             p5.Range.Text = "Тел: + 7 (900) 111-22-33";
                             p5.Range.Font.Name = "Times New Roman";
                             p5.Range.Font.Size = 6;
                             p5.Range.Font.Bold = 0;
-                            p5.Alignment = Word.WdParagraphAlignment.wdAlignParagraphLeft;
+                            p5.Alignment = GetWdAlignParagraphLeft();
                             p5.SpaceBefore = 0;
                             p5.SpaceAfter = 2;
                             p5.Range.InsertParagraphAfter();
 
-                            Word.Paragraph line3 = doc.Paragraphs.Add();
+                            dynamic line3 = doc.Paragraphs.Add();
                             line3.Range.Text = "__________________________________________________________________";
                             line3.Range.Font.Name = "Times New Roman";
                             line3.Range.Font.Size = 6;
-                            line3.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                            line3.Alignment = GetWdAlignParagraphCenter();
                             line3.SpaceBefore = 0;
                             line3.SpaceAfter = 0;
                             line3.Range.InsertParagraphAfter();
@@ -158,12 +162,12 @@ namespace WebSiteDev.Doc
 
                     MySqlCommand cmd2 = new MySqlCommand(query2, con);
 
-                    Word.Paragraph p6 = doc.Paragraphs.Add();
+                    dynamic p6 = doc.Paragraphs.Add();
                     p6.Range.Text = "СОСТАВ ЗАКАЗА";
                     p6.Range.Font.Name = "Times New Roman";
                     p6.Range.Font.Size = 6;
                     p6.Range.Font.Bold = 1;
-                    p6.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                    p6.Alignment = GetWdAlignParagraphCenter();
                     p6.SpaceBefore = 2;
                     p6.SpaceAfter = 2;
                     p6.Range.InsertParagraphAfter();
@@ -178,7 +182,7 @@ namespace WebSiteDev.Doc
                             r2.Close();
                             MySqlDataReader r3 = cmd2.ExecuteReader();
 
-                            Word.Table tbl = doc.Tables.Add(doc.Paragraphs[doc.Paragraphs.Count].Range, count + 1, 3);
+                            dynamic tbl = doc.Tables.Add(doc.Paragraphs[doc.Paragraphs.Count].Range, count + 1, 3);
                             tbl.Borders.Enable = 1;
 
                             tbl.Cell(1, 1).Range.Text = "Товар";
@@ -188,8 +192,8 @@ namespace WebSiteDev.Doc
                             tbl.Rows[1].Range.Font.Name = "Times New Roman";
                             tbl.Rows[1].Range.Font.Bold = 1;
                             tbl.Rows[1].Range.Font.Size = 5;
-                            tbl.Rows[1].Shading.BackgroundPatternColor = (Word.WdColor)System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(45, 156, 219));
-                            tbl.Rows[1].Range.Font.Color = Word.WdColor.wdColorWhite;
+                            tbl.Rows[1].Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.FromArgb(45, 156, 219));
+                            tbl.Rows[1].Range.Font.Color = GetWdColorWhite();
 
                             int i = 2;
                             while (r3.Read())
@@ -244,14 +248,14 @@ namespace WebSiteDev.Doc
                             }
                         }
 
-                        Word.Paragraph p7 = doc.Paragraphs.Add();
+                        dynamic p7 = doc.Paragraphs.Add();
                         p7.Range.Text = reason + ": ";
                         p7.Range.Font.Name = "Times New Roman";
                         p7.Range.Font.Size = 6;
                         p7.Range.Font.Bold = 0;
-                        p7.Range.Font.Color = Word.WdColor.wdColorBlack;
+                        p7.Range.Font.Color = GetWdColorBlack();
 
-                        Word.Range rng = p7.Range.Duplicate;
+                        dynamic rng = p7.Range.Duplicate;
                         rng.Start = p7.Range.End;
                         rng.Text = "-" + discount.ToString("0.00") + " ₽";
                         rng.Font.Bold = 1;
@@ -259,7 +263,7 @@ namespace WebSiteDev.Doc
                         rng.Font.Size = 6;
 
                         p7.Range.End = rng.End;
-                        p7.Alignment = Word.WdParagraphAlignment.wdAlignParagraphRight;
+                        p7.Alignment = GetWdAlignParagraphRight();
                         p7.SpaceBefore = 2;
                         p7.SpaceAfter = 0;
                         p7.Range.InsertParagraphAfter();
@@ -267,14 +271,14 @@ namespace WebSiteDev.Doc
 
                     if (hasSurcharge == true)
                     {
-                        Word.Paragraph p8 = doc.Paragraphs.Add();
+                        dynamic p8 = doc.Paragraphs.Add();
                         p8.Range.Text = "Срочность (15%): ";
                         p8.Range.Font.Name = "Times New Roman";
                         p8.Range.Font.Size = 6;
                         p8.Range.Font.Bold = 0;
-                        p8.Range.Font.Color = Word.WdColor.wdColorBlack;
+                        p8.Range.Font.Color = GetWdColorBlack();
 
-                        Word.Range rng = p8.Range.Duplicate;
+                        dynamic rng = p8.Range.Duplicate;
                         rng.Start = p8.Range.End;
                         rng.Text = "+" + surcharge.ToString("0.00") + " ₽";
                         rng.Font.Bold = 1;
@@ -282,7 +286,7 @@ namespace WebSiteDev.Doc
                         rng.Font.Size = 6;
 
                         p8.Range.End = rng.End;
-                        p8.Alignment = Word.WdParagraphAlignment.wdAlignParagraphRight;
+                        p8.Alignment = GetWdAlignParagraphRight();
                         p8.SpaceBefore = 0;
                         p8.SpaceAfter = 2;
                         p8.Range.InsertParagraphAfter();
@@ -299,13 +303,13 @@ namespace WebSiteDev.Doc
                         totalCost = val.ToString("0.00");
                     }
 
-                    Word.Paragraph p9 = doc.Paragraphs.Add();
+                    dynamic p9 = doc.Paragraphs.Add();
                     p9.Range.Text = "ИТОГО: ";
                     p9.Range.Font.Name = "Times New Roman";
                     p9.Range.Font.Size = 7;
                     p9.Range.Font.Bold = 0;
 
-                    Word.Range rng2 = p9.Range.Duplicate;
+                    dynamic rng2 = p9.Range.Duplicate;
                     rng2.Start = p9.Range.End;
                     rng2.Text = totalCost + " ₽";
                     rng2.Font.Bold = 1;
@@ -313,27 +317,27 @@ namespace WebSiteDev.Doc
                     rng2.Font.Name = "Times New Roman";
 
                     p9.Range.End = rng2.End;
-                    p9.Alignment = Word.WdParagraphAlignment.wdAlignParagraphRight;
+                    p9.Alignment = GetWdAlignParagraphRight();
                     p9.SpaceBefore = 0;
                     p9.SpaceAfter = 2;
                     p9.Range.InsertParagraphAfter();
 
-                    Word.Paragraph p10 = doc.Paragraphs.Add();
+                    dynamic p10 = doc.Paragraphs.Add();
                     p10.Range.Text = "Спасибо за покупку!";
                     p10.Range.Font.Name = "Times New Roman";
                     p10.Range.Font.Size = 7;
                     p10.Range.Font.Bold = 1;
-                    p10.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                    p10.Alignment = GetWdAlignParagraphCenter();
                     p10.SpaceBefore = 16;
                     p10.SpaceAfter = 2;
                     p10.Range.InsertParagraphAfter();
 
-                    Word.Paragraph p11 = doc.Paragraphs.Add();
+                    dynamic p11 = doc.Paragraphs.Add();
                     p11.Range.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
                     p11.Range.Font.Name = "Times New Roman";
                     p11.Range.Font.Size = 5;
                     p11.Range.Font.Bold = 0;
-                    p11.Alignment = Word.WdParagraphAlignment.wdAlignParagraphRight;
+                    p11.Alignment = GetWdAlignParagraphRight();
                     p11.SpaceBefore = 4;
                     p11.SpaceAfter = 0;
                 }
@@ -342,18 +346,15 @@ namespace WebSiteDev.Doc
 
                 if (ext == ".doc")
                 {
-                    doc.SaveAs(sfd.FileName, Word.WdSaveFormat.wdFormatDocument97);
+                    doc.SaveAs(sfd.FileName, GetWdFormatDocument97());
                 }
                 else
                 {
-                    doc.SaveAs(sfd.FileName, Word.WdSaveFormat.wdFormatDocumentDefault);
+                    doc.SaveAs(sfd.FileName, GetWdFormatDocumentDefault());
                 }
 
                 doc.Close();
                 app.Quit();
-
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(doc);
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(app);
 
                 MessageBox.Show("Чек успешно сформирован!\n\nПуть сохранения:\n" + sfd.FileName, "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -361,6 +362,66 @@ namespace WebSiteDev.Doc
             {
                 MessageBox.Show("Ошибка при создании чека:\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                try
+                {
+                    if (doc != null)
+                    {
+                        System.Runtime.InteropServices.Marshal.FinalReleaseComObject(doc);
+                        doc = null;
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    if (app != null)
+                    {
+                        System.Runtime.InteropServices.Marshal.FinalReleaseComObject(app);
+                        app = null;
+                    }
+                }
+                catch { }
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+        }
+
+        private static int GetWdAlignParagraphCenter()
+        {
+            return 1;
+        }
+
+        private static int GetWdAlignParagraphLeft()
+        {
+            return 0;
+        }
+
+        private static int GetWdAlignParagraphRight()
+        {
+            return 2;
+        }
+
+        private static int GetWdColorWhite()
+        {
+            return 16777215;
+        }
+
+        private static int GetWdColorBlack()
+        {
+            return 0;
+        }
+
+        private static int GetWdFormatDocument97()
+        {
+            return 0;
+        }
+
+        private static int GetWdFormatDocumentDefault()
+        {
+            return 16;
         }
     }
 }

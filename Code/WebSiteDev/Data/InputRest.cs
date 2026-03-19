@@ -40,12 +40,34 @@ namespace WebSiteDev
             }
         }
 
-        public static void OnlyRussianAndDash(KeyPressEventArgs e)
+        public static void OnlyRussianAndDash(KeyPressEventArgs e, TextBox textBox)
         {
             if (!((e.KeyChar >= 'А' && e.KeyChar <= 'я') || e.KeyChar == 'Ё' || e.KeyChar == 'ё' || e.KeyChar == '-' || e.KeyChar == '\b'))
             {
                 e.Handled = true;
-            }    
+                return;
+            }
+
+            if (e.KeyChar == '-')
+            {
+                if (textBox.Text.Count(c => c == '-') >= 2)
+                {
+                    e.Handled = true;
+                    return;
+                }
+
+                if (textBox.Text.Length == 0)
+                {
+                    e.Handled = true;
+                    return;
+                }
+
+                if (textBox.SelectionStart > 0 && textBox.Text[textBox.SelectionStart - 1] == '-')
+                {
+                    e.Handled = true;
+                    return;
+                }
+            }
         }
 
         public static void OnlyEnglishAndSpecial(KeyPressEventArgs e)

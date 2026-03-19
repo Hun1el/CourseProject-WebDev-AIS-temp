@@ -1,12 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using WebSiteDev.AddForm;
 
 namespace WebSiteDev.ManagerForm
 {
@@ -17,6 +12,8 @@ namespace WebSiteDev.ManagerForm
         public bool update = false;
         private int selectedOrderID = -1;
         private string currentStatus = "";
+        private int lastRevealedRowIndex = -1;
+        private Timer timer1 = new Timer();
 
         public static int CurrentUserID { get; set; } = 0;
         public static string CurrentUserName { get; set; } = "";
@@ -29,6 +26,8 @@ namespace WebSiteDev.ManagerForm
             userRole = role;
             CurrentUserID = userID;
             CurrentUserName = userName;
+            timer1.Interval = 20000;
+            timer1.Tick += Timer1_Tick;
             GetDate();
         }
 
@@ -81,6 +80,7 @@ namespace WebSiteDev.ManagerForm
 
                 dataSecurity.LoadOriginalClientNames(dt, "ClientName");
                 dataSecurity.LoadOriginalUserNames(dt, "UserName");
+                lastRevealedRowIndex = -1;
 
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["OrderID"].HeaderText = "№ заказа";
@@ -109,6 +109,8 @@ namespace WebSiteDev.ManagerForm
                 MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM `Order`", con);
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
                 label1.Text = $"Количество записей: {resultcount}";
+
+                ColorizeRowsByStatus();
             }
         }
 
@@ -119,9 +121,44 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            int orderID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value);
+            string status = dataGridView1.Rows[e.RowIndex].Cells["StatusName"].Value?.ToString();
+
+            if (status == "Завершён")
+            {
+                e.CellStyle.BackColor = System.Drawing.Color.LightGreen;
+            }
+            else if (status == "Отменён")
+            {
+                e.CellStyle.BackColor = System.Drawing.Color.IndianRed;
+            }
+
+            if (e.RowIndex == lastRevealedRowIndex)
+            {
+                if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
+                {
+                    string original = dataSecurity.GetOriginalClientName(orderID);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                else if (dataGridView1.Columns[e.ColumnIndex].Name == "UserName")
+                {
+                    string original = dataSecurity.GetOriginalUserName(orderID);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                return;
+            }
+
             if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
             {
-                string original = dataSecurity.GetOriginalClientName(e.RowIndex);
+                string original = dataSecurity.GetOriginalClientName(orderID);
                 if (e.Value != null && original != null)
                 {
                     e.Value = DataSecurity.MaskClientName(original);
@@ -131,7 +168,7 @@ namespace WebSiteDev.ManagerForm
 
             if (dataGridView1.Columns[e.ColumnIndex].Name == "UserName")
             {
-                string original = dataSecurity.GetOriginalUserName(e.RowIndex);
+                string original = dataSecurity.GetOriginalUserName(orderID);
                 if (e.Value != null && original != null)
                 {
                     e.Value = DataSecurity.MaskUserName(original);
@@ -159,6 +196,10 @@ namespace WebSiteDev.ManagerForm
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
+
+            dataGridView1.ClearSelection();
+            selectedOrderID = -1;
+            dataGridView1.Refresh();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -190,17 +231,29 @@ namespace WebSiteDev.ManagerForm
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
+
+            dataGridView1.ClearSelection();
+            selectedOrderID = -1;
+            dataGridView1.Refresh();
         }
 
         private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
+
+            dataGridView1.ClearSelection();
+            selectedOrderID = -1;
+            dataGridView1.Refresh();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             dataManipulation.ResetFilters(comboBox1, comboBox6, textBox1);
+
+            dataGridView1.ClearSelection();
+            selectedOrderID = -1;
+            dataGridView1.Refresh();
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
@@ -241,22 +294,37 @@ namespace WebSiteDev.ManagerForm
 
                 button5.Enabled = true;
 
+                DateTime orderDate = DateTime.Now;
+                bool isValidDate = false;
+
                 try
                 {
-                    DateTime orderDate = Convert.ToDateTime(dataGridView1.Rows[e.RowIndex].Cells["OrderCompDate"].Value);
-                    dateTimePicker1.MinDate = orderDate;
-                    dateTimePicker1.Value = orderDate;
+                    object compDateObj = dataGridView1.Rows[e.RowIndex].Cells["OrderCompDate"].Value;
+                    if (compDateObj != null && compDateObj != DBNull.Value)
+                    {
+                        orderDate = Convert.ToDateTime(compDateObj);
+                        isValidDate = true;
+                    }
                 }
-                catch
-                {
-                    dateTimePicker1.MinDate = DateTime.Now;
-                    dateTimePicker1.Value = DateTime.Now;
-                }
+                catch { }
 
-                if (dateTimePicker1.Value < DateTime.Now)
+                if (isValidDate)
                 {
-                    dateTimePicker1.MinDate = DateTime.Now.AddDays(1);
-                    dateTimePicker1.Value = DateTime.Now.AddDays(1);
+                    if (orderDate < DateTime.Now.Date)
+                    {
+                        dateTimePicker1.MinDate = DateTime.Now.Date;
+                        dateTimePicker1.Value = DateTime.Now.Date;
+                    }
+                    else
+                    {
+                        dateTimePicker1.MinDate = orderDate;
+                        dateTimePicker1.Value = orderDate;
+                    }
+                }
+                else
+                {
+                    dateTimePicker1.MinDate = DateTime.Now.Date;
+                    dateTimePicker1.Value = DateTime.Now.Date;
                 }
 
                 string[] statuses = null;
@@ -332,7 +400,8 @@ namespace WebSiteDev.ManagerForm
 
                 for (int i = 0; i < dataGridView1.Rows.Count; i++)
                 {
-                    if (Convert.ToInt32(dataGridView1.Rows[i].Cells["OrderID"].Value) == selectedOrderID)
+                    int orderID = Convert.ToInt32(dataGridView1.Rows[i].Cells["OrderID"].Value);
+                    if (orderID == selectedOrderID)
                     {
                         dataGridView1.Rows[i].Selected = true;
 
@@ -396,9 +465,7 @@ namespace WebSiteDev.ManagerForm
             }
 
             int orderID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["OrderID"].Value);
-
-            int rowIndex = dataGridView1.SelectedRows[0].Index;
-            string clientName = dataSecurity.GetOriginalClientName(rowIndex);
+            string clientName = dataSecurity.GetOriginalClientName(orderID);
 
             if (clientName == null)
             {
@@ -424,6 +491,73 @@ namespace WebSiteDev.ManagerForm
             }
 
             Doc.CheckWord.CreateCheck(orderID);
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            if (e.RowIndex == lastRevealedRowIndex)
+            {
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(e.RowIndex);
+                timer1.Stop();
+                return;
+            }
+
+            if (lastRevealedRowIndex >= 0)
+            {
+                int previousRow = lastRevealedRowIndex;
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(previousRow);
+            }
+
+            lastRevealedRowIndex = e.RowIndex;
+            dataGridView1.InvalidateRow(e.RowIndex);
+
+            timer1.Stop();
+            timer1.Start();
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            timer1.Stop();
+
+            if (lastRevealedRowIndex >= 0)
+            {
+                int rowToHide = lastRevealedRowIndex;
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(rowToHide);
+            }
+        }
+
+        private void ColorizeRowsByStatus()
+        {
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells["StatusName"].Value != null)
+                {
+                    string status = row.Cells["StatusName"].Value.ToString();
+
+                    if (status == "Завершён")
+                    {
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            cell.Style.BackColor = System.Drawing.Color.LightGreen;
+                        }
+                    }
+                    else if (status == "Отменён")
+                    {
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            cell.Style.BackColor = System.Drawing.Color.IndianRed;
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace WebSiteDev
 {
@@ -22,12 +21,18 @@ namespace WebSiteDev
                 return;
             }
 
+            dynamic excelApp = null;
+            dynamic workbook = null;
+            dynamic worksheet = null;
+
             try
             {
-                Excel.Application excelApp = new Excel.Application();
+                Type excelAppType = Type.GetTypeFromProgID("Excel.Application");
+                excelApp = Activator.CreateInstance(excelAppType);
                 excelApp.Visible = false;
-                Excel.Workbook workbook = excelApp.Workbooks.Add();
-                Excel.Worksheet worksheet = workbook.ActiveSheet;
+
+                workbook = excelApp.Workbooks.Add();
+                worksheet = workbook.ActiveSheet;
                 worksheet.Name = "Отчет";
                 worksheet.Cells.Font.Name = "Times New Roman";
                 worksheet.Cells.Font.Size = 14;
@@ -40,7 +45,7 @@ namespace WebSiteDev
                 worksheet.Cells[currentRow, 1].Font.Color = System.Drawing.Color.White;
                 worksheet.Cells[currentRow, 1].Interior.Color = System.Drawing.Color.FromArgb(45, 156, 219);
                 worksheet.Range[worksheet.Cells[currentRow, 1], worksheet.Cells[currentRow, 8]].Merge();
-                worksheet.Range[worksheet.Cells[currentRow, 1], worksheet.Cells[currentRow, 8]].HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+                worksheet.Range[worksheet.Cells[currentRow, 1], worksheet.Cells[currentRow, 8]].HorizontalAlignment = GetXlHAlignCenter();
                 currentRow = currentRow + 2;
 
                 string periodStr = dateFrom.ToString("dd.MM.yyyy") + " - " + dateTo.ToString("dd.MM.yyyy");
@@ -104,7 +109,7 @@ namespace WebSiteDev
                 worksheet.Cells[4, 3].Interior.Color = System.Drawing.Color.FromArgb(200, 255, 200);
                 worksheet.Cells[4, 3].Font.Bold = true;
                 worksheet.Cells[4, 3].Font.Size = 14;
-                worksheet.Cells[4, 3].HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+                worksheet.Cells[4, 3].HorizontalAlignment = GetXlHAlignCenter();
                 worksheet.Cells[4, 4].Value = "Заказ успешно выполнен";
                 worksheet.Cells[4, 4].Font.Size = 14;
 
@@ -112,7 +117,7 @@ namespace WebSiteDev
                 worksheet.Cells[5, 3].Interior.Color = System.Drawing.Color.FromArgb(255, 200, 200);
                 worksheet.Cells[5, 3].Font.Bold = true;
                 worksheet.Cells[5, 3].Font.Size = 14;
-                worksheet.Cells[5, 3].HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+                worksheet.Cells[5, 3].HorizontalAlignment = GetXlHAlignCenter();
                 worksheet.Cells[5, 4].Value = "Заказ был отменён";
                 worksheet.Cells[5, 4].Font.Size = 14;
 
@@ -128,13 +133,13 @@ namespace WebSiteDev
                 worksheet.Cells[headerRow, 7].Value = "Статус";
                 worksheet.Cells[headerRow, 8].Value = "Сумма, руб.";
 
-                Excel.Range headerRange = worksheet.Range[worksheet.Cells[headerRow, 1], worksheet.Cells[headerRow, 8]];
+                dynamic headerRange = worksheet.Range[worksheet.Cells[headerRow, 1], worksheet.Cells[headerRow, 8]];
                 headerRange.Font.Bold = true;
                 headerRange.Font.Size = 16;
                 headerRange.Font.Color = System.Drawing.Color.White;
                 headerRange.Interior.Color = System.Drawing.Color.FromArgb(45, 156, 219);
-                headerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-                headerRange.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
+                headerRange.HorizontalAlignment = GetXlHAlignCenter();
+                headerRange.VerticalAlignment = GetXlVAlignCenter();
 
                 currentRow = currentRow + 1;
                 int dataStartRow = currentRow;
@@ -247,15 +252,15 @@ namespace WebSiteDev
                     worksheet.Cells[currentRow, 7].Value = statusName;
                     worksheet.Cells[currentRow, 8].Value = orderCost + " руб.";
 
-                    Excel.Range dataRow = worksheet.Range[worksheet.Cells[currentRow, 1], worksheet.Cells[currentRow, 8]];
+                    dynamic dataRow = worksheet.Range[worksheet.Cells[currentRow, 1], worksheet.Cells[currentRow, 8]];
                     dataRow.Font.Size = 14;
-                    dataRow.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-                    dataRow.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
+                    dataRow.HorizontalAlignment = GetXlHAlignCenter();
+                    dataRow.VerticalAlignment = GetXlVAlignCenter();
 
-                    Excel.Range productCell = worksheet.Cells[currentRow, 6];
+                    dynamic productCell = worksheet.Cells[currentRow, 6];
                     productCell.WrapText = true;
-                    productCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-                    productCell.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
+                    productCell.HorizontalAlignment = GetXlHAlignCenter();
+                    productCell.VerticalAlignment = GetXlVAlignCenter();
 
                     int productCount = 1;
                     if (productName != "")
@@ -265,9 +270,9 @@ namespace WebSiteDev
                     }
                     worksheet.Rows[currentRow].RowHeight = 20 + (productCount * 20);
 
-                    Excel.Range statusCell = worksheet.Cells[currentRow, 7];
-                    statusCell.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-                    statusCell.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
+                    dynamic statusCell = worksheet.Cells[currentRow, 7];
+                    statusCell.HorizontalAlignment = GetXlHAlignCenter();
+                    statusCell.VerticalAlignment = GetXlVAlignCenter();
 
                     if (statusName == "Отменён")
                     {
@@ -425,19 +430,12 @@ namespace WebSiteDev
 
                 if (extension == ".xls")
                 {
-                    workbook.SaveAs(saveFileDialog.FileName, Excel.XlFileFormat.xlWorkbookNormal);
+                    workbook.SaveAs(saveFileDialog.FileName, GetXlWorkbookNormal());
                 }
                 else
                 {
-                    workbook.SaveAs(saveFileDialog.FileName, Excel.XlFileFormat.xlOpenXMLWorkbook);
+                    workbook.SaveAs(saveFileDialog.FileName, GetXlOpenXMLWorkbook());
                 }
-
-                workbook.Close();
-                excelApp.Quit();
-
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(worksheet);
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(workbook);
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
 
                 MessageBox.Show("Отчёт успешно сформирован!\n\nПуть сохранения:\n" + saveFileDialog.FileName, "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -445,6 +443,53 @@ namespace WebSiteDev
             {
                 MessageBox.Show("Ошибка при создании отчёта:\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                try
+                {
+                    if (workbook != null)
+                    {
+                        workbook.Close(false);
+                    }
+                }
+                catch { }
+
+                try
+                {
+                    if (excelApp != null)
+                    {
+                        excelApp.Quit();
+                    }
+                }
+                catch { }
+
+                worksheet = null;
+                workbook = null;
+                excelApp = null;
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+        }
+
+        private static int GetXlHAlignCenter()
+        {
+            return -4108;
+        }
+
+        private static int GetXlVAlignCenter()
+        {
+            return -4108;
+        }
+
+        private static int GetXlOpenXMLWorkbook()
+        {
+            return 51;
+        }
+
+        private static int GetXlWorkbookNormal()
+        {
+            return 56;
         }
     }
 }

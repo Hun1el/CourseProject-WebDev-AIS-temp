@@ -57,6 +57,11 @@ namespace WebSiteDev.AdminForm
             dataManipulation.ApplyAllCategory(comboBox3, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
+
+            dataGridView1.ClearSelection();
+            textBox2.Clear();
+            selectedCategoryID = -1;
+            selectedRowIndex = -1;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -85,12 +90,22 @@ namespace WebSiteDev.AdminForm
         {
             dataManipulation.ResetFilters(textSearch: textBox1, comboSort: comboBox3);
             dataManipulation.ApplyAllCategory(comboBox3, textBox1);
+
+            dataGridView1.ClearSelection();
+            textBox2.Clear();
+            selectedCategoryID = -1;
+            selectedRowIndex = -1;
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllCategory(comboBox3, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
+
+            dataGridView1.ClearSelection();
+            textBox2.Clear();
+            selectedCategoryID = -1;
+            selectedRowIndex = -1;
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
