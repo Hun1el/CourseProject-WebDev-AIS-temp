@@ -1,0 +1,124 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WebSiteDev.ManagerForm
+{
+    public partial class DirectorMainForm : Form
+    {
+        private string fullName;
+        private string roleName;
+        private Button currentSelectedButton = null;
+
+        public DirectorMainForm(string fullName, string roleName)
+        {
+            InitializeComponent();
+            this.fullName = fullName;
+            this.roleName = roleName;
+        }
+
+        private void DirectorMainForm_Load(object sender, EventArgs e)
+        {
+            label2.Text = $"Сотрудник: {fullName}";
+            label3.Text = $"Доступ: {roleName}";
+        }
+
+        private void LoadControl(UserControl control)
+        {
+            foreach (Control c in panel2.Controls)
+            {
+                c.Dispose();
+            }
+            panel2.Controls.Clear();
+
+            control.Dock = DockStyle.Fill;
+            panel2.Controls.Add(control);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            SelectButton(button3);
+            LoadControl(new DirectorOrderControl());
+            this.Text = "Учет заказов";
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            SelectButton(button5);
+            var result = MessageBox.Show("Вы действительно хотите сменить учетную запись?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else
+            {
+                SelectButton(currentSelectedButton);
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            SelectButton(button6);
+            var result = MessageBox.Show("Вы действительно хотите выйти из приложения?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                this.DialogResult = DialogResult.OK;
+                Application.Exit();
+            }
+            else
+            {
+                SelectButton(currentSelectedButton);
+            }
+        }
+
+        private void SelectButton(Button selectedButton)
+        {
+            Button[] buttons = { button3, button5, button6 };
+
+            foreach (Button btn in buttons)
+            {
+                if (btn == selectedButton)
+                {
+                    btn.BackColor = Color.FromArgb(45, 156, 219);
+                    btn.FlatStyle = FlatStyle.Flat;
+
+                    if (btn == button6)
+                    {
+                        btn.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        btn.ForeColor = Color.White;
+                    }
+                }
+                else
+                {
+                    btn.BackColor = SystemColors.Control;
+                    btn.FlatStyle = FlatStyle.Standard;
+
+                    if (btn == button6)
+                    {
+                        btn.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        btn.ForeColor = Color.Black;
+                    }
+                }
+            }
+            if (selectedButton != button5 && selectedButton != button6)
+            {
+                currentSelectedButton = selectedButton;
+            }
+        }
+    }
+}
