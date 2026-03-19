@@ -9,22 +9,25 @@ namespace WebSiteDev.ManagerForm
     {
         private string fullName;
         private string roleName;
+        private int CurrentUserID;
         private Button currentSelectedButton = null;
         private UserControl currentControl = null;
-        private bool isOrderProcessActive = false;
 
-        public ManagerMainForm(string fullName, string roleName)
+        public Button Button2 => button2;
+        public Button Button3 => button3;
+
+        public ManagerMainForm(string fullName, string roleName, int userID)
         {
             InitializeComponent();
             this.fullName = fullName;
             this.roleName = roleName;
+            this.CurrentUserID = userID;
         }
 
         private void ManagerMainForm_Load(object sender, EventArgs e)
         {
             label2.Text = $"Сотрудник: {fullName}";
             label3.Text = $"Доступ: {roleName}";
-            
         }
 
         public void LoadControl(UserControl control)
@@ -33,11 +36,6 @@ namespace WebSiteDev.ManagerForm
             label1.Visible = false;
             label2.Visible = false;
             label3.Visible = false;
-
-            if (isOrderProcessActive)
-            {
-                EndOrderProcess();
-            }
 
             if (currentControl != null)
             {
@@ -50,6 +48,11 @@ namespace WebSiteDev.ManagerForm
             panel2.Controls.Add(control);
 
             currentControl = control;
+        }
+
+        public void SelectButtonPublic(Button button)
+        {
+            SelectButton(button);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -71,7 +74,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
-            LoadControl(new ManagerForm.ProductControl(roleName));
+            LoadControl(new ManagerForm.ProductControl(roleName, CurrentUserID, fullName));
             this.Text = "Список услуг";
             SelectButton(button2);
         }
@@ -83,7 +86,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
-            LoadControl(new ManagerForm.OrderControl(roleName));
+            LoadControl(new ManagerForm.OrderControl(roleName, CurrentUserID, fullName));
             this.Text = "Список заказов";
             SelectButton(button3);
         }
@@ -165,23 +168,6 @@ namespace WebSiteDev.ManagerForm
             {
                 currentSelectedButton = selectedButton;
             }
-        }
-
-        public void StartOrderProcess()
-        {
-            isOrderProcessActive = true;
-
-            button2.Enabled = false;
-            button2.BackColor = Color.FromArgb(173, 216, 230);
-            button2.FlatStyle = FlatStyle.Flat;
-        }
-
-        public void EndOrderProcess()
-        {
-            isOrderProcessActive = false;
-            button2.Enabled = true;
-            button2.BackColor = SystemColors.Control;
-            button2.FlatStyle = FlatStyle.Standard;
         }
     }
 }
