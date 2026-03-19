@@ -21,6 +21,8 @@ namespace WebSiteDev.ManagerForm
         public static int CurrentUserID { get; set; } = 0;
         public static string CurrentUserName { get; set; } = "";
 
+        private DataSecurity dataSecurity = new DataSecurity();
+
         public OrderControl(string role, int userID = 0, string userName = "")
         {
             InitializeComponent();
@@ -55,20 +57,20 @@ namespace WebSiteDev.ManagerForm
                 con.Open();
 
                 MySqlCommand cmd = new MySqlCommand(@"
-                SELECT o.OrderID,
-                    CONCAT(c.Surname, ' ', c.FirstName, ' ', COALESCE(c.MiddleName, '')) AS ClientName,
-                    CONCAT(u.Surname, ' ', u.FirstName, ' ', COALESCE(u.MiddleName, '')) AS UserName,
-                    o.OrderDate, o.OrderCompDate,
-                GROUP_CONCAT(DISTINCT p.ProductName SEPARATOR ', ') AS ProductName,
-                    s.StatusName, o.OrderCost
-                FROM `Order` o
-                LEFT JOIN Clients c ON o.ClientID = c.ClientID
-                LEFT JOIN Users u ON o.UserID = u.UserID
-                LEFT JOIN orderproduct op ON o.OrderID = op.OrderID
-                LEFT JOIN Product p ON op.ProductID = p.ProductID
-                LEFT JOIN Status s ON o.StatusID = s.StatusID
-                GROUP BY o.OrderID
-                ORDER BY o.OrderDate ASC", con);
+        SELECT o.OrderID,
+            CONCAT(c.Surname, ' ', c.FirstName, ' ', COALESCE(c.MiddleName, '')) AS ClientName,
+            CONCAT(u.Surname, ' ', u.FirstName, ' ', COALESCE(u.MiddleName, '')) AS UserName,
+            o.OrderDate, o.OrderCompDate,
+        GROUP_CONCAT(DISTINCT p.ProductName SEPARATOR ', ') AS ProductName,
+            s.StatusName, o.OrderCost
+        FROM `Order` o
+        LEFT JOIN Clients c ON o.ClientID = c.ClientID
+        LEFT JOIN Users u ON o.UserID = u.UserID
+        LEFT JOIN orderproduct op ON o.OrderID = op.OrderID
+        LEFT JOIN Product p ON op.ProductID = p.ProductID
+        LEFT JOIN Status s ON o.StatusID = s.StatusID
+        GROUP BY o.OrderID
+        ORDER BY o.OrderDate ASC", con);
 
                 cmd.ExecuteNonQuery();
 
@@ -77,15 +79,27 @@ namespace WebSiteDev.ManagerForm
 
                 da.Fill(dt);
 
+                dataSecurity.LoadOriginalClientNames(dt, "ClientName");
+                dataSecurity.LoadOriginalUserNames(dt, "UserName");
+
                 dataGridView1.DataSource = dt;
-                dataGridView1.Columns["OrderID"].HeaderText = "Номер заказа";
+                dataGridView1.Columns["OrderID"].HeaderText = "№ заказа";
                 dataGridView1.Columns["ClientName"].HeaderText = "Клиент";
                 dataGridView1.Columns["UserName"].HeaderText = "Сотрудник";
                 dataGridView1.Columns["OrderDate"].HeaderText = "Дата заказа";
                 dataGridView1.Columns["OrderCompDate"].HeaderText = "Срок выполнения заказа";
-                dataGridView1.Columns["ProductName"].HeaderText = "Товар";
+                dataGridView1.Columns["ProductName"].Visible = false;
                 dataGridView1.Columns["StatusName"].HeaderText = "Статус";
                 dataGridView1.Columns["OrderCost"].HeaderText = "Итоговая цена";
+
+                dataGridView1.Columns["OrderID"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["ClientName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["UserName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["OrderDate"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["OrderCompDate"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["ProductName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["StatusName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["OrderCost"].SortMode = DataGridViewColumnSortMode.NotSortable;
 
                 dataManipulation = new DataManipulation(dt);
 
@@ -95,6 +109,34 @@ namespace WebSiteDev.ManagerForm
                 MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM `Order`", con);
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
                 label1.Text = $"Количество записей: {resultcount}";
+            }
+        }
+
+        private void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
+            {
+                string original = dataSecurity.GetOriginalClientName(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskClientName(original);
+                    e.FormattingApplied = true;
+                }
+            }
+
+            if (dataGridView1.Columns[e.ColumnIndex].Name == "UserName")
+            {
+                string original = dataSecurity.GetOriginalUserName(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskUserName(original);
+                    e.FormattingApplied = true;
+                }
             }
         }
 
@@ -246,7 +288,6 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
-
         private void button6_Click(object sender, EventArgs e)
         {
             if (selectedOrderID == -1)
@@ -355,7 +396,15 @@ namespace WebSiteDev.ManagerForm
             }
 
             int orderID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["OrderID"].Value);
-            string clientName = dataGridView1.SelectedRows[0].Cells["ClientName"].Value.ToString();
+
+            int rowIndex = dataGridView1.SelectedRows[0].Index;
+            string clientName = dataSecurity.GetOriginalClientName(rowIndex);
+
+            if (clientName == null)
+            {
+                clientName = dataGridView1.SelectedRows[0].Cells["ClientName"].Value.ToString();
+            }
+
             string orderDate = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["OrderDate"].Value).ToString("dd.MM.yyyy");
             string statusName = dataGridView1.SelectedRows[0].Cells["StatusName"].Value.ToString();
             string orderCost = dataGridView1.SelectedRows[0].Cells["OrderCost"].Value.ToString();

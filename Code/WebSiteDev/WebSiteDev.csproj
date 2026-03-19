@@ -105,6 +105,7 @@
     <Compile Include="AdminForm\UsersControl.Designer.cs">
       <DependentUpon>UsersControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Data\DataSecurity.cs" />
     <Compile Include="Doc\CheckWord.cs" />
     <Compile Include="Doc\ExcelReport.cs" />
     <Compile Include="ManagerForm\BucketForm.cs">
@@ -130,6 +131,12 @@
       <DependentUpon>DirectorOrderControl.cs</DependentUpon>
     </Compile>
     <Compile Include="FormControl.cs" />
+    <Compile Include="ManagerForm\ProductControl\DescriptionProduct.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ManagerForm\ProductControl\DescriptionProduct.Designer.cs">
+      <DependentUpon>DescriptionProduct.cs</DependentUpon>
+    </Compile>
     <Compile Include="ManagerForm\ProductControl\ImageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -234,6 +241,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DirectorForm\DirectorOrderControl.resx">
       <DependentUpon>DirectorOrderControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ManagerForm\ProductControl\DescriptionProduct.resx">
+      <DependentUpon>DescriptionProduct.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ManagerForm\ProductControl\ImageControl.resx">
       <DependentUpon>ImageControl.cs</DependentUpon>

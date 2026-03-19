@@ -48,7 +48,8 @@ namespace WebSiteDev.AdminForm
 
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["StatusID"].Visible = false;
-                dataGridView1.Columns["StatusName"].HeaderText = "Статус";
+                dataGridView1.Columns["StatusName"].HeaderText = "Наименование статуса";
+                dataGridView1.Columns["StatusName"].SortMode = DataGridViewColumnSortMode.NotSortable;
 
                 dataManipulation = new DataManipulation(dt);
 

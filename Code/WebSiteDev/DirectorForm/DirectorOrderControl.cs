@@ -9,6 +9,7 @@ namespace WebSiteDev.ManagerForm
     public partial class DirectorOrderControl : UserControl
     {
         private DataManipulation dataManipulation;
+        private DataSecurity dataSecurity = new DataSecurity();
 
         public DirectorOrderControl()
         {
@@ -22,6 +23,7 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.ContextMenuStrip = contextMenuStrip1;
             SetDatePickerRange();
             dataManipulation.FillComboBoxWithStatuses(comboBox1, "Выберите статус");
+            dataGridView1.ClearSelection();
         }
 
         private void SetDatePickerRange()
@@ -95,16 +97,27 @@ namespace WebSiteDev.ManagerForm
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
-                dataGridView1.DataSource = dt;
+                dataSecurity.LoadOriginalClientNames(dt, "ClientName");
+                dataSecurity.LoadOriginalUserNames(dt, "UserName");
 
-                dataGridView1.Columns["OrderID"].HeaderText = "Номер заказа";
+                dataGridView1.DataSource = dt;
+                dataGridView1.Columns["OrderID"].HeaderText = "№ заказа";
                 dataGridView1.Columns["ClientName"].HeaderText = "Клиент";
                 dataGridView1.Columns["UserName"].HeaderText = "Сотрудник";
                 dataGridView1.Columns["OrderDate"].HeaderText = "Дата заказа";
                 dataGridView1.Columns["OrderCompDate"].HeaderText = "Срок выполнения заказа";
-                dataGridView1.Columns["ProductName"].HeaderText = "Товар";
+                dataGridView1.Columns["ProductName"].Visible = false;
                 dataGridView1.Columns["StatusName"].HeaderText = "Статус";
                 dataGridView1.Columns["OrderCost"].HeaderText = "Итоговая цена";
+
+                dataGridView1.Columns["OrderID"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["ClientName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["UserName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["OrderDate"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["OrderCompDate"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["ProductName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["StatusName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["OrderCost"].SortMode = DataGridViewColumnSortMode.NotSortable;
 
                 dataManipulation = new DataManipulation(dt);
 
@@ -289,6 +302,34 @@ namespace WebSiteDev.ManagerForm
         private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
         {
             GetDate();
+        }
+
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
+            {
+                string original = dataSecurity.GetOriginalClientName(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskClientName(original);
+                    e.FormattingApplied = true;
+                }
+            }
+
+            if (dataGridView1.Columns[e.ColumnIndex].Name == "UserName")
+            {
+                string original = dataSecurity.GetOriginalUserName(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskUserName(original);
+                    e.FormattingApplied = true;
+                }
+            }
         }
     }
 }

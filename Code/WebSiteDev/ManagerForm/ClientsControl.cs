@@ -11,6 +11,8 @@ namespace WebSiteDev.ManagerForm
         private DataManipulation dataManipulation;
         public bool update = false;
         private int selectedClientID = -1;
+        private int lastRevealedRowIndex = -1;
+        private DataSecurity dataSecurity = new DataSecurity();
 
         public ClientsControl()
         {
@@ -23,6 +25,9 @@ namespace WebSiteDev.ManagerForm
             comboBox3.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
             dataGridView1.ClearSelection();
+
+            timer1.Interval = 20000;
+            timer1.Stop();
         }
 
         void GetDate()
@@ -39,6 +44,9 @@ namespace WebSiteDev.ManagerForm
 
                 da.Fill(dt);
 
+                dataSecurity.LoadOriginalData(dt, "", "PhoneNumber", "FirstName", "MiddleName");
+                lastRevealedRowIndex = -1;
+
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["ClientID"].Visible = false;
                 dataGridView1.Columns["Surname"].HeaderText = "Фамилия";
@@ -46,6 +54,12 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["MiddleName"].HeaderText = "Отчество";
                 dataGridView1.Columns["PhoneNumber"].HeaderText = "Телефон";
                 dataGridView1.Columns["Email"].HeaderText = "Эл. почта";
+
+                dataGridView1.Columns["Surname"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["FirstName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["MiddleName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["PhoneNumber"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["Email"].SortMode = DataGridViewColumnSortMode.NotSortable;
 
                 dataManipulation = new DataManipulation(dt);
 
@@ -75,6 +89,7 @@ namespace WebSiteDev.ManagerForm
             update = true;
             button1.Enabled = true;
         }
+
         private void maskedTextBox1_Enter(object sender, EventArgs e)
         {
             maskedTextBox1.SelectionStart = 4;
@@ -143,11 +158,44 @@ namespace WebSiteDev.ManagerForm
         {
             if (e.RowIndex >= 0)
             {
+                if (e.RowIndex == lastRevealedRowIndex)
+                {
+                    timer1.Stop();
+                    timer1.Start();
+                }
+
                 selectedClientID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ClientID"].Value);
                 textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["Surname"].Value.ToString();
-                textBox3.Text = dataGridView1.Rows[e.RowIndex].Cells["FirstName"].Value.ToString();
-                textBox4.Text = dataGridView1.Rows[e.RowIndex].Cells["MiddleName"].Value.ToString();
-                maskedTextBox1.Text = dataGridView1.Rows[e.RowIndex].Cells["PhoneNumber"].Value.ToString();
+
+                string firstName = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                if (firstName != null)
+                {
+                    textBox3.Text = firstName;
+                }
+                else
+                {
+                    textBox3.Text = dataGridView1.Rows[e.RowIndex].Cells["FirstName"].Value.ToString();
+                }
+
+                string middleName = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                if (middleName != null)
+                {
+                    textBox4.Text = middleName;
+                }
+                else
+                {
+                    textBox4.Text = dataGridView1.Rows[e.RowIndex].Cells["MiddleName"].Value.ToString();
+                }
+
+                string phoneNumber = dataSecurity.GetOriginalPhone(e.RowIndex);
+                if (phoneNumber != null)
+                {
+                    maskedTextBox1.Text = phoneNumber;
+                }
+                else
+                {
+                    maskedTextBox1.Text = dataGridView1.Rows[e.RowIndex].Cells["PhoneNumber"].Value.ToString();
+                }
 
                 string email = dataGridView1.Rows[e.RowIndex].Cells["Email"].Value.ToString();
 
@@ -178,7 +226,6 @@ namespace WebSiteDev.ManagerForm
                 }
             }
         }
-
 
         private void button6_Click(object sender, EventArgs e)
         {
@@ -233,6 +280,40 @@ namespace WebSiteDev.ManagerForm
                 if (foundRow != null)
                 {
                     foundRow.Selected = true;
+                    int foundRowIndex = foundRow.Index;
+
+                    textBox2.Text = foundRow.Cells["Surname"].Value.ToString();
+
+                    string firstName = dataSecurity.GetOriginalFirstName(foundRowIndex);
+                    if (firstName != null)
+                    {
+                        textBox3.Text = firstName;
+                    }
+                    else
+                    {
+                        textBox3.Text = foundRow.Cells["FirstName"].Value.ToString();
+                    }
+
+                    string middleName = dataSecurity.GetOriginalMiddleName(foundRowIndex);
+                    if (middleName != null)
+                    {
+                        textBox4.Text = middleName;
+                    }
+                    else
+                    {
+                        textBox4.Text = foundRow.Cells["MiddleName"].Value.ToString();
+                    }
+
+                    string phoneNumber = dataSecurity.GetOriginalPhone(foundRowIndex);
+                    if (phoneNumber != null)
+                    {
+                        maskedTextBox1.Text = phoneNumber;
+                    }
+                    else
+                    {
+                        maskedTextBox1.Text = foundRow.Cells["PhoneNumber"].Value.ToString();
+                    }
+
                     string email = foundRow.Cells["Email"].Value.ToString();
 
                     if (email.Contains("@"))
@@ -258,11 +339,6 @@ namespace WebSiteDev.ManagerForm
                             comboBox2.SelectedItem = domainWithAt;
                         }
                     }
-
-                    textBox2.Text = foundRow.Cells["Surname"].Value.ToString();
-                    textBox3.Text = foundRow.Cells["FirstName"].Value.ToString();
-                    textBox4.Text = foundRow.Cells["MiddleName"].Value.ToString();
-                    maskedTextBox1.Text = foundRow.Cells["PhoneNumber"].Value.ToString();
                 }
             }
         }
@@ -289,6 +365,115 @@ namespace WebSiteDev.ManagerForm
                 textBox2.Clear();
                 GetDate();
                 dataGridView1.ClearSelection();
+            }
+        }
+
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            if (e.RowIndex == lastRevealedRowIndex)
+            {
+                if (dataGridView1.Columns[e.ColumnIndex].Name == "PhoneNumber")
+                {
+                    string original = dataSecurity.GetOriginalPhone(e.RowIndex);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                else if (dataGridView1.Columns[e.ColumnIndex].Name == "FirstName")
+                {
+                    string original = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                else if (dataGridView1.Columns[e.ColumnIndex].Name == "MiddleName")
+                {
+                    string original = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                return;
+            }
+
+            if (dataGridView1.Columns[e.ColumnIndex].Name == "PhoneNumber")
+            {
+                string original = dataSecurity.GetOriginalPhone(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskPhone(original);
+                    e.FormattingApplied = true;
+                }
+            }
+            else if (dataGridView1.Columns[e.ColumnIndex].Name == "FirstName")
+            {
+                string original = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskName(original);
+                    e.FormattingApplied = true;
+                }
+            }
+            else if (dataGridView1.Columns[e.ColumnIndex].Name == "MiddleName")
+            {
+                string original = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskName(original);
+                    e.FormattingApplied = true;
+                }
+            }
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            if (e.RowIndex == lastRevealedRowIndex)
+            {
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(e.RowIndex);
+                timer1.Stop();
+                return;
+            }
+
+            if (lastRevealedRowIndex >= 0)
+            {
+                int previousRow = lastRevealedRowIndex;
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(previousRow);
+            }
+
+            lastRevealedRowIndex = e.RowIndex;
+            dataGridView1.InvalidateRow(e.RowIndex);
+
+            timer1.Stop();
+            timer1.Start();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            timer1.Stop();
+
+            if (lastRevealedRowIndex >= 0)
+            {
+                int rowToHide = lastRevealedRowIndex;
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(rowToHide);
             }
         }
     }

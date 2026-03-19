@@ -26,8 +26,22 @@ namespace WebSiteDev.Doc
                 app.Visible = false;
                 Word.Document doc = app.Documents.Add();
 
+                float baseHeight = 236.8f;
+
+                int productCount = 0;
+                using (MySqlConnection conTemp = new MySqlConnection(Data.GetConnectionString()))
+                {
+                    conTemp.Open();
+                    string countQuery = "SELECT COUNT(*) FROM orderproduct WHERE OrderID = " + orderID;
+                    MySqlCommand countCmd = new MySqlCommand(countQuery, conTemp);
+                    productCount = Convert.ToInt32(countCmd.ExecuteScalar());
+                }
+
+                float additionalHeight = (productCount > 1) ? (productCount - 1) * 5f : 0f;
+                float totalHeight = baseHeight + additionalHeight;
+
                 doc.PageSetup.PageWidth = 226.8f;
-                doc.PageSetup.PageHeight = 240.8f;
+                doc.PageSetup.PageHeight = totalHeight;
                 doc.PageSetup.TopMargin = 20;
                 doc.PageSetup.BottomMargin = 20;
                 doc.PageSetup.LeftMargin = 14;
@@ -310,7 +324,7 @@ namespace WebSiteDev.Doc
                     p10.Range.Font.Size = 7;
                     p10.Range.Font.Bold = 1;
                     p10.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
-                    p10.SpaceBefore = 0;
+                    p10.SpaceBefore = 16;
                     p10.SpaceAfter = 2;
                     p10.Range.InsertParagraphAfter();
 

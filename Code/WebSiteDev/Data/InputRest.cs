@@ -88,7 +88,9 @@ namespace WebSiteDev
 
         public static void RussianEnglishAndDigits(KeyPressEventArgs e)
         {
-            if (!((e.KeyChar >= 'А' && e.KeyChar <= 'я') || e.KeyChar == 'Ё' || e.KeyChar == 'ё' || (e.KeyChar >= 'A' && e.KeyChar <= 'z') || char.IsDigit(e.KeyChar) || e.KeyChar == '\b'))
+            char[] blockChars = new char[] { '<', '>', '`' };
+
+            if (blockChars.Contains(e.KeyChar))
             {
                 e.Handled = true;
             }

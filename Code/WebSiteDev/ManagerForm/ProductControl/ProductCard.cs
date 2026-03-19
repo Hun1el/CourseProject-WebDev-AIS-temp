@@ -12,8 +12,8 @@ namespace WebSiteDev
         public event EventHandler AddToCartClicked;
         public event EventHandler CancelEditClicked;
         public event EventHandler SaveButtonClicked;
-
         private string originalImagePath;
+        private ToolTip toolTip1;
 
         public DataRowView RowData { get; set; }
 
@@ -28,10 +28,25 @@ namespace WebSiteDev
 
             imageControl1.InitializeImage(row["ProductPhoto"].ToString());
 
-            label1.Text = row["ProductName"].ToString();
-            label2.Text = row["ProductDescription"].ToString();
+            string productName = row["ProductName"].ToString();
+            string productDesc = row["ProductDescription"].ToString();
+
+            label1.Text = productName;
+            label2.Text = productDesc;
+
+            if (productDesc.Length > 285)
+            {
+                button5.Visible = true;
+            }
+            else
+            {
+                button5.Visible = false;
+            }
+
             label3.Text = "Категория: " + row["Category"];
-            label4.Text = "Цена: " + row["BasePrice"] + " руб.";
+
+            decimal price = Convert.ToDecimal(row["BasePrice"]);
+            label4.Text = "Цена: " + price.ToString("0.00") + " руб.";
 
             if (userRole == "Менеджер")
             {
@@ -43,6 +58,16 @@ namespace WebSiteDev
                 button1.Text = "Редактировать";
                 button2.Text = "Удалить";
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string productName = RowData["ProductName"].ToString();
+            string productDesc = RowData["ProductDescription"].ToString();
+
+            DescriptionProduct descForm = new DescriptionProduct();
+            descForm.SetDescription(productName, productDesc);
+            descForm.ShowDialog();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -92,7 +117,13 @@ namespace WebSiteDev
 
             textBox1.Text = label1.Text;
             textBox2.Text = label2.Text;
-            textBox3.Text = RowData["BasePrice"].ToString();
+
+            decimal price = Convert.ToDecimal(RowData["BasePrice"]);
+            int rubles = (int)price;
+            int kopecks = (int)Math.Round((price - rubles) * 100, MidpointRounding.AwayFromZero);
+
+            textBox3.Text = rubles.ToString();
+            numericUpDown1.Value = kopecks;
 
             string categoryName = label3.Text.Replace("Категория: ", "");
 
@@ -135,11 +166,15 @@ namespace WebSiteDev
             label4.Visible = false;
             button1.Visible = false;
             button2.Visible = false;
+            button5.Visible = false;
 
             textBox1.Visible = true;
             textBox2.Visible = true;
             comboBox1.Visible = true;
             textBox3.Visible = true;
+            numericUpDown1.Visible = true;
+            label5.Visible = true;
+            label6.Visible = true;
             button3.Visible = true;
             button4.Visible = true;
         }
@@ -150,6 +185,9 @@ namespace WebSiteDev
             textBox2.Visible = false;
             comboBox1.Visible = false;
             textBox3.Visible = false;
+            numericUpDown1.Visible = false;
+            label5.Visible = false;
+            label6.Visible = false;
             button3.Visible = false;
             button4.Visible = false;
 
@@ -159,6 +197,12 @@ namespace WebSiteDev
             label4.Visible = true;
             button1.Visible = true;
             button2.Visible = true;
+
+            string productDesc = RowData["ProductDescription"].ToString();
+            if (productDesc.Length > 150)
+            {
+                button5.Visible = true;
+            }
         }
 
         public ImageControl GetImageControl()
@@ -200,6 +244,35 @@ namespace WebSiteDev
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             InputRest.FirstLetter(textBox2);
+        }
+
+        private void numericUpDown1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            NumericUpDown nud = sender as NumericUpDown;
+
+            InputRest.OnlyNumbers(e);
+
+            if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+
+            string currentText = nud.Text;
+
+            if (currentText.Length >= 2)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            string newText = currentText.Insert(currentText.Length, e.KeyChar.ToString());
+            if (int.TryParse(newText, out int value))
+            {
+                if (value > 99)
+                {
+                    e.Handled = true;
+                }
+            }
         }
     }
 }

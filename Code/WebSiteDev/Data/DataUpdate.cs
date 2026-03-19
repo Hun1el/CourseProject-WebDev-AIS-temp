@@ -106,7 +106,7 @@ namespace WebSiteDev
                         return false;
                     }
 
-                    string checkPhoneQuery = "SELECT COUNT(*) FROM `Users` WHERE PhoneNumber = '" + phone + "'";
+                    string checkPhoneQuery = "SELECT COUNT(*) FROM `Users` WHERE PhoneNumber = '" + phone + "' AND UserID != " + userID;
                     using (MySqlCommand checkPhoneCmd = new MySqlCommand(checkPhoneQuery, con))
                     {
                         int phoneCount = Convert.ToInt32(checkPhoneCmd.ExecuteScalar());

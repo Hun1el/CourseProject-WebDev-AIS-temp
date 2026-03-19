@@ -36,9 +36,9 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = global::WebSiteDev.Properties.Resources.no_image;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(270, 270);
+            this.pictureBox1.Size = new System.Drawing.Size(270, 214);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -50,7 +50,7 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(0, 240);
+            this.button1.Location = new System.Drawing.Point(0, 223);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(270, 40);
             this.button1.TabIndex = 1;
