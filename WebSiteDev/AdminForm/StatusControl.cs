@@ -84,6 +84,7 @@ namespace WebSiteDev.AdminForm
             AddStatusForm addStatusForm = new AddStatusForm();
             addStatusForm.ShowDialog();
             GetDate();
+            dataGridView1.ClearSelection();
         }
 
         private void button4_Click(object sender, EventArgs e)

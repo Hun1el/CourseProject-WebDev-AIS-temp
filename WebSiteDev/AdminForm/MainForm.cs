@@ -1,38 +1,37 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using WebSiteDev.AdminForm;
+using WebSiteDev.ManagerForm;
 
-namespace WebSiteDev.ManagerForm
+namespace WebSiteDev
 {
-    public partial class ManagerMainForm : Form
+    public partial class MainForm : Form
     {
         private string fullName;
         private string roleName;
-        private int CurrentUserID;
+        private int userID;
         private Button currentSelectedButton = null;
         private UserControl currentControl = null;
 
-        public Button Button2
-        {
-            get { return button2; }
-        }
-
-        public ManagerMainForm(string fullName, string roleName, int userID)
+        public MainForm(string fullName, string roleName, int userID = 0)
         {
             InitializeComponent();
             this.fullName = fullName;
             this.roleName = roleName;
-            this.CurrentUserID = userID;
+            this.userID = userID;
         }
 
-        private void ManagerMainForm_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
             label2.Text = $"Сотрудник: {fullName}";
             label3.Text = $"Доступ: {roleName}";
         }
 
-        public void LoadControl(UserControl control)
+        private void LoadControl(UserControl control)
         {
             FormControl.ResetFormSize(this);
             pictureBox2.Visible = false;
@@ -53,11 +52,6 @@ namespace WebSiteDev.ManagerForm
             currentControl = control;
         }
 
-        public void SelectButtonPublic(Button button)
-        {
-            SelectButton(button);
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             if (currentSelectedButton == button1)
@@ -65,8 +59,8 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
-            LoadControl(new ManagerForm.ClientsControl());
-            this.Text = "Список клиентов";
+            LoadControl(new AdminForm.UsersControl(userID));
+            this.Text = "Пользователи";
             SelectButton(button1);
         }
 
@@ -77,8 +71,8 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
-            LoadControl(new ManagerForm.ProductControl(roleName, CurrentUserID, fullName));
-            this.Text = "Список услуг";
+            LoadControl(new AdminForm.CategoryControl());
+            this.Text = "Список категорий";
             SelectButton(button2);
         }
 
@@ -89,9 +83,21 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
-            LoadControl(new ManagerForm.OrderControl(roleName, CurrentUserID, fullName));
-            this.Text = "Список заказов";
+            LoadControl(new AdminForm.RoleControl());
+            this.Text = "Список ролей";
             SelectButton(button3);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (currentSelectedButton == button4)
+            {
+                return;
+            }
+
+            LoadControl(new AdminForm.StatusControl());
+            this.Text = "Список статусов";
+            SelectButton(button4);
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -132,9 +138,33 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (currentSelectedButton == button7)
+            {
+                return;
+            }
+
+            LoadControl(new ProductControl(roleName));
+            this.Text = "Список услуг";
+            SelectButton(button7);
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (currentSelectedButton == button8)
+            {
+                return;
+            }
+
+            LoadControl(new OrderControl(roleName));
+            this.Text = "Список заказов";
+            SelectButton(button8);
+        }
+
         private void SelectButton(Button selectedButton)
         {
-            Button[] buttons = { button1, button2, button3, button5, button6 };
+            Button[] buttons = { button1, button2, button3, button4, button5, button6, button7, button8 };
 
             foreach (Button btn in buttons)
             {
@@ -145,7 +175,7 @@ namespace WebSiteDev.ManagerForm
 
                     if (btn == button6)
                     {
-                        btn.ForeColor = Color.Red;
+                        btn.ForeColor = Color.White;
                         btn.BackColor = Color.Crimson;
                     }
                     else

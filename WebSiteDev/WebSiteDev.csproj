@@ -105,16 +105,16 @@
     <Compile Include="AdminForm\UsersControl.Designer.cs">
       <DependentUpon>UsersControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="BucketForm.cs">
+    <Compile Include="ManagerForm\BucketForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BucketForm.Designer.cs">
+    <Compile Include="ManagerForm\BucketForm.Designer.cs">
       <DependentUpon>BucketForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Data.cs" />
-    <Compile Include="DataDelete.cs" />
-    <Compile Include="DataManipulation.cs" />
-    <Compile Include="DataUpdate.cs" />
+    <Compile Include="Data\Data.cs" />
+    <Compile Include="Data\DataDelete.cs" />
+    <Compile Include="Data\DataManipulation.cs" />
+    <Compile Include="Data\DataUpdate.cs" />
     <Compile Include="DirectorForm\DirectorMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -128,23 +128,23 @@
       <DependentUpon>DirectorOrderControl.cs</DependentUpon>
     </Compile>
     <Compile Include="FormControl.cs" />
-    <Compile Include="ImageControl.cs">
+    <Compile Include="ManagerForm\ProductControl\ImageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImageControl.Designer.cs">
+    <Compile Include="ManagerForm\ProductControl\ImageControl.Designer.cs">
       <DependentUpon>ImageControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="InputRest.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Data\InputRest.cs" />
+    <Compile Include="AdminForm\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="AdminForm\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ManagerForm\AddForm\AddProductForm.cs">
+    <Compile Include="AdminForm\AddForm\AddProductForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ManagerForm\AddForm\AddProductForm.Designer.cs">
+    <Compile Include="AdminForm\AddForm\AddProductForm.Designer.cs">
       <DependentUpon>AddProductForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ManagerForm\AddForm\AddClientsForm.cs">
@@ -159,10 +159,10 @@
     <Compile Include="ManagerForm\OrderControl.Designer.cs">
       <DependentUpon>OrderControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ManagerForm\ProductControl.cs">
+    <Compile Include="ManagerForm\ProductControl\ProductControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ManagerForm\ProductControl.Designer.cs">
+    <Compile Include="ManagerForm\ProductControl\ProductControl.Designer.cs">
       <DependentUpon>ProductControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ManagerForm\ManagerMainForm.cs">
@@ -182,6 +182,12 @@
     </Compile>
     <Compile Include="OrderProductForm.Designer.cs">
       <DependentUpon>OrderProductForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ManagerForm\ProductControl\ProductCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ManagerForm\ProductControl\ProductCard.Designer.cs">
+      <DependentUpon>ProductCard.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -218,7 +224,7 @@
     <EmbeddedResource Include="AdminForm\UsersControl.resx">
       <DependentUpon>UsersControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="BucketForm.resx">
+    <EmbeddedResource Include="ManagerForm\BucketForm.resx">
       <DependentUpon>BucketForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DirectorForm\DirectorMainForm.resx">
@@ -227,13 +233,13 @@
     <EmbeddedResource Include="DirectorForm\DirectorOrderControl.resx">
       <DependentUpon>DirectorOrderControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImageControl.resx">
+    <EmbeddedResource Include="ManagerForm\ProductControl\ImageControl.resx">
       <DependentUpon>ImageControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="AdminForm\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ManagerForm\AddForm\AddProductForm.resx">
+    <EmbeddedResource Include="AdminForm\AddForm\AddProductForm.resx">
       <DependentUpon>AddProductForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ManagerForm\AddForm\AddClientsForm.resx">
@@ -242,7 +248,7 @@
     <EmbeddedResource Include="ManagerForm\OrderControl.resx">
       <DependentUpon>OrderControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ManagerForm\ProductControl.resx">
+    <EmbeddedResource Include="ManagerForm\ProductControl\ProductControl.resx">
       <DependentUpon>ProductControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ManagerForm\ManagerMainForm.resx">
@@ -253,6 +259,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OrderProductForm.resx">
       <DependentUpon>OrderProductForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ManagerForm\ProductControl\ProductCard.resx">
+      <DependentUpon>ProductCard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

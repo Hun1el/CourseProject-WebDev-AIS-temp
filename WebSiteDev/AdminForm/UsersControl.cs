@@ -3,17 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebSiteDev.AddForm;
 using WebSiteDev.ManagerForm;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace WebSiteDev.AdminForm
 {
@@ -113,6 +108,7 @@ namespace WebSiteDev.AdminForm
             AddUsersForm addUsersForm = new AddUsersForm(dataManipulation);
             addUsersForm.ShowDialog();
             GetDate();
+            dataGridView1.ClearSelection();
         }
 
         private void button4_Click(object sender, EventArgs e)
