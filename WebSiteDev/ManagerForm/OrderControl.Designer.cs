@@ -38,7 +38,6 @@ namespace WebSiteDev.ManagerForm
             this.label2 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.comboBox5 = new System.Windows.Forms.ComboBox();
@@ -149,33 +148,23 @@ namespace WebSiteDev.ManagerForm
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(8, 333);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(106, 32);
-            this.button7.TabIndex = 37;
-            this.button7.Text = "Удалить";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(504, 59);
+            this.label6.Location = new System.Drawing.Point(500, 59);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(49, 26);
+            this.label6.Size = new System.Drawing.Size(136, 13);
             this.label6.TabIndex = 42;
-            this.label6.Text = "Сделать\r\nдо";
+            this.label6.Text = "Срок выполнения заказа";
             // 
             // dateTimePicker1
             // 
             this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dateTimePicker1.Location = new System.Drawing.Point(563, 59);
+            this.dateTimePicker1.Location = new System.Drawing.Point(503, 75);
             this.dateTimePicker1.MaxDate = new System.DateTime(2026, 12, 31, 0, 0, 0, 0);
             this.dateTimePicker1.MinDate = new System.DateTime(2025, 10, 17, 18, 46, 20, 0);
             this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(105, 20);
+            this.dateTimePicker1.Size = new System.Drawing.Size(154, 20);
             this.dateTimePicker1.TabIndex = 44;
             this.dateTimePicker1.Value = new System.DateTime(2025, 10, 17, 18, 46, 20, 0);
             // 
@@ -184,20 +173,20 @@ namespace WebSiteDev.ManagerForm
             this.comboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox5.FormattingEnabled = true;
             this.comboBox5.IntegralHeight = false;
-            this.comboBox5.Location = new System.Drawing.Point(563, 85);
+            this.comboBox5.Location = new System.Drawing.Point(503, 114);
             this.comboBox5.MaxDropDownItems = 6;
             this.comboBox5.Name = "comboBox5";
-            this.comboBox5.Size = new System.Drawing.Size(105, 21);
+            this.comboBox5.Size = new System.Drawing.Size(154, 21);
             this.comboBox5.TabIndex = 47;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(504, 88);
+            this.label8.Location = new System.Drawing.Point(500, 98);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(41, 13);
+            this.label8.Size = new System.Drawing.Size(80, 13);
             this.label8.TabIndex = 48;
-            this.label8.Text = "Статус";
+            this.label8.Text = "Статус заказа";
             // 
             // comboBox1
             // 
@@ -209,9 +198,9 @@ namespace WebSiteDev.ManagerForm
             "Дата заказа ↓",
             "Дата выполнения ↑",
             "Дата выполнения ↓"});
-            this.comboBox1.Location = new System.Drawing.Point(194, 32);
+            this.comboBox1.Location = new System.Drawing.Point(168, 32);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(115, 21);
+            this.comboBox1.Size = new System.Drawing.Size(141, 21);
             this.comboBox1.TabIndex = 54;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -247,7 +236,7 @@ namespace WebSiteDev.ManagerForm
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(191, 18);
+            this.label10.Location = new System.Drawing.Point(165, 18);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(67, 13);
             this.label10.TabIndex = 55;
@@ -309,7 +298,6 @@ namespace WebSiteDev.ManagerForm
             this.Controls.Add(this.comboBox5);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.label2);
@@ -338,7 +326,6 @@ namespace WebSiteDev.ManagerForm
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.ComboBox comboBox5;

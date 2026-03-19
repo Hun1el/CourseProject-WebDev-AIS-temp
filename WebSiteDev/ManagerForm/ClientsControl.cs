@@ -74,12 +74,14 @@ namespace WebSiteDev.ManagerForm
         {
             FormControl.Resize(this.FindForm(), 1500);
             update = true;
+            button1.Enabled = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             FormControl.Resize(this.FindForm(), 1175);
             update = true;
+            button1.Enabled = true;
         }
         private void maskedTextBox1_Enter(object sender, EventArgs e)
         {

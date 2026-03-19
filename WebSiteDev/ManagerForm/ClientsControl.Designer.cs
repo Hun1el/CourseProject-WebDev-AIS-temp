@@ -150,10 +150,10 @@ namespace WebSiteDev.ManagerForm
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(557, 57);
+            this.textBox2.Location = new System.Drawing.Point(506, 75);
             this.textBox2.MaxLength = 90;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(156, 20);
             this.textBox2.TabIndex = 20;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
@@ -170,7 +170,7 @@ namespace WebSiteDev.ManagerForm
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(503, 86);
+            this.label4.Location = new System.Drawing.Point(503, 98);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 13);
             this.label4.TabIndex = 22;
@@ -179,7 +179,7 @@ namespace WebSiteDev.ManagerForm
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(503, 112);
+            this.label5.Location = new System.Drawing.Point(503, 137);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 23;
@@ -187,20 +187,20 @@ namespace WebSiteDev.ManagerForm
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(557, 83);
+            this.textBox3.Location = new System.Drawing.Point(506, 114);
             this.textBox3.MaxLength = 75;
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
+            this.textBox3.Size = new System.Drawing.Size(156, 20);
             this.textBox3.TabIndex = 24;
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             this.textBox3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox3_KeyPress);
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(557, 109);
+            this.textBox4.Location = new System.Drawing.Point(506, 153);
             this.textBox4.MaxLength = 90;
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
+            this.textBox4.Size = new System.Drawing.Size(156, 20);
             this.textBox4.TabIndex = 25;
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             this.textBox4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox4_KeyPress);
@@ -208,25 +208,25 @@ namespace WebSiteDev.ManagerForm
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(503, 130);
+            this.label6.Location = new System.Drawing.Point(504, 176);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(55, 26);
+            this.label6.Size = new System.Drawing.Size(139, 13);
             this.label6.TabIndex = 26;
-            this.label6.Text = "Логин\r\nэл. почты";
+            this.label6.Text = "Логин электронной почты";
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(557, 135);
+            this.textBox5.Location = new System.Drawing.Point(506, 192);
             this.textBox5.MaxLength = 100;
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(100, 20);
+            this.textBox5.Size = new System.Drawing.Size(156, 20);
             this.textBox5.TabIndex = 28;
             this.textBox5.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox5_KeyPress);
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(503, 195);
+            this.label9.Location = new System.Drawing.Point(503, 255);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(52, 13);
             this.label9.TabIndex = 33;
@@ -234,7 +234,7 @@ namespace WebSiteDev.ManagerForm
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(503, 284);
+            this.button6.Location = new System.Drawing.Point(503, 292);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(154, 32);
             this.button6.TabIndex = 35;
@@ -244,10 +244,10 @@ namespace WebSiteDev.ManagerForm
             // 
             // maskedTextBox1
             // 
-            this.maskedTextBox1.Location = new System.Drawing.Point(557, 192);
+            this.maskedTextBox1.Location = new System.Drawing.Point(506, 271);
             this.maskedTextBox1.Mask = "+7 (999) 000-00-00";
             this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(100, 20);
+            this.maskedTextBox1.Size = new System.Drawing.Size(156, 20);
             this.maskedTextBox1.TabIndex = 36;
             this.maskedTextBox1.Click += new System.EventHandler(this.maskedTextBox1_Click);
             this.maskedTextBox1.Enter += new System.EventHandler(this.maskedTextBox1_Enter);
@@ -302,20 +302,20 @@ namespace WebSiteDev.ManagerForm
             "sina.com",
             "naver.com",
             "daum.net"});
-            this.comboBox2.Location = new System.Drawing.Point(557, 165);
+            this.comboBox2.Location = new System.Drawing.Point(506, 231);
             this.comboBox2.MaxDropDownItems = 6;
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(100, 21);
+            this.comboBox2.Size = new System.Drawing.Size(156, 21);
             this.comboBox2.TabIndex = 38;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(503, 160);
+            this.label7.Location = new System.Drawing.Point(503, 215);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(52, 26);
+            this.label7.Size = new System.Drawing.Size(143, 13);
             this.label7.TabIndex = 39;
-            this.label7.Text = "Домен\r\nэл.почты";
+            this.label7.Text = "Домен электронной почты";
             // 
             // comboBox3
             // 
@@ -326,17 +326,17 @@ namespace WebSiteDev.ManagerForm
             "Сортировка не выбрана",
             "От А до Я",
             "От Я до А"});
-            this.comboBox3.Location = new System.Drawing.Point(315, 32);
+            this.comboBox3.Location = new System.Drawing.Point(287, 32);
             this.comboBox3.MaxDropDownItems = 6;
             this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(115, 21);
+            this.comboBox3.Size = new System.Drawing.Size(143, 21);
             this.comboBox3.TabIndex = 41;
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(312, 18);
+            this.label10.Location = new System.Drawing.Point(284, 16);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(67, 13);
             this.label10.TabIndex = 42;

@@ -13,11 +13,11 @@ namespace WebSiteDev
         {
             InitializeComponent();
             this.orderID = orderID;
+            label1.Text = $"Состав заказа №{orderID}";
         }
 
         private void OrderProductForm_Load(object sender, EventArgs e)
         {
-            label1.Text = $"Состав заказа №{orderID}";
             LoadOrderProducts();
         }
 
@@ -30,6 +30,28 @@ namespace WebSiteDev
                 try
                 {
                     con.Open();
+
+                    string orderDataQuery = @"SELECT 
+                o.OrderDate, 
+                o.OrderCompDate,
+                CONCAT(u.Surname, ' ', u.FirstName, ' ', u.MiddleName) AS UserName,
+                CONCAT(c.Surname, ' ', c.FirstName, ' ', c.MiddleName) AS ClientName
+                FROM `Order` o
+                LEFT JOIN Users u ON o.UserID = u.UserID
+                LEFT JOIN Clients c ON o.ClientID = c.ClientID
+                WHERE o.OrderID = " + orderID;
+
+                    MySqlCommand orderDataCmd = new MySqlCommand(orderDataQuery, con);
+                    MySqlDataReader orderDataReader = orderDataCmd.ExecuteReader();
+
+                    if (orderDataReader.Read())
+                    {
+                        label8.Text = $"Дата заказа: {Convert.ToDateTime(orderDataReader["OrderDate"]).ToString("dd.MM.yyyy")}";
+                        label7.Text = $"Срок выполнения: {Convert.ToDateTime(orderDataReader["OrderCompDate"]).ToString("dd.MM.yyyy")}";
+                        label6.Text = $"Сотрудник: {orderDataReader["UserName"].ToString()}";
+                        label9.Text = $"Клиент: {orderDataReader["ClientName"].ToString()}";
+                    }
+                    orderDataReader.Close();
 
                     string discountQuery = "SELECT Discount, Surcharge FROM `Order` WHERE OrderID = " + orderID;
                     MySqlCommand discountCmd = new MySqlCommand(discountQuery, con);

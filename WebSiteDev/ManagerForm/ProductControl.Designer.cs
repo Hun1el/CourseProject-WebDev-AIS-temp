@@ -83,9 +83,9 @@
             this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox3.FormattingEnabled = true;
             this.comboBox3.Items.AddRange(new object[] { "Сортировка не выбрана", "Цена ↑", "Цена ↓" });
-            this.comboBox3.Location = new System.Drawing.Point(179, 32);
+            this.comboBox3.Location = new System.Drawing.Point(162, 32);
             this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(115, 21);
+            this.comboBox3.Size = new System.Drawing.Size(135, 21);
             this.comboBox3.TabIndex = 42;
             this.comboBox3.SelectedIndexChanged += this.comboBox3_SelectedIndexChanged;
             //
@@ -101,7 +101,7 @@
             // label10
             //
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(176, 18);
+            this.label10.Location = new System.Drawing.Point(160, 18);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(67, 13);
             this.label10.TabIndex = 43;

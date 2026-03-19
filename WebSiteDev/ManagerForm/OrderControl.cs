@@ -45,7 +45,6 @@ namespace WebSiteDev.ManagerForm
                 button5.Visible = false;
                 button1.Visible = false;
                 button2.Visible = false;
-                button7.Visible = false;
             }
         }
 
@@ -125,12 +124,14 @@ namespace WebSiteDev.ManagerForm
         {
             FormControl.Resize(this.FindForm(), 1500);
             update = true;
+            button1.Visible = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             FormControl.Resize(this.FindForm(), 1175);
             update = true;
+            button1.Visible = true;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -212,6 +213,12 @@ namespace WebSiteDev.ManagerForm
                     dateTimePicker1.Value = DateTime.Now;
                 }
 
+                if (dateTimePicker1.Value < DateTime.Now)
+                {
+                    dateTimePicker1.MinDate = DateTime.Now.AddDays(1);
+                    dateTimePicker1.Value = DateTime.Now.AddDays(1);
+                }
+
                 string[] statuses = null;
 
                 if (currentStatus == "Новый")
@@ -252,6 +259,12 @@ namespace WebSiteDev.ManagerForm
 
             string newStatus = comboBox5.SelectedItem.ToString();
             DateTime newDate = dateTimePicker1.Value;
+
+            if (newDate < DateTime.Now)
+            {
+                newDate = DateTime.Now.AddDays(1);
+                dateTimePicker1.Value = newDate;
+            }
 
             if (currentStatus == "Отменён" || currentStatus == "Завершён")
             {
@@ -333,30 +346,6 @@ namespace WebSiteDev.ManagerForm
             {
                 MessageBox.Show("Ошибка обновления.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            //if (selectedOrderID == -1)
-            //{
-            //    MessageBox.Show("Выберите заказ для удаления!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //    return;
-            //}
-
-            //var result = MessageBox.Show("Вы действительно хотите удалить заказ?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            //if (result == DialogResult.No)
-            //{
-            //    return;
-            //}
-
-            //if (DataDelete.DeleteOrder(selectedOrderID))
-            //{
-            //    MessageBox.Show("Заказ успешно удален!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            //    selectedOrderID = -1;
-            //    GetDate();
-            //    dataGridView1.ClearSelection();
-            //}
         }
     }
 }
