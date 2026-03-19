@@ -16,14 +16,20 @@ namespace WebSiteDev.AdminForm
 {
     public partial class UsersControl : UserControl
     {
+        public bool update = false;
+        private DataManipulation dataManipulation;
+
         public UsersControl()
         {
             InitializeComponent();
             GetDate();
         }
 
-        public bool update = false;
-        string search = "";
+        private void UsersControl_Load(object sender, EventArgs e)
+        {
+            comboBox1.SelectedIndex = 0;
+            comboBox3.SelectedIndex = 0;
+        }
 
         void GetDate()
         {
@@ -31,7 +37,18 @@ namespace WebSiteDev.AdminForm
             {
                 con.Open();
 
-                MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Users`", con);
+                MySqlCommand cmd = new MySqlCommand(@"
+            SELECT 
+                u.UserID,
+                u.Surname,
+                u.FirstName,
+                u.MiddleName,
+                u.UserLogin,
+                u.UserPassword,
+                r.RoleName AS RoleName,
+                u.PhoneNumber
+            FROM Users u
+            JOIN Role r ON u.RoleID = r.RoleID", con);
                 cmd.ExecuteNonQuery();
 
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
@@ -46,20 +63,17 @@ namespace WebSiteDev.AdminForm
                 dataGridView1.Columns["MiddleName"].HeaderText = "Отчество";
                 dataGridView1.Columns["UserLogin"].HeaderText = "Логин";
                 dataGridView1.Columns["UserPassword"].HeaderText = "Пароль";
-                dataGridView1.Columns["RoleID"].HeaderText = "Роль";
+                dataGridView1.Columns["RoleName"].HeaderText = "Роль";
                 dataGridView1.Columns["PhoneNumber"].HeaderText = "Телефон";
+
+                dataManipulation = new DataManipulation(dt);
             }
 
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            search = textBox1.Text;
-        }
-
-        private void textBox1_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = null;
+            dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -111,6 +125,22 @@ namespace WebSiteDev.AdminForm
         {
             AddUsersForm addUsersForm = new AddUsersForm();
             addUsersForm.ShowDialog();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            dataManipulation.ResetFilters(comboSort: comboBox3, comboFilter: comboBox1, textSearch: textBox1);
+            dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
         }
     }
 }

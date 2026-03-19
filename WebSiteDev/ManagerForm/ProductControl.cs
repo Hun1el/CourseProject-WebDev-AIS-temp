@@ -16,6 +16,7 @@ namespace WebSiteDev.ManagerForm
 {
     public partial class ProductControl : UserControl
     {
+        private DataManipulation dataManipulation;
         private string userRole;
 
         public ProductControl(string role)
@@ -26,7 +27,19 @@ namespace WebSiteDev.ManagerForm
         }
 
         public bool update = false;
-        string search = "";
+
+        private void ProductControl_Load(object sender, EventArgs e)
+        {
+            if (userRole == "Менеджер")
+            {
+                button1.Visible = false;
+                button2.Visible = false;
+                button7.Visible = false;
+            }
+
+            comboBox3.SelectedIndex = 0;
+            comboBox1.SelectedIndex = 0;
+        }
 
         void GetDate()
         {
@@ -34,7 +47,16 @@ namespace WebSiteDev.ManagerForm
             {
                 con.Open();
 
-                MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Product`", con);
+                MySqlCommand cmd = new MySqlCommand(@"
+    SELECT 
+        p.ProductID,
+        p.ProductName,
+        p.ProductDescription,
+        p.ProductPhoto,
+        c.CategoryName AS Category,
+        p.BasePrice
+    FROM Product p
+    JOIN Category c ON p.CategoryID = c.CategoryID;", con);
                 cmd.ExecuteNonQuery();
 
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
@@ -47,20 +69,17 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["ProductName"].HeaderText = "Название";
                 dataGridView1.Columns["ProductDescription"].HeaderText = "Описание";
                 dataGridView1.Columns["ProductPhoto"].HeaderText = "Изображение";
-                dataGridView1.Columns["CategoryID"].HeaderText = "Категория";
+                dataGridView1.Columns["Category"].HeaderText = "Категория";
                 dataGridView1.Columns["BasePrice"].HeaderText = "Цена";
+
+                dataManipulation = new DataManipulation(dt);
             }
 
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            search = textBox1.Text;
-        }
-
-        private void textBox1_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = null;
+            dataManipulation.ApplyAllProduct(comboBox3, comboBox1, textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -104,14 +123,20 @@ namespace WebSiteDev.ManagerForm
             addProductForm.ShowDialog();
         }
 
-        private void ProductControl_Load(object sender, EventArgs e)
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (userRole == "Менеджер")
-            {
-                button1.Visible = false;
-                button2.Visible = false;
-                button7.Visible = false;
-            }
+            dataManipulation.ApplyAllProduct(comboBox3, comboBox1, textBox1);
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dataManipulation.ApplyAllProduct(comboBox3, comboBox1, textBox1);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            dataManipulation.ResetFilters(comboSort: comboBox3, comboFilter: comboBox1, textSearch: textBox1);
+            dataManipulation.ApplyAllProduct(comboBox3, comboBox1, textBox1);
         }
     }
 }

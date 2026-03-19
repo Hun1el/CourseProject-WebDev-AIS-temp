@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,13 +10,15 @@ using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 using WebSiteDev.AddForm;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WebSiteDev.AdminForm
 {
     public partial class CategoryControl : UserControl
     {
+        private DataManipulation dataManipulation;
+
         public CategoryControl()
         {
             InitializeComponent();
@@ -23,7 +26,11 @@ namespace WebSiteDev.AdminForm
         }
 
         public bool update = false;
-        string search = "";
+
+        private void CategoryControl_Load(object sender, EventArgs e)
+        {
+            comboBox3.SelectedIndex = 0;
+        }
 
         void GetDate()
         {
@@ -42,18 +49,15 @@ namespace WebSiteDev.AdminForm
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["CategoryID"].Visible = false;
                 dataGridView1.Columns["CategoryName"].HeaderText = "Категория";
+
+                dataManipulation = new DataManipulation(dt);
             }
 
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            search = textBox1.Text;
-        }
-
-        private void textBox1_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = null;
+            dataManipulation.ApplyAllCategory(comboBox3, textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -95,6 +99,17 @@ namespace WebSiteDev.AdminForm
         {
             AddCategoryForm addCategoryForm = new AddCategoryForm();
             addCategoryForm.ShowDialog();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            dataManipulation.ResetFilters(textSearch: textBox1, comboSort: comboBox3);
+            dataManipulation.ApplyAllCategory(comboBox3, textBox1);
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dataManipulation.ApplyAllCategory(comboBox3, textBox1);
         }
     }
 }

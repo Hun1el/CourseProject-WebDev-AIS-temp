@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,20 +10,26 @@ using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 using WebSiteDev.AddForm;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WebSiteDev.ManagerForm
 {
     public partial class ClientsControl : UserControl
     {
+        private DataManipulation dataManipulation;
+
         public ClientsControl()
         {
             InitializeComponent();
             GetDate();
         }
         public bool update = false;
-        string search = "";
+
+        private void ClientsControl_Load(object sender, EventArgs e)
+        {
+            comboBox3.SelectedIndex = 0;
+        }
 
         void GetDate()
         {
@@ -45,18 +52,14 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["MiddleName"].HeaderText = "Отчество";
                 dataGridView1.Columns["PhoneNumber"].HeaderText = "Телефон";
                 dataGridView1.Columns["Email"].HeaderText = "Эл. почта";
-            }
 
+                dataManipulation = new DataManipulation(dt);
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            search = textBox1.Text;
-        }
-
-        private void textBox1_Click(object sender, EventArgs e)
-        {
-            textBox1.Text = null;
+            dataManipulation.ApplyAllClient(comboBox3, textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -108,6 +111,17 @@ namespace WebSiteDev.ManagerForm
         {
             AddClientsForm addClientsForm = new AddClientsForm();
             addClientsForm.ShowDialog();
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            dataManipulation.ApplyAllClient(comboBox3, textBox1);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            dataManipulation.ResetFilters(comboSort: comboBox3, textSearch: textBox1);
+            dataManipulation.ApplyAllClient(comboBox3, textBox1);
         }
     }
 }

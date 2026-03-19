@@ -105,6 +105,7 @@
       <DependentUpon>UsersControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Data.cs" />
+    <Compile Include="DataManipulation.cs" />
     <Compile Include="DirectorForm\DirectorMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
