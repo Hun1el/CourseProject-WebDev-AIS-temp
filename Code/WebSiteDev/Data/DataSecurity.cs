@@ -248,7 +248,6 @@ namespace WebSiteDev
 
         /// <summary>
         /// Маскирует ФИО клиента - показывает фамилию и инициалы имени/отчества
-        /// Формат: "Иванов И. О."
         /// </summary>
         public static string MaskClientName(string fullName)
         {
@@ -286,7 +285,6 @@ namespace WebSiteDev
 
         /// <summary>
         /// Маскирует ФИО сотрудника - показывает фамилию и инициалы имени/отчества
-        /// Формат: "Петров И. О."
         /// </summary>
         public static string MaskUserName(string fullName)
         {
