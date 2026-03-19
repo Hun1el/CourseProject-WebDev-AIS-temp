@@ -251,5 +251,30 @@ namespace WebSiteDev.ManagerForm
                 }
             }
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (selectedClientID == -1)
+            {
+                MessageBox.Show("Выберите клиента для удаления!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите удалить клиента?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataDelete.DeleteClient(selectedClientID))
+            {
+                MessageBox.Show("Клиент успешно удален!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                selectedClientID = -1;
+                textBox2.Clear();
+                GetDate();
+                dataGridView1.ClearSelection();
+            }
+        }
     }
 }

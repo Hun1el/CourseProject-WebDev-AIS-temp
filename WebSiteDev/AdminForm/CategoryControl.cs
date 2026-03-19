@@ -139,5 +139,31 @@ namespace WebSiteDev.AdminForm
                 }
             }
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (selectedCategoryID == -1)
+            {
+                MessageBox.Show("Выберите категорию для удаления!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите удалить категорию?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataDelete.DeleteCategory(selectedCategoryID))
+            {
+                MessageBox.Show("Категория успешно удалена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                selectedCategoryID = -1;
+                selectedRowIndex = -1;
+                textBox2.Clear();
+                GetDate();
+                dataGridView1.ClearSelection();
+            }
+        }
     }
 }

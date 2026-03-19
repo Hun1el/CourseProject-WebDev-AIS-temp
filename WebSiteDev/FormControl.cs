@@ -10,11 +10,20 @@ namespace WebSiteDev
 {
     public static class FormControl
     {
+        private static Form lastForm = null;
+        private static int lastWidth = 0;
+
         public static void Resize(Form parentForm, int newWidth, string panelRightName = "panel2")
         {
             if (parentForm == null)
             {
                 return;
+            }
+
+            if (lastForm != parentForm)
+            {
+                lastForm = parentForm;
+                lastWidth = parentForm.Width;
             }
 
             parentForm.SuspendLayout();
@@ -33,11 +42,21 @@ namespace WebSiteDev
             parentForm.Invalidate();
         }
 
-        private static void DisposeControlRecursively(Control ctrl)
+        public static void ResetFormSize(Form parentForm, string panelRightName = "panel2")
+        {
+            if (parentForm != null && lastForm == parentForm && lastWidth > 0)
+            {
+                Resize(parentForm, lastWidth, panelRightName);
+                lastForm = null;
+                lastWidth = 0;
+            }
+        }
+
+        private static void DispControl(Control ctrl)
         {
             foreach (Control c in ctrl.Controls)
             {
-                DisposeControlRecursively(c);
+                DispControl(c);
             }
 
             if (ctrl is PictureBox pb && pb.Image != null)
@@ -58,7 +77,7 @@ namespace WebSiteDev
 
             foreach (Control c in panel.Controls)
             {
-                DisposeControlRecursively(c);
+                DispControl(c);
             }
 
             panel.Controls.Clear();

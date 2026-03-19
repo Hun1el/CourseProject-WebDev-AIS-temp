@@ -62,14 +62,17 @@ namespace WebSiteDev.ManagerForm
                 CONCAT(u.Surname, ' ', u.FirstName, ' ', u.MiddleName) AS UserName,
                 o.OrderDate,
                 o.OrderCompDate,
-                p.ProductName,
+                GROUP_CONCAT(p.ProductName SEPARATOR ', ') AS ProductName,
                 s.StatusName,
                 o.OrderCost
             FROM `Order` o
             LEFT JOIN Clients c ON o.ClientID = c.ClientID
             LEFT JOIN Users u ON o.UserID = u.UserID
-            LEFT JOIN Product p ON o.ProductID = p.ProductID
-            LEFT JOIN Status s ON o.StatusID = s.StatusID", con);
+            LEFT JOIN orderproduct op ON o.OrderID = op.OrderID
+            LEFT JOIN Product p ON op.ProductID = p.ProductID
+            LEFT JOIN Status s ON o.StatusID = s.StatusID
+            GROUP BY o.OrderID", con);
+
                 cmd.ExecuteNonQuery();
 
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
@@ -281,7 +284,6 @@ namespace WebSiteDev.ManagerForm
                     {
                         dataGridView1.Rows[i].Selected = true;
 
-                        // Заполняем поля из новых данных таблицы
                         currentStatus = dataGridView1.Rows[i].Cells["StatusName"].Value.ToString();
 
                         try
@@ -331,6 +333,30 @@ namespace WebSiteDev.ManagerForm
             {
                 MessageBox.Show("Ошибка обновления.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            //if (selectedOrderID == -1)
+            //{
+            //    MessageBox.Show("Выберите заказ для удаления!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //    return;
+            //}
+
+            //var result = MessageBox.Show("Вы действительно хотите удалить заказ?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            //if (result == DialogResult.No)
+            //{
+            //    return;
+            //}
+
+            //if (DataDelete.DeleteOrder(selectedOrderID))
+            //{
+            //    MessageBox.Show("Заказ успешно удален!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //    selectedOrderID = -1;
+            //    GetDate();
+            //    dataGridView1.ClearSelection();
+            //}
         }
     }
 }

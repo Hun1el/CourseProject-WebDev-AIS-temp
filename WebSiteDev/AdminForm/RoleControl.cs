@@ -128,5 +128,31 @@ namespace WebSiteDev.AdminForm
                 }
             }
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (selectedRoleID == -1)
+            {
+                MessageBox.Show("Выберите роль для удаления!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите удалить роль?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataDelete.DeleteRole(selectedRoleID))
+            {
+                MessageBox.Show("Роль успешно удалена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                selectedRoleID = -1;
+                selectedRowIndex = -1;
+                textBox2.Clear();
+                GetDate();
+                dataGridView1.ClearSelection();
+            }
+        }
     }
 }

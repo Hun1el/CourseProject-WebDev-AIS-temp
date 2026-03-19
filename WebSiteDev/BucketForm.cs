@@ -27,7 +27,7 @@ namespace WebSiteDev
             DateTime dateTimeNow = DateTime.Now;
             textBox1.Text = dateTimeNow.ToString("yyyy.MM.dd");
             dateTimePicker1.Value = dateTimeNow.AddDays(7);
-            dateTimePicker1.MinDate = dateTimeNow.AddDays(1);
+            dateTimePicker1.MinDate = dateTimeNow.AddDays(3);
 
             checkbox1.AutoCheck = false;
             checkbox2.AutoCheck = false;

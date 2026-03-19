@@ -56,7 +56,7 @@ namespace WebSiteDev
 
                             if (role == "Администратор")
                             {
-                                MainForm adminForm = new MainForm(fullName, role);
+                                MainForm adminForm = new MainForm(fullName, role, userID);
                                 this.Hide();
                                 adminForm.ShowDialog();
                                 this.Show();

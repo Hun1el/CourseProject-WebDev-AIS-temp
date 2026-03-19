@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebSiteDev.AddForm;
+using WebSiteDev.ManagerForm;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace WebSiteDev.AdminForm
@@ -21,11 +22,13 @@ namespace WebSiteDev.AdminForm
         public bool update = false;
         private DataManipulation dataManipulation;
         private int selectedUserID = -1;
+        private int currentUserID = 0;
         static readonly Random rand = new Random();
 
-        public UsersControl()
+        public UsersControl(int userID = 0)
         {
             InitializeComponent();
+            currentUserID = userID;
             GetDate();
         }
 
@@ -307,6 +310,31 @@ namespace WebSiteDev.AdminForm
             {
                 textBox6.UseSystemPasswordChar = true;
                 pictureBox2.BackgroundImage = Properties.Resources.EyeView;
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (selectedUserID == -1)
+            {
+                MessageBox.Show("Выберите пользователя для удаления!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите удалить пользователя?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataDelete.DeleteUser(selectedUserID, currentUserID))
+            {
+                MessageBox.Show("Пользователь успешно удален!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                selectedUserID = -1;
+                textBox2.Clear();
+                GetDate();
+                dataGridView1.ClearSelection();
             }
         }
     }

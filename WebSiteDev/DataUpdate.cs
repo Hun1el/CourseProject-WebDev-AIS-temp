@@ -25,13 +25,6 @@ namespace WebSiteDev
                         return false;
                     }
 
-                    //MySqlCommand Links = new MySqlCommand("SELECT COUNT(*) FROM Product WHERE CategoryID = " + categoryID, con);
-                    //if (Convert.ToInt32(Links.ExecuteScalar()) > 0)
-                    //{
-                    //    MessageBox.Show("Категория уже используется! Изменение невозможно.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    //    return false;
-                    //}
-
                     MySqlCommand UpdateQuery = new MySqlCommand("UPDATE Category SET CategoryName = '" + newName + "' WHERE CategoryID = " + categoryID, con);
 
                     return UpdateQuery.ExecuteNonQuery() > 0;
@@ -98,8 +91,7 @@ namespace WebSiteDev
             }
         }
 
-        public static bool UpdateUser(int userID, string surname, string firstName, string middleName,
-                               string login, string password, int roleID, string phone)
+        public static bool UpdateUser(int userID, string surname, string firstName, string middleName, string login, string password, int roleID, string phone)
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
@@ -107,12 +99,10 @@ namespace WebSiteDev
                 {
                     con.Open();
 
-                    MySqlCommand checkLogin = new MySqlCommand(
-                        "SELECT COUNT(*) FROM Users WHERE UserLogin = '" + login + "' AND UserID != " + userID, con);
+                    MySqlCommand checkLogin = new MySqlCommand("SELECT COUNT(*) FROM Users WHERE UserLogin = '" + login + "' AND UserID != " + userID, con);
                     if (Convert.ToInt32(checkLogin.ExecuteScalar()) > 0)
                     {
-                        MessageBox.Show("Логин уже используется!", "Ошибка",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Логин уже используется!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
                     }
 
@@ -150,8 +140,7 @@ namespace WebSiteDev
                     
                     if (Convert.ToInt32(checkName.ExecuteScalar()) > 0)
                     {
-                        MessageBox.Show("Услуга с таким названием уже существует!", "Ошибка",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Услуга с таким названием уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
                     }
 
@@ -226,6 +215,5 @@ namespace WebSiteDev
                 }
             }
         }
-
     }
 }

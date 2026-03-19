@@ -16,13 +16,13 @@ namespace WebSiteDev.ManagerForm
     public partial class DirectorOrderControl : UserControl
     {
         private DataManipulation dataManipulation;
+        public bool update = false;
 
         public DirectorOrderControl()
         {
             InitializeComponent();
             GetDate();
         }
-        public bool update = false;
 
         private void DirectorOrderControl_Load(object sender, EventArgs e)
         {
@@ -44,14 +44,16 @@ namespace WebSiteDev.ManagerForm
                 CONCAT(u.Surname, ' ', u.FirstName, ' ', u.MiddleName) AS UserName,
                 o.OrderDate,
                 o.OrderCompDate,
-                p.ProductName,
+                GROUP_CONCAT(p.ProductName SEPARATOR ', ') AS ProductName,
                 s.StatusName,
                 o.OrderCost
             FROM `Order` o
             LEFT JOIN Clients c ON o.ClientID = c.ClientID
             LEFT JOIN Users u ON o.UserID = u.UserID
-            LEFT JOIN Product p ON o.ProductID = p.ProductID
-            LEFT JOIN Status s ON o.StatusID = s.StatusID", con);
+            LEFT JOIN orderproduct op ON o.OrderID = op.OrderID
+            LEFT JOIN Product p ON op.ProductID = p.ProductID
+            LEFT JOIN Status s ON o.StatusID = s.StatusID
+            GROUP BY o.OrderID", con);
                 cmd.ExecuteNonQuery();
 
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
