@@ -98,6 +98,7 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+
         private Panel CreateProductCard(DataRowView row)
         {
             Panel card = new Panel
@@ -112,9 +113,11 @@ namespace WebSiteDev.ManagerForm
 
             card.MouseDown += Card_MouseDown;
 
-            PictureBox pic = CreateProductImage(row);
-            pic.MouseDown += Card_MouseDown;
-            card.Controls.Add(pic);
+            ImageControl imageControl = new ImageControl();
+            imageControl.Location = new Point(10, 10);
+            imageControl.Size = new Size(270, 310);
+            imageControl.InitializeImage(row["ProductPhoto"].ToString());
+            card.Controls.Add(imageControl);
 
             Label label1 = CreateLabel(row["ProductName"].ToString(), 285, 35, nameFont, new Size(400, 70));
             label1.MouseDown += Card_MouseDown;
@@ -186,6 +189,22 @@ namespace WebSiteDev.ManagerForm
             }
 
             editingProductID = productID;
+
+            ImageControl imageControl = null;
+            foreach (Control ctrl in card.Controls)
+            {
+                if (ctrl is ImageControl)
+                {
+                    imageControl = ctrl as ImageControl;
+                    break;
+                }
+            }
+
+            if (imageControl != null)
+            {
+                imageControl.InitializeImage(row["ProductPhoto"].ToString());
+                imageControl.ShowChangeButton(true);
+            }
 
             Label label1 = card.Controls[1] as Label;
             Label label2 = card.Controls[2] as Label;
@@ -353,6 +372,20 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            ImageControl imageControl = null;
+            foreach (Control ctrl in card.Controls)
+            {
+                if (ctrl is ImageControl)
+                {
+                    imageControl = ctrl as ImageControl;
+                    break;
+                }
+            }
+            if (imageControl != null)
+            {
+                imageControl.SaveImage(productID);
+            }
+
             if (DataUpdate.UpdateProduct(productID, textBox1.Text.Trim(), textBox2.Text.Trim(), categoryID, price))
             {
                 MessageBox.Show("Услуга успешно изменена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -388,35 +421,6 @@ namespace WebSiteDev.ManagerForm
                 GetDate();
                 EnableLazyLoading();
             }
-        }
-
-        private PictureBox CreateProductImage(DataRowView row)
-        {
-            PictureBox pic = new PictureBox
-            {
-                Size = new Size(270, 270),
-                Location = new Point(10, 10),
-                SizeMode = PictureBoxSizeMode.Zoom,
-                Image = Properties.Resources.no_image
-            };
-
-            string photoName = row["ProductPhoto"].ToString();
-            if (!string.IsNullOrEmpty(photoName))
-            {
-                string projectPath = AppDomain.CurrentDomain.BaseDirectory;
-                string imagePath = Path.Combine(projectPath, @"..\..\Images", photoName);
-                if (File.Exists(imagePath))
-                {
-                    using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
-                    {
-                        using (Image img = Image.FromStream(fs))
-                        {
-                            pic.Image = img.GetThumbnailImage(270, 270, null, IntPtr.Zero);
-                        }
-                    }
-                }
-            }
-            return pic;
         }
 
         private Label CreateLabel(string text, int x, int y, Font font, Size size = default)
