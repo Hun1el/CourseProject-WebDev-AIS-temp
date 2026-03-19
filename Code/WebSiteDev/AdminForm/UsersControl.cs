@@ -20,6 +20,9 @@ namespace WebSiteDev.AdminForm
         private int currentUserID = 0;
         static readonly Random rand = new Random();
 
+        private int lastRevealedRowIndex = -1;
+        private DataSecurity dataSecurity = new DataSecurity();
+
         public UsersControl(int userID = 0)
         {
             InitializeComponent();
@@ -32,6 +35,13 @@ namespace WebSiteDev.AdminForm
             dataGridView1.Columns["UserID"].Visible = false;
             comboBox3.SelectedIndex = 0;
             dataGridView1.ClearSelection();
+
+            timer1.Interval = 20000;
+            timer1.Stop();
+
+            dataGridView1.Columns["Surname"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView1.Columns["FirstName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dataGridView1.Columns["MiddleName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         void GetDate()
@@ -41,9 +51,9 @@ namespace WebSiteDev.AdminForm
                 con.Open();
 
                 MySqlCommand cmd = new MySqlCommand(@"SELECT u.UserID, u.Surname, u.FirstName, u.MiddleName, u.UserLogin,
-                                                             u.UserPassword, r.RoleName AS RoleName, u.PhoneNumber, u.RoleID
-                                                      FROM Users u
-                                                      JOIN Role r ON u.RoleID = r.RoleID", con);
+                                                     u.UserPassword, r.RoleName AS RoleName, u.PhoneNumber, u.RoleID
+                                              FROM Users u
+                                              JOIN Role r ON u.RoleID = r.RoleID", con);
                 cmd.ExecuteNonQuery();
 
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
@@ -51,9 +61,13 @@ namespace WebSiteDev.AdminForm
 
                 da.Fill(dt);
 
+                dataSecurity.LoadOriginalData(dt);
+                lastRevealedRowIndex = -1;
+
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["UserID"].Visible = false;
                 dataGridView1.Columns["RoleID"].Visible = false;
+                dataGridView1.Columns["UserPassword"].Visible = false;
                 dataGridView1.Columns["Surname"].HeaderText = "Фамилия";
                 dataGridView1.Columns["FirstName"].HeaderText = "Имя";
                 dataGridView1.Columns["MiddleName"].HeaderText = "Отчество";
@@ -61,6 +75,13 @@ namespace WebSiteDev.AdminForm
                 dataGridView1.Columns["UserPassword"].HeaderText = "Пароль";
                 dataGridView1.Columns["RoleName"].HeaderText = "Роль";
                 dataGridView1.Columns["PhoneNumber"].HeaderText = "Телефон";
+
+                dataGridView1.Columns["Surname"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["FirstName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["MiddleName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["UserLogin"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["RoleName"].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns["PhoneNumber"].SortMode = DataGridViewColumnSortMode.NotSortable;
 
                 dataManipulation = new DataManipulation(dt);
 
@@ -71,6 +92,121 @@ namespace WebSiteDev.AdminForm
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
                 label1.Text = $"Количество записей: {resultcount}";
             }
+        }
+
+        private void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            if (e.RowIndex == lastRevealedRowIndex)
+            {
+                if (dataGridView1.Columns[e.ColumnIndex].Name == "UserLogin")
+                {
+                    string original = dataSecurity.GetOriginalLogin(e.RowIndex);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                else if (dataGridView1.Columns[e.ColumnIndex].Name == "PhoneNumber")
+                {
+                    string original = dataSecurity.GetOriginalPhone(e.RowIndex);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                else if (dataGridView1.Columns[e.ColumnIndex].Name == "FirstName")
+                {
+                    string original = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                else if (dataGridView1.Columns[e.ColumnIndex].Name == "MiddleName")
+                {
+                    string original = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                return;
+            }
+
+            if (dataGridView1.Columns[e.ColumnIndex].Name == "UserLogin")
+            {
+                string original = dataSecurity.GetOriginalLogin(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskLogin(original);
+                    e.FormattingApplied = true;
+                }
+            }
+            else if (dataGridView1.Columns[e.ColumnIndex].Name == "PhoneNumber")
+            {
+                string original = dataSecurity.GetOriginalPhone(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskPhone(original);
+                    e.FormattingApplied = true;
+                }
+            }
+            else if (dataGridView1.Columns[e.ColumnIndex].Name == "FirstName")
+            {
+                string original = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskName(original);
+                    e.FormattingApplied = true;
+                }
+            }
+            else if (dataGridView1.Columns[e.ColumnIndex].Name == "MiddleName")
+            {
+                string original = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                if (e.Value != null && original != null)
+                {
+                    e.Value = DataSecurity.MaskName(original);
+                    e.FormattingApplied = true;
+                }
+            }
+        }
+
+        private void DataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            if (e.RowIndex == lastRevealedRowIndex)
+            {
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(e.RowIndex);
+                timer1.Stop();
+                return;
+            }
+
+            if (lastRevealedRowIndex >= 0)
+            {
+                int previousRow = lastRevealedRowIndex;
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(previousRow);
+            }
+
+            lastRevealedRowIndex = e.RowIndex;
+            dataGridView1.InvalidateRow(e.RowIndex);
+
+            timer1.Stop();
+            timer1.Start();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -195,13 +331,56 @@ namespace WebSiteDev.AdminForm
         {
             if (e.RowIndex >= 0)
             {
+                if (e.RowIndex == lastRevealedRowIndex)
+                {
+                    timer1.Stop();
+                    timer1.Start();
+                }
+
                 selectedUserID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["UserID"].Value);
                 textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["Surname"].Value.ToString();
-                textBox3.Text = dataGridView1.Rows[e.RowIndex].Cells["FirstName"].Value.ToString();
-                textBox4.Text = dataGridView1.Rows[e.RowIndex].Cells["MiddleName"].Value.ToString();
-                textBox5.Text = dataGridView1.Rows[e.RowIndex].Cells["UserLogin"].Value.ToString();
+
+                string firstName = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                if (firstName != null)
+                {
+                    textBox3.Text = firstName;
+                }
+                else
+                {
+                    textBox3.Text = dataGridView1.Rows[e.RowIndex].Cells["FirstName"].Value.ToString();
+                }
+
+                string middleName = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                if (middleName != null)
+                {
+                    textBox4.Text = middleName;
+                }
+                else
+                {
+                    textBox4.Text = dataGridView1.Rows[e.RowIndex].Cells["MiddleName"].Value.ToString();
+                }
+
+                string login = dataSecurity.GetOriginalLogin(e.RowIndex);
+                if (login != null)
+                {
+                    textBox5.Text = login;
+                }
+                else
+                {
+                    textBox5.Text = dataGridView1.Rows[e.RowIndex].Cells["UserLogin"].Value.ToString();
+                }
+
                 textBox6.Clear();
-                maskedTextBox1.Text = dataGridView1.Rows[e.RowIndex].Cells["PhoneNumber"].Value.ToString();
+
+                string phoneNumber = dataSecurity.GetOriginalPhone(e.RowIndex);
+                if (phoneNumber != null)
+                {
+                    maskedTextBox1.Text = phoneNumber;
+                }
+                else
+                {
+                    maskedTextBox1.Text = dataGridView1.Rows[e.RowIndex].Cells["PhoneNumber"].Value.ToString();
+                }
 
                 int roleID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["RoleID"].Value);
                 comboBox2.SelectedValue = roleID;
@@ -216,6 +395,7 @@ namespace WebSiteDev.AdminForm
                 }
             }
         }
+
 
         private void button6_Click(object sender, EventArgs e)
         {
@@ -261,15 +441,56 @@ namespace WebSiteDev.AdminForm
                 if (foundRow != null)
                 {
                     foundRow.Selected = true;
+                    int foundRowIndex = foundRow.Index;
+
                     textBox2.Text = foundRow.Cells["Surname"].Value.ToString();
-                    textBox3.Text = foundRow.Cells["FirstName"].Value.ToString();
-                    textBox4.Text = foundRow.Cells["MiddleName"].Value.ToString();
-                    textBox5.Text = foundRow.Cells["UserLogin"].Value.ToString();
+
+                    string firstName = dataSecurity.GetOriginalFirstName(foundRowIndex);
+                    if (firstName != null)
+                    {
+                        textBox3.Text = firstName;
+                    }
+                    else
+                    {
+                        textBox3.Text = foundRow.Cells["FirstName"].Value.ToString();
+                    }
+
+                    string middleName = dataSecurity.GetOriginalMiddleName(foundRowIndex);
+                    if (middleName != null)
+                    {
+                        textBox4.Text = middleName;
+                    }
+                    else
+                    {
+                        textBox4.Text = foundRow.Cells["MiddleName"].Value.ToString();
+                    }
+
+                    string login = dataSecurity.GetOriginalLogin(foundRowIndex);
+                    if (login != null)
+                    {
+                        textBox5.Text = login;
+                    }
+                    else
+                    {
+                        textBox5.Text = foundRow.Cells["UserLogin"].Value.ToString();
+                    }
+
                     textBox6.Clear();
-                    maskedTextBox1.Text = foundRow.Cells["PhoneNumber"].Value.ToString();
+
+                    string phoneNumber = dataSecurity.GetOriginalPhone(foundRowIndex);
+                    if (phoneNumber != null)
+                    {
+                        maskedTextBox1.Text = phoneNumber;
+                    }
+                    else
+                    {
+                        maskedTextBox1.Text = foundRow.Cells["PhoneNumber"].Value.ToString();
+                    }
+
                     int roleID2 = Convert.ToInt32(foundRow.Cells["RoleID"].Value);
                     comboBox2.SelectedValue = roleID2;
                 }
+
             }
         }
 
@@ -345,6 +566,18 @@ namespace WebSiteDev.AdminForm
                 textBox2.Clear();
                 GetDate();
                 dataGridView1.ClearSelection();
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            timer1.Stop();
+
+            if (lastRevealedRowIndex >= 0)
+            {
+                int rowToHide = lastRevealedRowIndex;
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(rowToHide);
             }
         }
     }

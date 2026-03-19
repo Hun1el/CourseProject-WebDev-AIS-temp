@@ -41,7 +41,8 @@ namespace WebSiteDev.AdminForm
 
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["CategoryID"].Visible = false;
-                dataGridView1.Columns["CategoryName"].HeaderText = "Категория";
+                dataGridView1.Columns["CategoryName"].HeaderText = "Наименование категории";
+                dataGridView1.Columns["CategoryName"].SortMode = DataGridViewColumnSortMode.NotSortable;
 
                 dataManipulation = new DataManipulation(dt);
 
@@ -113,7 +114,7 @@ namespace WebSiteDev.AdminForm
             {
                 selectedRowIndex = e.RowIndex;
                 selectedCategoryID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["CategoryID"].Value);
-                textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["CategoryName"].Value.ToString();
+                textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["CategoryName"].Value.ToString();      
             }
         }
 

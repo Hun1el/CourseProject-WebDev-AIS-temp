@@ -223,7 +223,7 @@ namespace WebSiteDev.ManagerForm
             TextBox textBox3 = data[4] as TextBox;
             ProductCard card = data[5] as ProductCard;
 
-            if (!ValidateProductData(textBox1, textBox2, textBox3, comboBox))
+            if (!ValidateProductData(textBox1, textBox2, textBox3, card.numericUpDown1, comboBox))
             {
                 return;
             }
@@ -246,7 +246,6 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
-
             string categoryName = comboBox.SelectedItem.ToString();
             int categoryID = GetCategoryID(categoryName);
 
@@ -263,7 +262,13 @@ namespace WebSiteDev.ManagerForm
                 imageControl.SaveImage(productID);
             }
 
-            decimal.TryParse(textBox3.Text, out decimal price);
+            int rubles = 0;
+            int kopecks = 0;
+
+            int.TryParse(textBox3.Text, out rubles);
+            kopecks = Convert.ToInt32(card.numericUpDown1.Value);
+
+            decimal price = rubles + (kopecks / 100.0m);
 
             if (DataUpdate.UpdateProduct(productID, textBox1.Text.Trim(), textBox2.Text.Trim(), categoryID, price))
             {
@@ -293,7 +298,6 @@ namespace WebSiteDev.ManagerForm
                 ApplyFilters();
             }
         }
-
 
         private void DeleteProduct(ProductCard card)
         {
@@ -331,15 +335,15 @@ namespace WebSiteDev.ManagerForm
 
 
 
-        private bool ValidateProductData(TextBox name, TextBox description, TextBox price, ComboBox category)
+        private bool ValidateProductData(TextBox name, TextBox description, TextBox rubles, NumericUpDown kopecks, ComboBox category)
         {
-            if (name == null || description == null || price == null || category == null)
+            if (name == null || description == null || rubles == null || kopecks == null || category == null)
             {
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(name.Text) || string.IsNullOrWhiteSpace(description.Text) ||
-                string.IsNullOrWhiteSpace(price.Text) || category.SelectedIndex < 0)
+                string.IsNullOrWhiteSpace(rubles.Text) || category.SelectedIndex < 0)
             {
                 MessageBox.Show("Заполните все поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
@@ -357,13 +361,19 @@ namespace WebSiteDev.ManagerForm
                 return false;
             }
 
-            if (!decimal.TryParse(price.Text, out decimal priceValue))
+            if (!int.TryParse(rubles.Text, out int rublesValue))
             {
-                MessageBox.Show("Цена должна быть числом!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Рубли должны быть числом!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
-            if (priceValue <= 0)
+            if (rublesValue < 0)
+            {
+                MessageBox.Show("Рубли не могут быть отрицательными!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (rublesValue == 0 && kopecks.Value == 0)
             {
                 MessageBox.Show("Цена должна быть больше нуля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
@@ -410,6 +420,33 @@ namespace WebSiteDev.ManagerForm
                     MessageBox.Show("Товар \"" + productName + "\" уже в корзине.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+            }
+
+            decimal currentTotal = 0;
+            foreach (OrderItem item in CurrentOrder.Items)
+            {
+                currentTotal += item.BasePrice * item.Quantity;
+            }
+
+            decimal newTotal = currentTotal + basePrice;
+            decimal newTotalWithSurcharge = Math.Round(newTotal * 1.15m, 2);
+
+            decimal maxLimit = 9999999999.99m;
+
+            if (newTotalWithSurcharge > maxLimit)
+            {
+                contextMenuStrip1.Close();
+                MessageBox.Show(
+                    "Невозможно добавить товар!\n\n" +
+                    "Сумма заказа с учётом надбавки 15% превысит допустимый лимит заказа (9 999 999 999.99 руб.).\n" +
+                    "Текущая сумма: " + currentTotal.ToString("N2") + " руб.\n" +
+                    "Будет после добавления: " + newTotal.ToString("N2") + " руб. (без надбавки)\n" +
+                    "С учётом надбавки: " + newTotalWithSurcharge.ToString("N2") + " руб.",
+                    "Превышение лимита",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
             }
 
             OrderItem newItem = new OrderItem();

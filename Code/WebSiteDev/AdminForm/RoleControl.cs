@@ -41,7 +41,8 @@ namespace WebSiteDev.AdminForm
 
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["RoleID"].Visible = false;
-                dataGridView1.Columns["RoleName"].HeaderText = "Роль";
+                dataGridView1.Columns["RoleName"].HeaderText = "Наименование роли";
+                dataGridView1.Columns["RoleName"].SortMode = DataGridViewColumnSortMode.NotSortable;
 
                 dataManipulation = new DataManipulation(dt);
 

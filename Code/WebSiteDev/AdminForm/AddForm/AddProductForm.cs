@@ -136,7 +136,7 @@ namespace WebSiteDev.AddForm
         {
             string ProductName = textBox1.Text.Trim();
             string ProductDesc = textBox2.Text.Trim();
-            string BasePrice = textBox3.Text.Trim();
+            string rublesText = textBox3.Text.Trim();
             int categoryId = Convert.ToInt32(comboBox1.SelectedValue);
 
             if (ProductName == "")
@@ -169,23 +169,33 @@ namespace WebSiteDev.AddForm
                 return;
             }
 
-            if (BasePrice == "")
+            if (rublesText == "")
             {
                 MessageBox.Show("Заполните цену!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (!decimal.TryParse(BasePrice, out decimal price))
+            if (!int.TryParse(rublesText, out int rubles))
             {
-                MessageBox.Show("Цена должна быть числом!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Рубли должны быть числом!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (price <= 0)
+            if (rubles < 0)
+            {
+                MessageBox.Show("Рубли не могут быть отрицательными!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int kopecks = Convert.ToInt32(numericUpDown1.Value);
+
+            if (rubles == 0 && kopecks == 0)
             {
                 MessageBox.Show("Цена должна быть больше нуля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            decimal price = rubles + (kopecks / 100.0m);
 
             string ProductPhoto = "";
 
@@ -272,7 +282,7 @@ namespace WebSiteDev.AddForm
                     }
 
                     string insertQuery = "INSERT INTO Product (ProductName, ProductDescription, ProductPhoto, CategoryID, BasePrice) " +
-                                         "VALUES ('" + ProductName + "', '" + ProductDesc + "', '" + ProductPhoto + "', '" + categoryId + "', '" + BasePrice + "')";
+                                         "VALUES ('" + ProductName + "', '" + ProductDesc + "', '" + ProductPhoto + "', '" + categoryId + "', '" + price.ToString(System.Globalization.CultureInfo.InvariantCulture) + "')";
                     using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, con))
                     {
                         insertCmd.ExecuteNonQuery();
@@ -283,6 +293,7 @@ namespace WebSiteDev.AddForm
                     textBox1.Clear();
                     textBox2.Clear();
                     textBox3.Clear();
+                    numericUpDown1.Value = 0;
                     comboBox1.SelectedIndex = 0;
 
                     if (pictureBox1.Image != null)
@@ -318,6 +329,35 @@ namespace WebSiteDev.AddForm
                 pictureBox1.Image = null;
 
                 SelectedFileName = null;
+            }
+        }
+
+        private void numericUpDown1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            NumericUpDown nud = sender as NumericUpDown;
+
+            InputRest.OnlyNumbers(e);
+
+            if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+
+            string currentText = nud.Text;
+
+            if (currentText.Length >= 2)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            string newText = currentText.Insert(currentText.Length, e.KeyChar.ToString());
+            if (int.TryParse(newText, out int value))
+            {
+                if (value > 99)
+                {
+                    e.Handled = true;
+                }
             }
         }
     }
