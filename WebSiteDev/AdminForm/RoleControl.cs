@@ -46,8 +46,11 @@ namespace WebSiteDev.AdminForm
                 dataGridView1.Columns["RoleName"].HeaderText = "Роль";
 
                 dataManipulation = new DataManipulation(dt);
-            }
 
+                MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM Role", con);
+                int resultcount = Convert.ToInt32(count.ExecuteScalar());
+                label1.Text = $"Количество записей: {resultcount}";
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -58,13 +61,13 @@ namespace WebSiteDev.AdminForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1500);
+            FormControl.Resize(this.FindForm(), 1500);
             update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1175);
+            FormControl.Resize(this.FindForm(), 1175);
             update = true;
         }
 
@@ -72,6 +75,7 @@ namespace WebSiteDev.AdminForm
         {
             AddRoleForm addRoleForm = new AddRoleForm();
             addRoleForm.ShowDialog();
+            GetDate();
         }
 
         private void button4_Click(object sender, EventArgs e)

@@ -8,92 +8,12 @@ using WebSiteDev;
 public class DataManipulation
 {
     private DataTable data;
-    private DataView view;
+    public DataView view;
 
     public DataManipulation(DataTable table)
     {
         data = table;
         view = data.DefaultView;
-    }
-
-    public void FillComboBox(ComboBox combo, string firstItem, List<string> items)
-    {
-        combo.Items.Clear();
-        if (!string.IsNullOrEmpty(firstItem))
-        {
-            combo.Items.Add(firstItem);
-        }
-
-        if (items != null && items.Count > 0)
-        {
-            items.Sort();
-            foreach (var item in items)
-            {
-                combo.Items.Add(item);
-            }
-        }
-
-        combo.SelectedIndex = 0;
-    }
-
-    public List<string> GetListFromQuery(string query, string columnName)
-    {
-        List<string> list = new List<string>();
-
-        using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
-        {
-            con.Open();
-            MySqlCommand cmd = new MySqlCommand(query, con);
-
-            using (MySqlDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    if (!reader.IsDBNull(reader.GetOrdinal(columnName)))
-                    {
-                        list.Add(reader.GetString(columnName));
-                    }
-                }
-            }
-        }
-
-        return list;
-    }
-
-    public void FillComboBoxWithRoles(ComboBox combo, string firstItem)
-    {
-        var roles = GetListFromQuery("SELECT RoleName FROM Role", "RoleName");
-        FillComboBox(combo, firstItem, roles);
-    }
-
-    public void FillComboBoxWithCategories(ComboBox combo, string firstItem)
-    {
-        var categories = GetListFromQuery("SELECT CategoryName FROM Category", "CategoryName");
-        FillComboBox(combo, firstItem, categories);
-    }
-
-    public void FillComboBoxWithStatuses(ComboBox combo, string firstItem)
-    {
-        var statuses = GetListFromQuery("SELECT StatusName FROM Status", "StatusName");
-        FillComboBox(combo, firstItem, statuses);
-    }
-
-    public void FillComboBoxWithUsers(ComboBox combo, string firstItem)
-    {
-        var products = GetListFromQuery("SELECT ProductName FROM Product", "ProductName");
-        FillComboBox(combo, firstItem, products);
-    }
-
-    public void FillComboBoxWithClients(ComboBox combo, string firstItem)
-    {
-        var users = GetListFromQuery(@"SELECT CONCAT(IFNULL(Surname,''), ' ', IFNULL(FirstName,''), ' ', IFNULL(MiddleName,'')) AS FullName FROM Users", "FullName");
-        FillComboBox(combo, firstItem, users);
-    }
-
-    public void FillComboBoxWithProducts(ComboBox combo, string firstItem)
-    {
-        var clients = GetListFromQuery(@"SELECT CONCAT(IFNULL(Surname,''), ' ', IFNULL(FirstName,''), ' ', IFNULL(MiddleName,'')) AS FullName FROM Clients", "FullName");
-        FillComboBox(combo, firstItem, clients);
     }
 
     // Методы для применения всех функций
@@ -135,6 +55,132 @@ public class DataManipulation
         ApplySearchDirector(textSearch);
         ApplyFilterDirector(comboFilter);
         ApplySortDirector(comboSort);
+    }
+
+    public void FillComboBoxWithRoles(ComboBox combo, string firstItem)
+    {
+        using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+        {
+            con.Open();
+            MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT RoleID, RoleName FROM Role ORDER BY RoleName", con);
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+
+            DataRow dr = dt.NewRow();
+            dr["RoleID"] = 0;
+            dr["RoleName"] = firstItem;
+            dt.Rows.InsertAt(dr, 0);
+
+            combo.DataSource = dt;
+            combo.DisplayMember = "RoleName";
+            combo.ValueMember = "RoleID";
+            combo.SelectedIndex = 0;
+        }
+    }
+
+    public void FillComboBoxWithCategories(ComboBox combo, string firstItem)
+    {
+        using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+        {
+            con.Open();
+            MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT CategoryID, CategoryName FROM Category ORDER BY CategoryName", con);
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+
+            DataRow dr = dt.NewRow();
+            dr["CategoryID"] = 0;
+            dr["CategoryName"] = firstItem;
+            dt.Rows.InsertAt(dr, 0);
+
+            combo.DataSource = dt;
+            combo.DisplayMember = "CategoryName";
+            combo.ValueMember = "CategoryID";
+            combo.SelectedIndex = 0;
+        }
+    }
+
+    public void FillComboBoxWithStatuses(ComboBox combo, string firstItem)
+    {
+        using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+        {
+            con.Open();
+            MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT StatusID, StatusName FROM Status ORDER BY StatusName", con);
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+
+            DataRow dr = dt.NewRow();
+            dr["StatusID"] = 0;
+            dr["StatusName"] = firstItem;
+            dt.Rows.InsertAt(dr, 0);
+
+            combo.DataSource = dt;
+            combo.DisplayMember = "StatusName";
+            combo.ValueMember = "StatusID";
+            combo.SelectedIndex = 0;
+        }
+    }
+
+    public void FillComboBoxWithProducts(ComboBox combo, string firstItem)
+    {
+        using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+        {
+            con.Open();
+            MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT ProductID, ProductName FROM Product ORDER BY ProductName", con);
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+
+            DataRow dr = dt.NewRow();
+            dr["ProductID"] = 0;
+            dr["ProductName"] = firstItem;
+            dt.Rows.InsertAt(dr, 0);
+
+            combo.DataSource = dt;
+            combo.DisplayMember = "ProductName";
+            combo.ValueMember = "ProductID";
+            combo.SelectedIndex = 0;
+        }
+    }
+
+    public void FillComboBoxWithUsers(ComboBox combo, string firstItem)
+    {
+        using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+        {
+            con.Open();
+            MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT UserID, CONCAT(IFNULL(Surname,''), ' ', IFNULL(FirstName,''), ' ', IFNULL(MiddleName,'')) AS FullName FROM Users ORDER BY FullName", con);
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+
+            DataRow dr = dt.NewRow();
+            dr["UserID"] = 0;
+            dr["FullName"] = firstItem;
+            dt.Rows.InsertAt(dr, 0);
+
+            combo.DataSource = dt;
+            combo.DisplayMember = "FullName";
+            combo.ValueMember = "UserID";
+            combo.SelectedIndex = 0;
+        }
+    }
+
+    public void FillComboBoxWithClients(ComboBox combo, string firstItem)
+    {
+        using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+        {
+            con.Open();
+            MySqlDataAdapter adapter = new MySqlDataAdapter("SELECT ClientID, CONCAT(IFNULL(Surname,''), ' ', IFNULL(FirstName,''), ' ', IFNULL(MiddleName,'')) AS FullName FROM Clients ORDER BY FullName", con);
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+
+            DataRow dr = dt.NewRow();
+            dr["ClientID"] = 0;
+            dr["FullName"] = firstItem;
+            dt.Rows.InsertAt(dr, 0);
+
+            combo.DataSource = dt;
+            combo.DisplayMember = "FullName";
+            combo.ValueMember = "ClientID";
+            combo.SelectedIndex = 0;
+        }
     }
 
     // Методы поиска
@@ -200,7 +246,7 @@ public class DataManipulation
 
         if (!string.IsNullOrEmpty(searchText))
         {
-            view.RowFilter = $"ProductName LIKE '{searchText}%'";
+            view.RowFilter = $"ProductName LIKE '%{searchText}%'";
         }
         else
         {
@@ -266,17 +312,27 @@ public class DataManipulation
 
         if (comboFilter.SelectedIndex > 0)
         {
-            string selectedRole = comboFilter.SelectedItem.ToString().Replace("'", "''");
-            filters.Add($"RoleName = '{selectedRole}'");
+            var row = comboFilter.SelectedItem as DataRowView;
+            if (row != null)
+            {
+                string selectedRole = row["RoleName"].ToString().Replace("'", "''");
+                filters.Add("RoleName = '" + selectedRole + "'");
+            }
         }
 
-        string currentSearch = view.RowFilter;
-        if (!string.IsNullOrEmpty(currentSearch))
+        if (!string.IsNullOrEmpty(view.RowFilter))
         {
-            filters.Add(currentSearch);
+            filters.Add(view.RowFilter);
         }
 
-        view.RowFilter = string.Join(" AND ", filters);
+        if (filters.Count > 0)
+        {
+            view.RowFilter = string.Join(" AND ", filters);
+        }
+        else
+        {
+            view.RowFilter = "";
+        }
     }
 
     public void ApplyFilterProduct(ComboBox comboFilter)
@@ -285,8 +341,12 @@ public class DataManipulation
 
         if (comboFilter.SelectedIndex > 0)
         {
-            string selectedCategory = comboFilter.SelectedItem.ToString().Replace("'", "''");
-            filters.Add("Category = '" + selectedCategory + "'");
+            var row = comboFilter.SelectedItem as DataRowView;
+            if (row != null)
+            {
+                string selectedCategory = row["CategoryName"].ToString().Replace("'", "''");
+                filters.Add("Category = '" + selectedCategory + "'");
+            }
         }
 
         if (!string.IsNullOrEmpty(view.RowFilter))
@@ -310,17 +370,27 @@ public class DataManipulation
 
         if (comboFilter.SelectedIndex > 0)
         {
-            string selectedCategory = comboFilter.SelectedItem.ToString().Replace("'", "''");
-            filters.Add($"StatusName = '{selectedCategory}'");
+            var row = comboFilter.SelectedItem as DataRowView;
+            if (row != null)
+            {
+                string selectedStatus = row["StatusName"].ToString().Replace("'", "''");
+                filters.Add("StatusName = '" + selectedStatus + "'");
+            }
         }
 
-        string currentSearch = view.RowFilter;
-        if (!string.IsNullOrEmpty(currentSearch))
+        if (!string.IsNullOrEmpty(view.RowFilter))
         {
-            filters.Add(currentSearch);
+            filters.Add(view.RowFilter);
         }
 
-        view.RowFilter = string.Join(" AND ", filters);
+        if (filters.Count > 0)
+        {
+            view.RowFilter = string.Join(" AND ", filters);
+        }
+        else
+        {
+            view.RowFilter = "";
+        }
     }
 
     public void ApplyFilterDirector(ComboBox comboFilter)
@@ -329,17 +399,27 @@ public class DataManipulation
 
         if (comboFilter.SelectedIndex > 0)
         {
-            string selectedCategory = comboFilter.SelectedItem.ToString().Replace("'", "''");
-            filters.Add($"StatusName = '{selectedCategory}'");
+            var row = comboFilter.SelectedItem as DataRowView;
+            if (row != null)
+            {
+                string selectedStatus = row["StatusName"].ToString().Replace("'", "''");
+                filters.Add("StatusName = '" + selectedStatus + "'");
+            }
         }
 
-        string currentSearch = view.RowFilter;
-        if (!string.IsNullOrEmpty(currentSearch))
+        if (!string.IsNullOrEmpty(view.RowFilter))
         {
-            filters.Add(currentSearch);
+            filters.Add(view.RowFilter);
         }
 
-        view.RowFilter = string.Join(" AND ", filters);
+        if (filters.Count > 0)
+        {
+            view.RowFilter = string.Join(" AND ", filters);
+        }
+        else
+        {
+            view.RowFilter = "";
+        }
     }
 
 

@@ -54,6 +54,7 @@
             this.button2.TabIndex = 52;
             this.button2.Text = "Добавить";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -96,6 +97,7 @@
             // comboBox4
             // 
             this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox4.Enabled = false;
             this.comboBox4.FormattingEnabled = true;
             this.comboBox4.IntegralHeight = false;
             this.comboBox4.Location = new System.Drawing.Point(125, 257);
@@ -126,11 +128,15 @@
             // 
             // dateTimePicker1
             // 
+            this.dateTimePicker1.CustomFormat = "yyyy.MM.dd";
             this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dateTimePicker1.Location = new System.Drawing.Point(125, 214);
+            this.dateTimePicker1.MaxDate = new System.DateTime(2026, 12, 31, 0, 0, 0, 0);
+            this.dateTimePicker1.MinDate = new System.DateTime(2025, 10, 24, 0, 0, 0, 0);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(218, 29);
             this.dateTimePicker1.TabIndex = 61;
+            this.dateTimePicker1.Value = new System.DateTime(2025, 10, 24, 14, 52, 28, 0);
             // 
             // label6
             // 
@@ -143,8 +149,9 @@
             // 
             // maskedTextBox1
             // 
+            this.maskedTextBox1.Culture = new System.Globalization.CultureInfo("");
             this.maskedTextBox1.Location = new System.Drawing.Point(125, 158);
-            this.maskedTextBox1.Mask = "0000-00-00";
+            this.maskedTextBox1.Mask = "0000.00.00";
             this.maskedTextBox1.Name = "maskedTextBox1";
             this.maskedTextBox1.ReadOnly = true;
             this.maskedTextBox1.Size = new System.Drawing.Size(218, 29);

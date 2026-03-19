@@ -17,6 +17,7 @@ namespace WebSiteDev
         private string fullName;
         private string roleName;
         private Button currentSelectedButton = null;
+        private UserControl currentControl = null;
 
         public MainForm(string fullName, string roleName)
         {
@@ -33,20 +34,31 @@ namespace WebSiteDev
 
         private void LoadControl(UserControl control)
         {
-            foreach (Control c in panel2.Controls)
-            {
-                c.Dispose();
-            }
-            panel2.Controls.Clear();
+            pictureBox2.Visible = false;
+            label1.Visible = false;
+            label2.Visible = false;
+            label3.Visible = false;
 
-            FormResizer.Resize(this, 1175);
+            if (currentControl != null)
+            {
+                panel2.Controls.Remove(currentControl);
+                currentControl.Dispose();
+                currentControl = null;
+            }
 
             control.Dock = DockStyle.Fill;
             panel2.Controls.Add(control);
+
+            currentControl = control;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button1)
+            {
+                return;
+            }
+
             LoadControl(new AdminForm.UsersControl());
             this.Text = "Пользователи";
             SelectButton(button1);
@@ -54,6 +66,11 @@ namespace WebSiteDev
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button2)
+            {
+                return;
+            }
+
             LoadControl(new AdminForm.CategoryControl());
             this.Text = "Список категорий";
             SelectButton(button2);
@@ -61,6 +78,11 @@ namespace WebSiteDev
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button3)
+            {
+                return;
+            }
+
             LoadControl(new AdminForm.RoleControl());
             this.Text = "Список ролей";
             SelectButton(button3);
@@ -68,6 +90,11 @@ namespace WebSiteDev
 
         private void button4_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button4)
+            {
+                return;
+            }
+
             LoadControl(new AdminForm.StatusControl());
             this.Text = "Список статусов";
             SelectButton(button4);
@@ -79,7 +106,13 @@ namespace WebSiteDev
             var result = MessageBox.Show("Вы действительно хотите сменить учетную запись?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (result == DialogResult.Yes)
-            { 
+            {
+                if (currentControl != null)
+                {
+                    FormControl.ClearPanelControls(panel2);
+                    currentControl = null;
+                }
+
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -107,6 +140,11 @@ namespace WebSiteDev
 
         private void button7_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button7)
+            {
+                return;
+            }
+
             LoadControl(new ProductControl(roleName));
             this.Text = "Список услуг";
             SelectButton(button7);
@@ -114,6 +152,11 @@ namespace WebSiteDev
 
         private void button8_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button8)
+            {
+                return;
+            }
+
             LoadControl(new OrderControl(roleName));
             this.Text = "Список заказов";
             SelectButton(button8);

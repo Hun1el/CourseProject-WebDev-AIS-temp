@@ -37,18 +37,10 @@ namespace WebSiteDev.AdminForm
             {
                 con.Open();
 
-                MySqlCommand cmd = new MySqlCommand(@"
-            SELECT 
-                u.UserID,
-                u.Surname,
-                u.FirstName,
-                u.MiddleName,
-                u.UserLogin,
-                u.UserPassword,
-                r.RoleName AS RoleName,
-                u.PhoneNumber
-            FROM Users u
-            JOIN Role r ON u.RoleID = r.RoleID", con);
+                MySqlCommand cmd = new MySqlCommand(@"SELECT u.UserID, u.Surname, u.FirstName, u.MiddleName, u.UserLogin,
+                                                             u.UserPassword, r.RoleName AS RoleName, u.PhoneNumber
+                                                      FROM Users u
+                                                      JOIN Role r ON u.RoleID = r.RoleID", con);
                 cmd.ExecuteNonQuery();
 
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
@@ -70,6 +62,10 @@ namespace WebSiteDev.AdminForm
 
                 dataManipulation.FillComboBoxWithRoles(comboBox1, "Роль не выбрана");
                 dataManipulation.FillComboBoxWithRoles(comboBox2, "Выберите роль");
+
+                MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM Users", con);
+                int resultcount = Convert.ToInt32(count.ExecuteScalar());
+                label1.Text = $"Количество записей: {resultcount}";
             }
         }
 
@@ -81,13 +77,13 @@ namespace WebSiteDev.AdminForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1500);
+            FormControl.Resize(this.FindForm(), 1500);
             update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1175);
+            FormControl.Resize(this.FindForm(), 1175);
             update = true;
         }
 
@@ -105,6 +101,7 @@ namespace WebSiteDev.AdminForm
         {
             AddUsersForm addUsersForm = new AddUsersForm(dataManipulation);
             addUsersForm.ShowDialog();
+            GetDate();
         }
 
         private void button4_Click(object sender, EventArgs e)

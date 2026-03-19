@@ -18,6 +18,7 @@ namespace WebSiteDev.ManagerForm
     {
         private DataManipulation dataManipulation;
         private string userRole;
+        public bool update = false;
 
         public OrderControl(string role)
         {
@@ -25,8 +26,6 @@ namespace WebSiteDev.ManagerForm
             userRole = role;
             GetDate();
         }
-
-        public bool update = false;
 
         private void OrderControl_Load(object sender, EventArgs e)
         {
@@ -38,7 +37,10 @@ namespace WebSiteDev.ManagerForm
 
             if (userRole == "Администратор")
             {
-
+                button5.Visible = false;
+                button1.Visible = false;
+                button2.Visible = false;
+                button7.Visible = false;
             }
         }
 
@@ -87,6 +89,10 @@ namespace WebSiteDev.ManagerForm
                 dataManipulation.FillComboBoxWithUsers(comboBox2, "Выберите сотрудника");
                 dataManipulation.FillComboBoxWithClients(comboBox3, "Выберите клиента");
                 dataManipulation.FillComboBoxWithProducts(comboBox4, "Выберите услугу");
+
+                MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM `Order`", con);
+                int resultcount = Convert.ToInt32(count.ExecuteScalar());
+                label1.Text = $"Количество записей: {resultcount}";
             }
         }
 
@@ -98,13 +104,13 @@ namespace WebSiteDev.ManagerForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1500);
+            FormControl.Resize(this.FindForm(), 1500);
             update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1175);
+            FormControl.Resize(this.FindForm(), 1175);
             update = true;
         }
 
@@ -112,6 +118,7 @@ namespace WebSiteDev.ManagerForm
         {
             AddOrderForm addOrderForm = new AddOrderForm(dataManipulation);
             addOrderForm.ShowDialog();
+            GetDate();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
