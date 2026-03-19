@@ -6,7 +6,6 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using WebSiteDev.AddForm;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace WebSiteDev.ManagerForm
 {
@@ -16,11 +15,15 @@ namespace WebSiteDev.ManagerForm
         private string userRole;
         public bool update = false;
         private Panel selectedCard;
+        private int editingProductID = -1;
 
         private Font nameFont = new Font("Comic Sans Serif", 18, FontStyle.Bold);
         private Font descFont = new Font("Comic Sans Serif", 12);
         private Font categoryFont = new Font("Comic Sans Serif", 12);
         private Font priceFont = new Font("Comic Sans Serif", 18, FontStyle.Bold);
+
+        public static int CurrentUserID { get; set; } = 0;
+        public static string CurrentUserName { get; set; } = "";
 
         public class OrderItem
         {
@@ -40,20 +43,7 @@ namespace WebSiteDev.ManagerForm
             {
                 Items.Clear();
             }
-
-            public static decimal GetTotal()
-            {
-                decimal total = 0;
-                foreach (OrderItem item in Items)
-                {
-                    total += (item.BasePrice * item.Quantity);
-                }
-                return total;
-            }
         }
-
-        public static int CurrentUserID { get; set; } = 0;
-        public static string CurrentUserName { get; set; } = "";
 
         public ProductControl(string role, int userID = 0, string userName = "")
         {
@@ -65,13 +55,6 @@ namespace WebSiteDev.ManagerForm
             GetDate();
             EnableLazyLoading();
             flowPanel.MouseWheel += flowPanel_MouseWheel;
-
-            if (button1 != null)
-            {
-                button1.Visible = false;
-                button1.Enabled = false;
-                button1.Text = "Просмотр заказа\n(0 товаров)";
-            }
         }
 
         private void ProductControl_Load(object sender, EventArgs e)
@@ -98,13 +81,12 @@ namespace WebSiteDev.ManagerForm
             {
                 con.Open();
                 string query = @"SELECT p.ProductID, p.ProductName, p.ProductDescription, p.ProductPhoto,
-                                        c.CategoryName AS Category, p.BasePrice
+                                        c.CategoryName AS Category, p.BasePrice, p.CategoryID
                                  FROM Product p
                                  JOIN Category c ON p.CategoryID = c.CategoryID;";
 
                 MySqlDataAdapter da = new MySqlDataAdapter(query, con);
                 DataTable dt = new DataTable();
-
                 da.Fill(dt);
 
                 dataManipulation = new DataManipulation(dt);
@@ -112,7 +94,7 @@ namespace WebSiteDev.ManagerForm
 
                 MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM Product", con);
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
-                label1.Text = $"Количество записей: {resultcount}";
+                label1.Text = "Количество записей: " + resultcount;
             }
         }
 
@@ -134,27 +116,21 @@ namespace WebSiteDev.ManagerForm
             pic.MouseDown += Card_MouseDown;
             card.Controls.Add(pic);
 
-            string productName = row["ProductName"].ToString();
-            Size nameSize = new Size(400, 70);
-            Label nameLabel = CreateLabel(productName, 285, 35, nameFont, nameSize);
-            nameLabel.MouseDown += Card_MouseDown;
-            card.Controls.Add(nameLabel);
+            Label label1 = CreateLabel(row["ProductName"].ToString(), 285, 35, nameFont, new Size(400, 70));
+            label1.MouseDown += Card_MouseDown;
+            card.Controls.Add(label1);
 
-            string productDescription = row["ProductDescription"].ToString();
-            Size descSize = new Size(400, 70);
-            Label descLabel = CreateLabel(productDescription, 285, 110, descFont, descSize);
-            descLabel.MouseDown += Card_MouseDown;
-            card.Controls.Add(descLabel);
+            Label label2 = CreateLabel(row["ProductDescription"].ToString(), 285, 110, descFont, new Size(400, 70));
+            label2.MouseDown += Card_MouseDown;
+            card.Controls.Add(label2);
 
-            string categoryText = "Категория: " + row["Category"];
-            Label categoryLabel = CreateLabel(categoryText, 285, 195, categoryFont);
-            categoryLabel.MouseDown += Card_MouseDown;
-            card.Controls.Add(categoryLabel);
+            Label label3 = CreateLabel("Категория: " + row["Category"], 285, 195, categoryFont);
+            label3.MouseDown += Card_MouseDown;
+            card.Controls.Add(label3);
 
-            string priceText = "Цена: " + row["BasePrice"] + " руб.";
-            Label priceLabel = CreateLabel(priceText, 285, 220, priceFont);
-            priceLabel.MouseDown += Card_MouseDown;
-            card.Controls.Add(priceLabel);
+            Label label4 = CreateLabel("Цена: " + row["BasePrice"] + " руб.", 285, 220, priceFont);
+            label4.MouseDown += Card_MouseDown;
+            card.Controls.Add(label4);
 
             if (userRole == "Менеджер")
             {
@@ -162,15 +138,269 @@ namespace WebSiteDev.ManagerForm
             }
             else
             {
-                var (btn1, btn2) = CreateButtons(row);
-                card.Controls.Add(btn1);
-                card.Controls.Add(btn2);
-                button1.Visible = false;
+                int productID = Convert.ToInt32(row["ProductID"]);
 
-                button2.FlatStyle = FlatStyle.Standard;
+                Button button1 = new Button
+                {
+                    Text = "Редактировать",
+                    Size = new Size(200, 50),
+                    Location = new Point(670, 240),
+                    BackColor = Color.FromArgb(45, 156, 219),
+                    FlatStyle = FlatStyle.Flat,
+                    ForeColor = Color.White,
+                    Tag = row
+                };
+                button1.Click += button8_Click;
+
+                Button button2 = new Button
+                {
+                    Text = "Удалить",
+                    Size = new Size(200, 50),
+                    Location = new Point(670, 180),
+                    BackColor = Color.FromArgb(45, 156, 219),
+                    FlatStyle = FlatStyle.Flat,
+                    ForeColor = Color.Red,
+                    Tag = productID
+                };
+                button2.Click += button7_Click;
+
+                card.Controls.Add(button1);
+                card.Controls.Add(button2);
             }
 
             return card;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            Button button = sender as Button;
+            DataRowView row = button.Tag as DataRowView;
+            Panel card = button.Parent as Panel;
+
+            int productID = Convert.ToInt32(row["ProductID"]);
+
+            if (editingProductID != -1)
+            {
+                MessageBox.Show("Уже редактируется другой товар! Завершите редактирование.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            editingProductID = productID;
+
+            Label label1 = card.Controls[1] as Label;
+            Label label2 = card.Controls[2] as Label;
+            Label label3 = card.Controls[3] as Label;
+
+            TextBox textBox1 = new TextBox
+            {
+                Text = label1.Text,
+                Location = new Point(285, 35),
+                Size = new Size(400, 30),
+                Font = nameFont,
+                MaxLength = 100
+            };
+
+            TextBox textBox2 = new TextBox
+            {
+                Text = label2.Text,
+                Location = new Point(285, 80),
+                Size = new Size(400, 70),
+                Font = descFont,
+                Multiline = true,
+                MaxLength = 500
+            };
+
+            string categoryName = label3.Text.Replace("Категория: ", "");
+
+            ComboBox comboBox1 = new ComboBox
+            {
+                Location = new Point(285, 160),
+                Size = new Size(200, 30),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                MaxDropDownItems = 6
+            };
+
+            for (int i = 0; i < dataManipulation.view.Count; i++)
+            {
+                string cat = dataManipulation.view[i]["Category"].ToString();
+                if (!comboBox1.Items.Contains(cat))
+                {
+                    comboBox1.Items.Add(cat);
+                }
+            }
+
+            for (int i = 0; i < comboBox1.Items.Count; i++)
+            {
+                if (comboBox1.Items[i].ToString() == categoryName)
+                {
+                    comboBox1.SelectedIndex = i;
+                    break;
+                }
+            }
+
+            TextBox textBox3 = new TextBox
+            {
+                Text = row["BasePrice"].ToString(),
+                Location = new Point(285, 215),
+                Size = new Size(100, 30),
+                Font = priceFont,
+                MaxLength = 6
+            };
+
+            Button button1 = new Button
+            {
+                Text = "Сохранить",
+                Size = new Size(150, 50),
+                Location = new Point(710, 240),
+                BackColor = Color.Green,
+                FlatStyle = FlatStyle.Flat,
+                ForeColor = Color.White,
+                Tag = new object[] { productID, textBox1, textBox2, comboBox1, textBox3, card }
+            };
+            button1.Click += button6_Click;
+
+            Button button2 = new Button
+            {
+                Text = "Отмена",
+                Size = new Size(150, 50),
+                Location = new Point(710, 180),
+                BackColor = Color.Gray,
+                FlatStyle = FlatStyle.Flat,
+                ForeColor = Color.White
+            };
+            button2.Click += button5_Click;
+
+            card.Controls.RemoveAt(1);
+            card.Controls.RemoveAt(1);
+            card.Controls.RemoveAt(1);
+            card.Controls.RemoveAt(1);
+
+            card.Controls[1].Visible = false;
+            card.Controls[2].Visible = false;
+
+            card.Controls.Add(textBox1);
+            card.Controls.Add(textBox2);
+            card.Controls.Add(comboBox1);
+            card.Controls.Add(textBox3);
+            card.Controls.Add(button1);
+            card.Controls.Add(button2);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            object[] data = btn.Tag as object[];
+
+            int productID = (int)data[0];
+            TextBox textBox1 = data[1] as TextBox;
+            TextBox textBox2 = data[2] as TextBox;
+            ComboBox comboBox1 = data[3] as ComboBox;
+            TextBox textBox3 = data[4] as TextBox;
+            Panel card = data[5] as Panel;
+
+            if (string.IsNullOrWhiteSpace(textBox1.Text) || string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox3.Text) || comboBox1.SelectedIndex < 0)
+            {
+                MessageBox.Show("Заполните все поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (textBox1.Text.Length < 3)
+            {
+                MessageBox.Show("Название услуги должно быть минимум 3 символа!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (textBox2.Text.Length < 10)
+            {
+                MessageBox.Show("Описание должно быть минимум 10 символов!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!decimal.TryParse(textBox3.Text, out decimal price))
+            {
+                MessageBox.Show("Цена должна быть числом!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (price <= 0)
+            {
+                MessageBox.Show("Цена должна быть больше нуля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DialogResult result = MessageBox.Show("Вы действительно хотите изменить услугу?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            string selectedCategoryName = comboBox1.SelectedItem.ToString();
+            int categoryID = 0;
+
+            for (int i = 0; i < dataManipulation.view.Count; i++)
+            {
+                if (dataManipulation.view[i]["Category"].ToString() == selectedCategoryName)
+                {
+                    categoryID = Convert.ToInt32(dataManipulation.view[i]["CategoryID"]);
+                    break;
+                }
+            }
+
+            if (categoryID == 0)
+            {
+                MessageBox.Show("Категория не найдена!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (DataUpdate.UpdateProduct(productID, textBox1.Text.Trim(), textBox2.Text.Trim(), categoryID, price))
+            {
+                MessageBox.Show("Услуга успешно изменена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                editingProductID = -1;
+                GetDate();
+                EnableLazyLoading();
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            editingProductID = -1;
+            GetDate();
+            EnableLazyLoading();
+        }
+
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            int productID = Convert.ToInt32(btn.Tag);
+
+            var result = MessageBox.Show("Вы действительно хотите удалить услугу?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+            {
+                try
+                {
+                    con.Open();
+                    MySqlCommand cmd = new MySqlCommand("DELETE FROM Product WHERE ProductID = " + productID, con);
+
+                    if (cmd.ExecuteNonQuery() > 0)
+                    {
+                        MessageBox.Show("Услуга удалена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        GetDate();
+                        EnableLazyLoading();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private PictureBox CreateProductImage(DataRowView row)
@@ -190,9 +420,9 @@ namespace WebSiteDev.ManagerForm
                 string imagePath = Path.Combine(projectPath, @"..\..\Images", photoName);
                 if (File.Exists(imagePath))
                 {
-                    using (var fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                    using (FileStream fs = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
                     {
-                        using (var img = Image.FromStream(fs))
+                        using (Image img = Image.FromStream(fs))
                         {
                             pic.Image = img.GetThumbnailImage(270, 270, null, IntPtr.Zero);
                         }
@@ -202,47 +432,22 @@ namespace WebSiteDev.ManagerForm
             return pic;
         }
 
-        private Label CreateLabel(string text, int x, int y, Font font, Size? size = null)
+        private Label CreateLabel(string text, int x, int y, Font font, Size size = default)
         {
             Label label = new Label
             {
                 Text = text,
                 Font = font,
                 Location = new Point(x, y),
-                AutoSize = size == null
+                AutoSize = size == default
             };
 
-            if (size.HasValue)
+            if (size != default)
             {
-                label.Size = size.Value;
+                label.Size = size;
             }
 
             return label;
-        }
-
-        private (Button, Button) CreateButtons(DataRowView row)
-        {
-            Button button1 = new Button
-            {
-                Text = "Редактировать",
-                Size = new Size(200, 50),
-                Location = new Point(670, 240),
-                BackColor = Color.FromArgb(45, 156, 219),
-                FlatStyle = FlatStyle.Flat,
-                ForeColor = Color.White
-            };
-
-            Button button2 = new Button
-            {
-                Text = "Удалить",
-                Size = new Size(200, 50),
-                Location = new Point(670, 180),
-                BackColor = Color.FromArgb(45, 156, 219),
-                FlatStyle = FlatStyle.Flat,
-                ForeColor = Color.Red
-            };
-
-            return (button1, button2);
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -311,7 +516,6 @@ namespace WebSiteDev.ManagerForm
                 Panel card = CreateProductCard(dataManipulation.view[currentIndex]);
                 flowPanel.Controls.Add(card);
                 currentIndex++;
-
                 count++;
             }
 
@@ -322,7 +526,6 @@ namespace WebSiteDev.ManagerForm
         {
             currentIndex = 0;
             flowPanel.Controls.Clear();
-
             LoadNextBatch();
         }
 
@@ -365,106 +568,111 @@ namespace WebSiteDev.ManagerForm
 
         public void UpdateOrderButtonVisibility()
         {
-            if (button1 != null)
+            if (button1 == null)
             {
-                button1.ForeColor = Color.White;
-                button1.BackColor = Color.FromArgb(45, 156, 219);
-                int totalQuantity = 0;
-
-                foreach (var item in CurrentOrder.Items)
-                {
-                    totalQuantity += item.Quantity;
-                }
-
-                button1.Visible = totalQuantity > 0;
-
-                string wordEnding = GetWordEnding(totalQuantity);
-                button1.Text = $"Просмотр заказа\n({totalQuantity} {wordEnding})";
-                button1.Enabled = totalQuantity > 0;
+                return;
             }
+
+            button1.ForeColor = Color.White;
+            button1.BackColor = Color.FromArgb(45, 156, 219);
+
+            int totalQuantity = 0;
+            foreach (OrderItem item in CurrentOrder.Items)
+            {
+                totalQuantity += item.Quantity;
+            }
+
+            button1.Visible = totalQuantity > 0;
+
+            string wordEnding = GetWordEnding(totalQuantity);
+            button1.Text = "Просмотр заказа\n(" + totalQuantity + " " + wordEnding + ")";
+            button1.Enabled = totalQuantity > 0;
         }
 
         private void Card_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            if (e.Button != MouseButtons.Right)
             {
-                if (userRole != "Менеджер")
-                {
-                    return;
-                }
+                return;
+            }
 
-                Control control = sender as Control;
-                Panel card = null;
+            if (userRole != "Менеджер")
+            {
+                return;
+            }
 
-                if (control is Panel)
-                {
-                    card = control as Panel;
-                }
-                else
-                {
-                    card = control.Parent as Panel;
-                }
+            Control control = sender as Control;
+            Panel card = control as Panel;
 
-                if (card != null && card.Tag is int)
-                {
-                    selectedCard = card;
-                    contextMenuStrip1.Show(Control.MousePosition);
-                }
+            if (card == null)
+            {
+                card = control.Parent as Panel;
+            }
+
+            if (card != null && card.Tag is int)
+            {
+                selectedCard = card;
+                contextMenuStrip1.Show(Control.MousePosition);
             }
         }
 
         private void contextMenuStrip1_Click(object sender, EventArgs e)
         {
-            if (selectedCard != null && selectedCard.Tag is int)
+            if (selectedCard == null)
             {
-                int productID = Convert.ToInt32(selectedCard.Tag);
+                return;
+            }
 
-                DataRowView row = null;
-                foreach (DataRowView drv in dataManipulation.view)
+            int productID = Convert.ToInt32(selectedCard.Tag);
+
+            DataRowView row = null;
+            for (int i = 0; i < dataManipulation.view.Count; i++)
+            {
+                if (Convert.ToInt32(dataManipulation.view[i]["ProductID"]) == productID)
                 {
-                    if (Convert.ToInt32(drv["ProductID"]) == productID)
-                    {
-                        row = drv;
-                        break;
-                    }
+                    row = dataManipulation.view[i];
+                    break;
                 }
+            }
 
-                if (row != null)
+            if (row == null)
+            {
+                return;
+            }
+
+            string productName = row["ProductName"].ToString();
+            decimal basePrice = Convert.ToDecimal(row["BasePrice"]);
+
+            OrderItem existingItem = null;
+            for (int i = 0; i < CurrentOrder.Items.Count; i++)
+            {
+                if (CurrentOrder.Items[i].ProductID == productID)
                 {
-                    string productName = row["ProductName"].ToString();
-                    decimal basePrice = Convert.ToDecimal(row["BasePrice"]);
-
-                    OrderItem existingItem = null;
-                    foreach (OrderItem item in CurrentOrder.Items)
-                    {
-                        if (item.ProductID == productID)
-                        {
-                            existingItem = item;
-                            break;
-                        }
-                    }
-
-                    if (existingItem == null)
-                    {
-                        OrderItem newItem = new OrderItem();
-                        newItem.ProductID = productID;
-                        newItem.ProductName = productName;
-                        newItem.BasePrice = basePrice;
-                        newItem.CategoryName = row["Category"].ToString();
-                        newItem.Quantity = 1;
-                        newItem.ProductPhoto = row["ProductPhoto"].ToString();
-
-                        CurrentOrder.Items.Add(newItem);
-                        UpdateOrderButtonVisibility();
-
-                        contextMenuStrip1.Close();                  
-                    }
-                    else
-                    {
-                        contextMenuStrip1.Close();
-                        MessageBox.Show($"Товар \"{productName}\" уже в корзине.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                    existingItem = CurrentOrder.Items[i];
+                    break;
                 }
+            }
+
+            if (existingItem == null)
+            {
+                OrderItem newItem = new OrderItem
+                {
+                    ProductID = productID,
+                    ProductName = productName,
+                    BasePrice = basePrice,
+                    CategoryName = row["Category"].ToString(),
+                    Quantity = 1,
+                    ProductPhoto = row["ProductPhoto"].ToString()
+                };
+
+                CurrentOrder.Items.Add(newItem);
+                UpdateOrderButtonVisibility();
+                contextMenuStrip1.Close();
+            }
+            else
+            {
+                contextMenuStrip1.Close();
+                MessageBox.Show("Товар \"" + productName + "\" уже в корзине.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -472,7 +680,6 @@ namespace WebSiteDev.ManagerForm
         {
             CurrentOrder.Clear();
             UpdateOrderButtonVisibility();
-            var managerForm = this.FindForm() as ManagerMainForm;
         }
 
         private void button1_Click(object sender, EventArgs e)

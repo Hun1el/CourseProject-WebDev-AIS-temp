@@ -1,14 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebSiteDev.AddForm;
 
@@ -17,6 +9,9 @@ namespace WebSiteDev.AdminForm
     public partial class CategoryControl : UserControl
     {
         private DataManipulation dataManipulation;
+        public bool update = false;
+        private int selectedCategoryID = -1;
+        private int selectedRowIndex = -1;
 
         public CategoryControl()
         {
@@ -24,11 +19,10 @@ namespace WebSiteDev.AdminForm
             GetDate();
         }
 
-        public bool update = false;
-
         private void CategoryControl_Load(object sender, EventArgs e)
         {
             comboBox3.SelectedIndex = 0;
+            dataGridView1.ClearSelection();
         }
 
         public void GetDate()
@@ -106,6 +100,44 @@ namespace WebSiteDev.AdminForm
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyRussian(e);
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selectedRowIndex = e.RowIndex;
+                selectedCategoryID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["CategoryID"].Value);
+                textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["CategoryName"].Value.ToString();
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (selectedCategoryID == -1 || string.IsNullOrWhiteSpace(textBox2.Text))
+            {
+                MessageBox.Show("Выберите категорию!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите изменить категорию?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataUpdate.UpdateCategory(selectedCategoryID, textBox2.Text.Trim()))
+            {
+                MessageBox.Show("Категория изменена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GetDate();
+
+                if (selectedRowIndex >= 0 && selectedRowIndex < dataGridView1.Rows.Count)
+                {
+                    dataGridView1.Rows[selectedRowIndex].Selected = true;
+                    textBox2.Text = dataGridView1.Rows[selectedRowIndex].Cells["CategoryName"].Value.ToString();
+                }
+            }
         }
     }
 }

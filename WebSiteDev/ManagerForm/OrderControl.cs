@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using WebSiteDev.AddForm;
 
 namespace WebSiteDev.ManagerForm
@@ -14,6 +15,8 @@ namespace WebSiteDev.ManagerForm
         private DataManipulation dataManipulation;
         private string userRole;
         public bool update = false;
+        private int selectedOrderID = -1;
+        private string currentStatus = "";
 
         public static int CurrentUserID { get; set; } = 0;
         public static string CurrentUserName { get; set; } = "";
@@ -29,10 +32,10 @@ namespace WebSiteDev.ManagerForm
 
         private void OrderControl_Load(object sender, EventArgs e)
         {
+            dataGridView1.ClearSelection();
             comboBox1.SelectedIndex = 0;
             comboBox6.SelectedIndex = 0;
             DateTime dateTimeNow = DateTime.Now;
-            maskedTextBox1.Text = dateTimeNow.ToString("yyyy.MM.dd");
             dateTimePicker1.CustomFormat = "yyyy.MM.dd";
 
             dataGridView1.ContextMenuStrip = contextMenuStrip1;
@@ -88,9 +91,6 @@ namespace WebSiteDev.ManagerForm
 
                 dataManipulation.FillComboBoxWithStatuses(comboBox6, "Статус не выбран");
                 dataManipulation.FillComboBoxWithStatuses(comboBox5, "Выберите статус");
-                dataManipulation.FillComboBoxWithUsers(comboBox2, "Выберите сотрудника");
-                dataManipulation.FillComboBoxWithClients(comboBox3, "Выберите клиента");
-                dataManipulation.FillComboBoxWithProducts(comboBox4, "Выберите услугу");
 
                 MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM `Order`", con);
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
@@ -138,7 +138,7 @@ namespace WebSiteDev.ManagerForm
             managerForm.LoadControl(new ProductControl(userRole, CurrentUserID, CurrentUserName));
             managerForm.Text = "Оформление заказа";
 
-            SelectButton(button2, managerForm);
+            managerForm.SelectButtonPublic(managerForm.Button2);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -190,9 +190,147 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
-        private void SelectButton(Button button, ManagerMainForm managerForm)
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            managerForm.SelectButtonPublic(button);
+            if (e.RowIndex >= 0)
+            {
+                selectedOrderID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value);
+                currentStatus = dataGridView1.Rows[e.RowIndex].Cells["StatusName"].Value.ToString();
+
+                try
+                {
+                    DateTime orderDate = Convert.ToDateTime(dataGridView1.Rows[e.RowIndex].Cells["OrderCompDate"].Value);
+                    dateTimePicker1.MinDate = orderDate;
+                    dateTimePicker1.Value = orderDate;
+                }
+                catch
+                {
+                    dateTimePicker1.MinDate = DateTime.Now;
+                    dateTimePicker1.Value = DateTime.Now;
+                }
+
+                string[] statuses = null;
+
+                if (currentStatus == "Новый")
+                {
+                    statuses = new string[] { "Новый", "В работе", "Отменён" };
+                }
+                else if (currentStatus == "В работе")
+                {
+                    statuses = new string[] { "В работе", "Завершён", "Отменён" };
+                }
+                else if (currentStatus == "Завершён" || currentStatus == "Отменён")
+                {
+                    statuses = new string[] { currentStatus };
+                }
+
+                if (statuses != null && statuses.Length > 0)
+                {
+                    comboBox5.DataSource = null;
+                    comboBox5.DataSource = statuses;
+                    comboBox5.SelectedIndex = 0;
+                }
+
+                bool isEditable = !(currentStatus == "Завершён" || currentStatus == "Отменён");
+                comboBox5.Enabled = isEditable;
+                dateTimePicker1.Enabled = isEditable;
+                button6.Enabled = isEditable;
+            }
+        }
+
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (selectedOrderID == -1)
+            {
+                MessageBox.Show("Выберите заказ!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string newStatus = comboBox5.SelectedItem.ToString();
+            DateTime newDate = dateTimePicker1.Value;
+
+            if (currentStatus == "Отменён" || currentStatus == "Завершён")
+            {
+                MessageBox.Show("Данный заказ нельзя редактировать!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if ((currentStatus == "Новый" && (newStatus != "В работе" && newStatus != "Отменён" && newStatus != "Новый")) ||
+                (currentStatus == "В работе" && (newStatus != "Завершён" && newStatus != "Отменён" && newStatus != "В работе")))
+            {
+                MessageBox.Show("Недопустимый переход статуса!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите изменить заказ?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataUpdate.UpdateOrderStatusAndDate(selectedOrderID, newStatus, newDate))
+            {
+                MessageBox.Show("Заказ успешно обновлён!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GetDate();
+
+                for (int i = 0; i < dataGridView1.Rows.Count; i++)
+                {
+                    if (Convert.ToInt32(dataGridView1.Rows[i].Cells["OrderID"].Value) == selectedOrderID)
+                    {
+                        dataGridView1.Rows[i].Selected = true;
+
+                        // Заполняем поля из новых данных таблицы
+                        currentStatus = dataGridView1.Rows[i].Cells["StatusName"].Value.ToString();
+
+                        try
+                        {
+                            DateTime orderDate = Convert.ToDateTime(dataGridView1.Rows[i].Cells["OrderCompDate"].Value);
+                            dateTimePicker1.MinDate = orderDate;
+                            dateTimePicker1.Value = orderDate;
+                        }
+                        catch
+                        {
+                            dateTimePicker1.MinDate = DateTime.Now;
+                            dateTimePicker1.Value = DateTime.Now;
+                        }
+
+                        string[] statuses = null;
+
+                        if (currentStatus == "Новый")
+                        {
+                            statuses = new string[] { "Новый", "В работе", "Отменён" };
+                        }
+                        else if (currentStatus == "В работе")
+                        {
+                            statuses = new string[] { "В работе", "Завершён", "Отменён" };
+                        }
+                        else if (currentStatus == "Завершён" || currentStatus == "Отменён")
+                        {
+                            statuses = new string[] { currentStatus };
+                        }
+
+                        if (statuses != null && statuses.Length > 0)
+                        {
+                            comboBox5.DataSource = null;
+                            comboBox5.DataSource = statuses;
+                            comboBox5.SelectedIndex = 0;
+                        }
+
+                        bool isEditable = !(currentStatus == "Завершён" || currentStatus == "Отменён");
+                        comboBox5.Enabled = isEditable;
+                        dateTimePicker1.Enabled = isEditable;
+                        button6.Enabled = isEditable;
+
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Ошибка обновления.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

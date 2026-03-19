@@ -13,6 +13,11 @@ namespace WebSiteDev.ManagerForm
         private Button currentSelectedButton = null;
         private UserControl currentControl = null;
 
+        public Button Button2
+        {
+            get { return button2; }
+        }
+
         public ManagerMainForm(string fullName, string roleName, int userID)
         {
             InitializeComponent();

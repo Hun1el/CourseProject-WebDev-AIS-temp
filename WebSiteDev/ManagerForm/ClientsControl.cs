@@ -18,18 +18,20 @@ namespace WebSiteDev.ManagerForm
     public partial class ClientsControl : UserControl
     {
         private DataManipulation dataManipulation;
+        public bool update = false;
+        private int selectedClientID = -1;
 
         public ClientsControl()
         {
             InitializeComponent();
             GetDate();
         }
-        public bool update = false;
 
         private void ClientsControl_Load(object sender, EventArgs e)
         {
             comboBox3.SelectedIndex = 0;
             comboBox2.SelectedIndex = 0;
+            dataGridView1.ClearSelection();
         }
 
         void GetDate()
@@ -140,6 +142,114 @@ namespace WebSiteDev.ManagerForm
         private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.EmailInput(e);
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selectedClientID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ClientID"].Value);
+                textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["Surname"].Value.ToString();
+                textBox3.Text = dataGridView1.Rows[e.RowIndex].Cells["FirstName"].Value.ToString();
+                textBox4.Text = dataGridView1.Rows[e.RowIndex].Cells["MiddleName"].Value.ToString();
+                maskedTextBox1.Text = dataGridView1.Rows[e.RowIndex].Cells["PhoneNumber"].Value.ToString();
+
+                string email = dataGridView1.Rows[e.RowIndex].Cells["Email"].Value.ToString();
+
+                if (email.Contains("@"))
+                {
+                    string[] emailParts = email.Split('@');
+                    textBox5.Text = emailParts[0];
+
+                    string domain = emailParts[1];
+                    int domainIndex = comboBox2.FindString(domain);
+
+                    if (domainIndex >= 0)
+                    {
+                        comboBox2.SelectedIndex = domainIndex;
+                    }
+                    else
+                    {
+                        comboBox2.Items.Add(domain);
+                        comboBox2.SelectedItem = domain;
+                    }
+                }
+                else
+                {
+                    textBox5.Text = email;
+                    comboBox2.SelectedIndex = 0;
+                }
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (selectedClientID == -1 || string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox3.Text) || string.IsNullOrWhiteSpace(textBox5.Text) || comboBox2.SelectedIndex < 0)
+            {
+                MessageBox.Show("Заполните все поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string phone = maskedTextBox1.Text;
+            string domain = comboBox2.SelectedItem.ToString();
+            string fullEmail = $"{textBox5.Text}@{domain}";
+
+            var result = MessageBox.Show("Вы действительно хотите изменить клиента?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataUpdate.UpdateClient(selectedClientID, textBox2.Text.Trim(), textBox3.Text.Trim(), textBox4.Text.Trim(), phone, fullEmail))
+            {
+                MessageBox.Show("Клиент успешно изменён!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GetDate();
+
+                DataGridViewRow foundRow = null;
+
+                for (int i = 0; i < dataGridView1.Rows.Count; i++)
+                {
+                    if (Convert.ToInt32(dataGridView1.Rows[i].Cells["ClientID"].Value) == selectedClientID)
+                    {
+                        foundRow = dataGridView1.Rows[i];
+                        break;
+                    }
+                }
+
+                if (foundRow != null)
+                {
+                    foundRow.Selected = true;
+                    string email = foundRow.Cells["Email"].Value.ToString();
+
+                    if (email.Contains("@"))
+                    {
+                        string[] emailParts = email.Split('@');
+                        textBox5.Text = emailParts[0];
+
+                        string domain2 = emailParts[1];
+                        int domainIndex = comboBox2.FindString(domain2);
+
+                        if (domainIndex >= 0)
+                        {
+                            comboBox2.SelectedIndex = domainIndex;
+                        }
+                        else
+                        {
+                            if (!comboBox2.Items.Contains(domain2))
+                            {
+                                comboBox2.Items.Add(domain2);
+                            }
+                            comboBox2.SelectedItem = domain2;
+                        }
+                    }
+
+                    textBox2.Text = foundRow.Cells["Surname"].Value.ToString();
+                    textBox3.Text = foundRow.Cells["FirstName"].Value.ToString();
+                    textBox4.Text = foundRow.Cells["MiddleName"].Value.ToString();
+                    maskedTextBox1.Text = foundRow.Cells["PhoneNumber"].Value.ToString();
+                }
+            }
         }
     }
 }
