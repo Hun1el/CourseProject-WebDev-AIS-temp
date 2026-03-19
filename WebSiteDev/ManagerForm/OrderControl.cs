@@ -81,6 +81,12 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["OrderCost"].HeaderText = "Итоговая цена";
 
                 dataManipulation = new DataManipulation(dt);
+
+                dataManipulation.FillComboBoxWithStatuses(comboBox6, "Статус не выбран");
+                dataManipulation.FillComboBoxWithStatuses(comboBox5, "Выберите статус");
+                dataManipulation.FillComboBoxWithUsers(comboBox2, "Выберите сотрудника");
+                dataManipulation.FillComboBoxWithClients(comboBox3, "Выберите клиента");
+                dataManipulation.FillComboBoxWithProducts(comboBox4, "Выберите услугу");
             }
         }
 
@@ -92,42 +98,19 @@ namespace WebSiteDev.ManagerForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1500, true);
+            FormResizer.Resize(this.FindForm(), 1500);
+            update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1175, true);
-        }
-
-        private void ResizeParentForm(int newWidth, bool updateFlag)
-        {
-            var parentForm = this.FindForm();
-            if (parentForm == null)
-            {
-                return;
-            }
-
-            parentForm.SuspendLayout();
-
-            int delta = newWidth - parentForm.Width;
-            parentForm.Width = newWidth;
-
-            var panelRight = parentForm.Controls["panel2"];
-            if (panelRight != null)
-            {
-                panelRight.Width += delta;
-            }
-
-            parentForm.ResumeLayout();
-            parentForm.Invalidate();
-
-            update = updateFlag;
+            FormResizer.Resize(this.FindForm(), 1175);
+            update = true;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            AddOrderForm addOrderForm = new AddOrderForm();
+            AddOrderForm addOrderForm = new AddOrderForm(dataManipulation);
             addOrderForm.ShowDialog();
         }
 

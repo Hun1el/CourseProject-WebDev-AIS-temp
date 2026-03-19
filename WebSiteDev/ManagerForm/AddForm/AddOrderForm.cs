@@ -12,9 +12,17 @@ namespace WebSiteDev.AddForm
 {
     public partial class AddOrderForm : Form
     {
-        public AddOrderForm()
+        private DataManipulation dataManipulation;
+
+        public AddOrderForm(DataManipulation dm)
         {
             InitializeComponent();
+
+            dataManipulation = dm;
+            dataManipulation.FillComboBoxWithUsers(comboBox1, "Выберите сотрудника");
+            dataManipulation.FillComboBoxWithClients(comboBox2, "Выберите клиента");
+            dataManipulation.FillComboBoxWithProducts(comboBox3, "Выберите услугу");
+            dataManipulation.FillComboBoxWithProducts(comboBox4, "Выберите статус");
         }
 
         private void AddOrderForm_Load(object sender, EventArgs e)

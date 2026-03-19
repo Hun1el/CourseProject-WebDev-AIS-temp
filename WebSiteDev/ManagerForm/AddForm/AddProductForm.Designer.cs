@@ -37,7 +37,7 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
@@ -89,6 +89,7 @@
             this.button2.TabIndex = 52;
             this.button2.Text = "Добавить";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -113,10 +114,11 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.pictureBox1.Location = new System.Drawing.Point(16, 223);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(130, 130);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 55;
             this.pictureBox1.TabStop = false;
             // 
@@ -129,14 +131,16 @@
             this.label1.TabIndex = 56;
             this.label1.Text = "Фото";
             // 
-            // comboBox2
+            // comboBox1
             // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(117, 119);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(237, 32);
-            this.comboBox2.TabIndex = 57;
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.IntegralHeight = false;
+            this.comboBox1.Location = new System.Drawing.Point(117, 119);
+            this.comboBox1.MaxDropDownItems = 6;
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(237, 32);
+            this.comboBox1.TabIndex = 57;
             // 
             // textBox3
             // 
@@ -164,6 +168,7 @@
             this.button3.TabIndex = 60;
             this.button3.Text = "Загрузить фото";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // AddProductForm
             // 
@@ -174,7 +179,7 @@
             this.Controls.Add(this.button3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.textBox2);
@@ -208,7 +213,7 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button3;

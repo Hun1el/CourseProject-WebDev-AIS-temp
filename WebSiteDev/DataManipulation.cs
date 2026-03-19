@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
@@ -14,9 +15,85 @@ public class DataManipulation
         data = table;
         view = data.DefaultView;
     }
-    public DataTable Table
+
+    public void FillComboBox(ComboBox combo, string firstItem, List<string> items)
     {
-        get { return data; }
+        combo.Items.Clear();
+        if (!string.IsNullOrEmpty(firstItem))
+        {
+            combo.Items.Add(firstItem);
+        }
+
+        if (items != null && items.Count > 0)
+        {
+            items.Sort();
+            foreach (var item in items)
+            {
+                combo.Items.Add(item);
+            }
+        }
+
+        combo.SelectedIndex = 0;
+    }
+
+    public List<string> GetListFromQuery(string query, string columnName)
+    {
+        List<string> list = new List<string>();
+
+        using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+        {
+            con.Open();
+            MySqlCommand cmd = new MySqlCommand(query, con);
+
+            using (MySqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    if (!reader.IsDBNull(reader.GetOrdinal(columnName)))
+                    {
+                        list.Add(reader.GetString(columnName));
+                    }
+                }
+            }
+        }
+
+        return list;
+    }
+
+    public void FillComboBoxWithRoles(ComboBox combo, string firstItem)
+    {
+        var roles = GetListFromQuery("SELECT RoleName FROM Role", "RoleName");
+        FillComboBox(combo, firstItem, roles);
+    }
+
+    public void FillComboBoxWithCategories(ComboBox combo, string firstItem)
+    {
+        var categories = GetListFromQuery("SELECT CategoryName FROM Category", "CategoryName");
+        FillComboBox(combo, firstItem, categories);
+    }
+
+    public void FillComboBoxWithStatuses(ComboBox combo, string firstItem)
+    {
+        var statuses = GetListFromQuery("SELECT StatusName FROM Status", "StatusName");
+        FillComboBox(combo, firstItem, statuses);
+    }
+
+    public void FillComboBoxWithUsers(ComboBox combo, string firstItem)
+    {
+        var products = GetListFromQuery("SELECT ProductName FROM Product", "ProductName");
+        FillComboBox(combo, firstItem, products);
+    }
+
+    public void FillComboBoxWithClients(ComboBox combo, string firstItem)
+    {
+        var users = GetListFromQuery(@"SELECT CONCAT(IFNULL(Surname,''), ' ', IFNULL(FirstName,''), ' ', IFNULL(MiddleName,'')) AS FullName FROM Users", "FullName");
+        FillComboBox(combo, firstItem, users);
+    }
+
+    public void FillComboBoxWithProducts(ComboBox combo, string firstItem)
+    {
+        var clients = GetListFromQuery(@"SELECT CONCAT(IFNULL(Surname,''), ' ', IFNULL(FirstName,''), ' ', IFNULL(MiddleName,'')) AS FullName FROM Clients", "FullName");
+        FillComboBox(combo, firstItem, clients);
     }
 
     // Методы для применения всех функций
@@ -189,8 +266,8 @@ public class DataManipulation
 
         if (comboFilter.SelectedIndex > 0)
         {
-            string selectedCategory = comboFilter.SelectedItem.ToString().Replace("'", "''");
-            filters.Add($"RoleName = '{selectedCategory}'");
+            string selectedRole = comboFilter.SelectedItem.ToString().Replace("'", "''");
+            filters.Add($"RoleName = '{selectedRole}'");
         }
 
         string currentSearch = view.RowFilter;

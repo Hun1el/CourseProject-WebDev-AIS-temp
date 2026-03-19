@@ -27,6 +27,7 @@ namespace WebSiteDev.ManagerForm
         {
             label2.Text = $"Сотрудник: {fullName}";
             label3.Text = $"Доступ: {roleName}";
+            
         }
 
         private void LoadControl(UserControl control)

@@ -29,6 +29,7 @@ namespace WebSiteDev.ManagerForm
         private void ClientsControl_Load(object sender, EventArgs e)
         {
             comboBox3.SelectedIndex = 0;
+            comboBox2.SelectedIndex = 0;
         }
 
         void GetDate()
@@ -65,39 +66,15 @@ namespace WebSiteDev.ManagerForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1500, true);
+            FormResizer.Resize(this.FindForm(), 1500);
+            update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1175, true);
+            FormResizer.Resize(this.FindForm(), 1175);
+            update = true;
         }
-
-        private void ResizeParentForm(int newWidth, bool updateFlag)
-        {
-            var parentForm = this.FindForm();
-            if (parentForm == null)
-            {
-                return;
-            }
-
-            parentForm.SuspendLayout();
-
-            int delta = newWidth - parentForm.Width;
-            parentForm.Width = newWidth;
-
-            var panelRight = parentForm.Controls["panel2"];
-            if (panelRight != null)
-            {
-                panelRight.Width += delta;
-            }
-
-            parentForm.ResumeLayout();
-            parentForm.Invalidate();
-
-            update = updateFlag;
-        }
-
         private void maskedTextBox1_Enter(object sender, EventArgs e)
         {
             maskedTextBox1.SelectionStart = 4;

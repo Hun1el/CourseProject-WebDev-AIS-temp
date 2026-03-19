@@ -13,9 +13,14 @@ namespace WebSiteDev.AddForm
 {
     public partial class AddUsersForm : Form
     {
-        public AddUsersForm()
+        private DataManipulation dataManipulation;
+
+        public AddUsersForm(DataManipulation dm)
         {
             InitializeComponent();
+
+            dataManipulation = dm;
+            dataManipulation.FillComboBoxWithRoles(comboBox1, "Выберите роль");
         }
 
         private void button1_Click(object sender, EventArgs e)
