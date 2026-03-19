@@ -179,9 +179,9 @@
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label6.Location = new System.Drawing.Point(780, 5);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(101, 20);
+            this.label6.Size = new System.Drawing.Size(198, 20);
             this.label6.TabIndex = 61;
-            this.label6.Text = "Сделать до";
+            this.label6.Text = "Срок выполнения заказа";
             // 
             // dateTimePicker1
             // 

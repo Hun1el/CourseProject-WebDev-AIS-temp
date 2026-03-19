@@ -19,6 +19,11 @@ namespace WebSiteDev.AdminForm
             GetDate();
         }
 
+        private void RoleControl_Load(object sender, EventArgs e)
+        {
+            dataGridView1.ClearSelection();
+        }
+
         void GetDate()
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -56,12 +61,14 @@ namespace WebSiteDev.AdminForm
         {
             FormControl.Resize(this.FindForm(), 1500);
             update = true;
+            button1.Enabled = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             FormControl.Resize(this.FindForm(), 1175);
             update = true;
+            button1.Enabled = true;
         }
 
         private void button2_Click(object sender, EventArgs e)

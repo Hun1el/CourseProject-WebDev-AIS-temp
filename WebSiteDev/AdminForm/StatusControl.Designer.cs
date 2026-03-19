@@ -128,10 +128,10 @@ namespace WebSiteDev.AdminForm
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(557, 57);
+            this.textBox2.Location = new System.Drawing.Point(506, 75);
             this.textBox2.MaxLength = 30;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(156, 20);
             this.textBox2.TabIndex = 20;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);

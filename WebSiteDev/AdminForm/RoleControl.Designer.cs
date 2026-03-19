@@ -128,10 +128,10 @@ namespace WebSiteDev.AdminForm
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(559, 57);
+            this.textBox2.Location = new System.Drawing.Point(505, 75);
             this.textBox2.MaxLength = 30;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(156, 20);
             this.textBox2.TabIndex = 20;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
@@ -204,6 +204,7 @@ namespace WebSiteDev.AdminForm
             this.Controls.Add(this.dataGridView1);
             this.Name = "RoleControl";
             this.Size = new System.Drawing.Size(675, 371);
+            this.Load += new System.EventHandler(this.RoleControl_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

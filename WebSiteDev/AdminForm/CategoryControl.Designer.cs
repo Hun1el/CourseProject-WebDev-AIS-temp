@@ -130,10 +130,10 @@ namespace WebSiteDev.AdminForm
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(559, 57);
+            this.textBox2.Location = new System.Drawing.Point(505, 75);
             this.textBox2.MaxLength = 45;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(156, 20);
             this.textBox2.TabIndex = 20;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
@@ -141,7 +141,7 @@ namespace WebSiteDev.AdminForm
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(502, 59);
+            this.label3.Location = new System.Drawing.Point(504, 59);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(60, 13);
             this.label3.TabIndex = 21;
@@ -190,7 +190,7 @@ namespace WebSiteDev.AdminForm
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(312, 18);
+            this.label10.Location = new System.Drawing.Point(286, 18);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(67, 13);
             this.label10.TabIndex = 44;
@@ -204,9 +204,9 @@ namespace WebSiteDev.AdminForm
             "Сортировка не выбрана",
             "От А до Я",
             "От Я до А"});
-            this.comboBox3.Location = new System.Drawing.Point(315, 32);
+            this.comboBox3.Location = new System.Drawing.Point(289, 32);
             this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(115, 21);
+            this.comboBox3.Size = new System.Drawing.Size(141, 21);
             this.comboBox3.TabIndex = 43;
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
             // 

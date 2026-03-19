@@ -183,52 +183,5 @@ namespace WebSiteDev
                 }
             }
         }
-
-        //public static bool DeleteOrder(int orderID)
-        //{
-        //    using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
-        //    {
-        //        try
-        //        {
-        //            con.Open();
-
-        //            MySqlCommand GetStatus = new MySqlCommand("SELECT s.StatusName FROM `Order` o " +
-        //                "JOIN Status s ON o.StatusID = s.StatusID " +
-        //                "WHERE o.OrderID = " + orderID, con);
-
-        //            object StatusObject = GetStatus.ExecuteScalar();
-        //            string Status = "";
-
-        //            if (StatusObject != null)
-        //            {
-        //                Status = StatusObject.ToString();
-        //            }
-
-        //            if (Status == "Завершён")
-        //            {
-        //                MessageBox.Show("Нельзя удалить завершённый заказ!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //                return false;
-        //            }
-
-        //            if (Status == "Отменён")
-        //            {
-        //                MessageBox.Show("Нельзя удалить отменённый заказ!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //                return false;
-        //            }
-
-        //            MySqlCommand DeleteOrderProducts = new MySqlCommand("DELETE FROM orderproduct WHERE OrderID = " + orderID, con);
-        //            DeleteOrderProducts.ExecuteNonQuery();
-
-        //            MySqlCommand cmd = new MySqlCommand("DELETE FROM `Order` WHERE OrderID = " + orderID, con);
-
-        //            return cmd.ExecuteNonQuery() > 0;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show("Ошибка: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            return false;
-        //        }
-        //    }
-        //}
     }
 }

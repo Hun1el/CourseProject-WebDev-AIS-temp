@@ -88,12 +88,14 @@ namespace WebSiteDev.AdminForm
         {
             FormControl.Resize(this.FindForm(), 1500);
             update = true;
+            button1.Enabled = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             FormControl.Resize(this.FindForm(), 1175);
             update = true;
+            button1.Enabled = true;
         }
 
         private void maskedTextBox1_Enter(object sender, EventArgs e)
@@ -204,6 +206,15 @@ namespace WebSiteDev.AdminForm
 
                 int roleID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["RoleID"].Value);
                 comboBox2.SelectedValue = roleID;
+
+                if (selectedUserID == currentUserID)
+                {
+                    comboBox2.Enabled = false;
+                }
+                else
+                {
+                    comboBox2.Enabled = true;
+                }
             }
         }
 
@@ -211,7 +222,7 @@ namespace WebSiteDev.AdminForm
         {
             if (selectedUserID == -1 || string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox5.Text) || comboBox2.SelectedIndex == 0)
             {
-                MessageBox.Show("Заполните все поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Выберите пользователя!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

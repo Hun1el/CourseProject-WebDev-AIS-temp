@@ -553,10 +553,9 @@ namespace WebSiteDev
                         string discountStr = discount.ToString().Replace(",", ".");
                         string surchargeStr = surcharge.ToString().Replace(",", ".");
 
-                        string insertOrderQuery = "INSERT INTO `Order` (UserID, ClientID, OrderDate, OrderCompDate, ProductID, StatusID, OrderCost, Discount, Surcharge) " +
+                        string insertOrderQuery = "INSERT INTO `Order` (UserID, ClientID, OrderDate, OrderCompDate, StatusID, OrderCost, Discount, Surcharge) " +
                         "VALUES (" + userID + ", " + clientID + ", '" + orderDate.ToString("yyyy-MM-dd") + "', '" +
-                        orderCompDate.ToString("yyyy-MM-dd") + "', " + ProductControl.CurrentOrder.Items[0].ProductID +
-                        ", 1, " + totalCostStr + ", " + discountStr + ", " + surchargeStr + ")";
+                        orderCompDate.ToString("yyyy-MM-dd") + "', 1, " + totalCostStr + ", " + discountStr + ", " + surchargeStr + ")";
 
                         MySqlCommand cmdOrder = new MySqlCommand(insertOrderQuery, con, transaction);
                         cmdOrder.ExecuteNonQuery();

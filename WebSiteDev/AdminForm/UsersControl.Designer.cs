@@ -159,10 +159,10 @@ namespace WebSiteDev.AdminForm
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(557, 57);
+            this.textBox2.Location = new System.Drawing.Point(507, 26);
             this.textBox2.MaxLength = 90;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(156, 20);
             this.textBox2.TabIndex = 20;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
@@ -170,7 +170,7 @@ namespace WebSiteDev.AdminForm
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(503, 59);
+            this.label3.Location = new System.Drawing.Point(504, 10);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(56, 13);
             this.label3.TabIndex = 21;
@@ -179,7 +179,7 @@ namespace WebSiteDev.AdminForm
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(503, 86);
+            this.label4.Location = new System.Drawing.Point(505, 45);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 13);
             this.label4.TabIndex = 22;
@@ -188,7 +188,7 @@ namespace WebSiteDev.AdminForm
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(503, 112);
+            this.label5.Location = new System.Drawing.Point(506, 80);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(54, 13);
             this.label5.TabIndex = 23;
@@ -196,20 +196,20 @@ namespace WebSiteDev.AdminForm
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(557, 83);
+            this.textBox3.Location = new System.Drawing.Point(507, 59);
             this.textBox3.MaxLength = 75;
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
+            this.textBox3.Size = new System.Drawing.Size(156, 20);
             this.textBox3.TabIndex = 24;
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             this.textBox3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox3_KeyPress);
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(557, 109);
+            this.textBox4.Location = new System.Drawing.Point(507, 96);
             this.textBox4.MaxLength = 90;
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
+            this.textBox4.Size = new System.Drawing.Size(156, 20);
             this.textBox4.TabIndex = 25;
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             this.textBox4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox4_KeyPress);
@@ -217,7 +217,7 @@ namespace WebSiteDev.AdminForm
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(503, 138);
+            this.label6.Location = new System.Drawing.Point(504, 118);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(38, 13);
             this.label6.TabIndex = 26;
@@ -226,7 +226,7 @@ namespace WebSiteDev.AdminForm
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(503, 164);
+            this.label7.Location = new System.Drawing.Point(504, 158);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(45, 13);
             this.label7.TabIndex = 27;
@@ -234,19 +234,19 @@ namespace WebSiteDev.AdminForm
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(557, 135);
+            this.textBox5.Location = new System.Drawing.Point(507, 134);
             this.textBox5.MaxLength = 20;
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(100, 20);
+            this.textBox5.Size = new System.Drawing.Size(156, 20);
             this.textBox5.TabIndex = 28;
             this.textBox5.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox5_KeyPress);
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(557, 161);
+            this.textBox6.Location = new System.Drawing.Point(507, 174);
             this.textBox6.MaxLength = 20;
             this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(100, 20);
+            this.textBox6.Size = new System.Drawing.Size(142, 20);
             this.textBox6.TabIndex = 29;
             this.textBox6.UseSystemPasswordChar = true;
             this.textBox6.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox6_KeyPress);
@@ -254,7 +254,7 @@ namespace WebSiteDev.AdminForm
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(503, 190);
+            this.label8.Location = new System.Drawing.Point(504, 218);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(32, 13);
             this.label8.TabIndex = 30;
@@ -264,15 +264,15 @@ namespace WebSiteDev.AdminForm
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(557, 187);
+            this.comboBox2.Location = new System.Drawing.Point(507, 234);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(100, 21);
+            this.comboBox2.Size = new System.Drawing.Size(156, 21);
             this.comboBox2.TabIndex = 32;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(503, 217);
+            this.label9.Location = new System.Drawing.Point(504, 258);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(52, 13);
             this.label9.TabIndex = 33;
@@ -280,9 +280,9 @@ namespace WebSiteDev.AdminForm
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(503, 234);
+            this.button5.Location = new System.Drawing.Point(507, 195);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(154, 25);
+            this.button5.Size = new System.Drawing.Size(142, 20);
             this.button5.TabIndex = 34;
             this.button5.Text = "Сгенерировать пароль";
             this.button5.UseVisualStyleBackColor = true;
@@ -290,9 +290,9 @@ namespace WebSiteDev.AdminForm
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(503, 284);
+            this.button6.Location = new System.Drawing.Point(506, 297);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(154, 32);
+            this.button6.Size = new System.Drawing.Size(154, 28);
             this.button6.TabIndex = 35;
             this.button6.Text = "Изменить данные";
             this.button6.UseVisualStyleBackColor = true;
@@ -300,10 +300,10 @@ namespace WebSiteDev.AdminForm
             // 
             // maskedTextBox1
             // 
-            this.maskedTextBox1.Location = new System.Drawing.Point(557, 214);
+            this.maskedTextBox1.Location = new System.Drawing.Point(507, 274);
             this.maskedTextBox1.Mask = "+7 (999) 000-00-00";
             this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(100, 20);
+            this.maskedTextBox1.Size = new System.Drawing.Size(143, 20);
             this.maskedTextBox1.TabIndex = 36;
             this.maskedTextBox1.Click += new System.EventHandler(this.maskedTextBox1_Click);
             this.maskedTextBox1.Enter += new System.EventHandler(this.maskedTextBox1_Enter);
@@ -321,7 +321,7 @@ namespace WebSiteDev.AdminForm
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(191, 18);
+            this.label10.Location = new System.Drawing.Point(171, 16);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(67, 13);
             this.label10.TabIndex = 39;
@@ -344,9 +344,9 @@ namespace WebSiteDev.AdminForm
             "Сортировка не выбрана",
             "От А до Я",
             "От Я до А"});
-            this.comboBox3.Location = new System.Drawing.Point(194, 32);
+            this.comboBox3.Location = new System.Drawing.Point(174, 32);
             this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(115, 21);
+            this.comboBox3.Size = new System.Drawing.Size(135, 21);
             this.comboBox3.TabIndex = 38;
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
             // 
@@ -378,7 +378,7 @@ namespace WebSiteDev.AdminForm
             // 
             this.pictureBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.BackgroundImage")));
             this.pictureBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pictureBox2.Location = new System.Drawing.Point(654, 160);
+            this.pictureBox2.Location = new System.Drawing.Point(651, 173);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(21, 21);
             this.pictureBox2.TabIndex = 55;
