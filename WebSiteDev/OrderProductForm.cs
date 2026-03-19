@@ -1,20 +1,248 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WebSiteDev
 {
     public partial class OrderProductForm : Form
     {
-        public OrderProductForm()
+        private int orderID;
+
+        public OrderProductForm(int orderID)
         {
             InitializeComponent();
+            this.orderID = orderID;
+        }
+
+        private void OrderProductForm_Load(object sender, EventArgs e)
+        {
+            label1.Text = $"Состав заказа №{orderID}";
+            LoadOrderProducts();
+        }
+
+        private void LoadOrderProducts()
+        {
+            flowLayoutPanel1.Controls.Clear();
+
+            using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+            {
+                try
+                {
+                    con.Open();
+
+                    string discountQuery = "SELECT Discount, Surcharge FROM `Order` WHERE OrderID = " + orderID;
+                    MySqlCommand discountCmd = new MySqlCommand(discountQuery, con);
+                    MySqlDataReader discountReader = discountCmd.ExecuteReader();
+
+                    decimal totalDiscount = 0;
+                    decimal totalSurcharge = 0;
+
+                    if (discountReader.Read())
+                    {
+                        object discountVal = discountReader["Discount"];
+                        object surchargeVal = discountReader["Surcharge"];
+
+                        if (discountVal != DBNull.Value)
+                        {
+                            totalDiscount = Convert.ToDecimal(discountVal);
+                        }
+
+                        if (surchargeVal != DBNull.Value)
+                        {
+                            totalSurcharge = Convert.ToDecimal(surchargeVal);
+                        }
+                    }
+                    discountReader.Close();
+
+                    string query = @"SELECT p.ProductID, p.ProductName, p.ProductPhoto, p.BasePrice, 
+                                    c.CategoryName, op.ProductCount
+                                    FROM orderproduct op
+                                    INNER JOIN product p ON op.ProductID = p.ProductID
+                                    INNER JOIN category c ON p.CategoryID = c.CategoryID
+                                    WHERE op.OrderID = " + orderID;
+
+                    MySqlCommand cmd = new MySqlCommand(query, con);
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    decimal totalBasePrice = 0;
+                    int itemCount = 0;
+
+                    while (reader.Read())
+                    {
+                        itemCount++;
+                        decimal basePrice = Convert.ToDecimal(reader["BasePrice"]);
+                        int quantity = Convert.ToInt32(reader["ProductCount"]);
+
+                        totalBasePrice += basePrice * quantity;
+
+                        Panel productPanel = CreateProductPanel(
+                            reader["ProductName"].ToString(),
+                            reader["CategoryName"].ToString(),
+                            reader["ProductPhoto"].ToString(),
+                            basePrice,
+                            quantity
+                        );
+                        flowLayoutPanel1.Controls.Add(productPanel);
+                    }
+
+                    reader.Close();
+
+                    UpdateSummaryPanel(totalBasePrice, totalDiscount, totalSurcharge);
+
+                    if (itemCount == 0)
+                    {
+                        Label emptyLabel = new Label
+                        {
+                            Text = "Товары не найдены",
+                            Font = new Font("Microsoft Sans Serif", 16),
+                            ForeColor = Color.Gray,
+                            Size = new Size(950, 300),
+                            TextAlign = ContentAlignment.MiddleCenter
+                        };
+                        flowLayoutPanel1.Controls.Add(emptyLabel);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void UpdateSummaryPanel(decimal totalBasePrice, decimal discount, decimal surcharge)
+        {
+            label2.Text = $"Сумма товаров: {totalBasePrice:F2} руб.";
+
+            if (discount > 0)
+            {
+                label3.Text = $"Скидка: -{discount:F2} руб.";
+                label3.Visible = true;
+            }
+            else
+            {
+                label3.Visible = false;
+            }
+
+            if (surcharge > 0)
+            {
+                label4.Text = $"Надбавка: +{surcharge:F2} руб.";
+                label4.Visible = true;
+            }
+            else
+            {
+                label4.Visible = false;
+            }
+
+            decimal finalTotal = totalBasePrice - discount + surcharge;
+            label5.Text = $"Итого: {finalTotal:F2} руб.";
+        }
+
+        private Panel CreateProductPanel(string productName, string categoryName, string photoPath, decimal price, int quantity)
+        {
+            Panel panel = new Panel
+            {
+                Size = new Size(970, 120),
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.White,
+                Margin = new Padding(5)
+            };
+
+            PictureBox pic = new PictureBox
+            {
+                Size = new Size(100, 100),
+                Location = new Point(10, 10),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Image = Properties.Resources.no_image,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            if (!string.IsNullOrEmpty(photoPath))
+            {
+                string projectPath = AppDomain.CurrentDomain.BaseDirectory;
+                string imagePath = System.IO.Path.Combine(projectPath, @"..\..\Images", photoPath);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    try
+                    {
+                        using (var fs = new System.IO.FileStream(imagePath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+                        {
+                            using (var img = Image.FromStream(fs))
+                            {
+                                pic.Image = new Bitmap(img, 100, 100);
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            panel.Controls.Add(pic);
+
+            Label labelName = new Label
+            {
+                Text = productName,
+                Font = new Font("Microsoft Sans Serif", 14, FontStyle.Bold),
+                Location = new Point(120, 10),
+                Size = new Size(500, 25),
+                ForeColor = Color.Black,
+                AutoSize = false
+            };
+            panel.Controls.Add(labelName);
+
+            Label labelCategory = new Label
+            {
+                Text = $"Категория: {categoryName}",
+                Font = new Font("Microsoft Sans Serif", 11),
+                Location = new Point(120, 40),
+                Size = new Size(400, 20),
+                ForeColor = Color.Gray,
+                AutoSize = false
+            };
+            panel.Controls.Add(labelCategory);
+
+            Label labelPrice = new Label
+            {
+                Text = $"Цена: {price} руб.",
+                Font = new Font("Microsoft Sans Serif", 11),
+                Location = new Point(120, 65),
+                Size = new Size(180, 20),
+                ForeColor = Color.Black,
+                AutoSize = false
+            };
+            panel.Controls.Add(labelPrice);
+
+            Label labelQuantity = new Label
+            {
+                Text = $"Количество: {quantity} шт.",
+                Font = new Font("Microsoft Sans Serif", 11, FontStyle.Bold),
+                Location = new Point(310, 65),
+                Size = new Size(200, 20),
+                ForeColor = Color.DarkGreen,
+                AutoSize = false
+            };
+            panel.Controls.Add(labelQuantity);
+
+            decimal baseTotal = price * quantity;
+
+            Label labelSubtotal = new Label
+            {
+                Text = $"Сумма: {baseTotal:F2} руб.",
+                Font = new Font("Microsoft Sans Serif", 12, FontStyle.Bold),
+                Location = new Point(700, 45),
+                Size = new Size(230, 25),
+                ForeColor = Color.DarkGreen,
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleRight
+            };
+            panel.Controls.Add(labelSubtotal);
+
+            return panel;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

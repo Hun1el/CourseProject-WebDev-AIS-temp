@@ -29,6 +29,7 @@ namespace WebSiteDev.ManagerForm
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -59,7 +60,10 @@ namespace WebSiteDev.ManagerForm
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.button5 = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.просмотрСоставаЗаказаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -77,6 +81,8 @@ namespace WebSiteDev.ManagerForm
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(494, 232);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseDoubleClick);
+            this.dataGridView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DataGridView1_MouseDown);
             // 
             // button1
             // 
@@ -377,6 +383,20 @@ namespace WebSiteDev.ManagerForm
             this.button5.Text = "Печать чека";
             this.button5.UseVisualStyleBackColor = true;
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.просмотрСоставаЗаказаToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(214, 26);
+            // 
+            // просмотрСоставаЗаказаToolStripMenuItem
+            // 
+            this.просмотрСоставаЗаказаToolStripMenuItem.Name = "просмотрСоставаЗаказаToolStripMenuItem";
+            this.просмотрСоставаЗаказаToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.просмотрСоставаЗаказаToolStripMenuItem.Text = "Просмотр состава заказа";
+            this.просмотрСоставаЗаказаToolStripMenuItem.Click += new System.EventHandler(this.просмотрСоставаЗаказаToolStripMenuItem_Click);
+            // 
             // OrderControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -415,6 +435,7 @@ namespace WebSiteDev.ManagerForm
             this.Size = new System.Drawing.Size(675, 371);
             this.Load += new System.EventHandler(this.OrderControl_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -452,5 +473,7 @@ namespace WebSiteDev.ManagerForm
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem просмотрСоставаЗаказаToolStripMenuItem;
     }
 }
