@@ -17,6 +17,9 @@ namespace WebSiteDev.AdminForm
     public partial class StatusControl : UserControl
     {
         private DataManipulation dataManipulation;
+        public bool update = false;
+        private int selectedStatusID = -1;
+        private int selectedRowIndex = -1;
 
         public StatusControl()
         {
@@ -24,7 +27,10 @@ namespace WebSiteDev.AdminForm
             GetDate();
         }
 
-        public bool update = false;
+        private void StatusControl_Load(object sender, EventArgs e)
+        {
+            dataGridView1.ClearSelection();
+        }
 
         void GetDate()
         {
@@ -96,6 +102,43 @@ namespace WebSiteDev.AdminForm
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyRussian(e);
+        }
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selectedRowIndex = e.RowIndex;
+                selectedStatusID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["StatusID"].Value);
+                textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["StatusName"].Value.ToString();
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (selectedStatusID == -1 || string.IsNullOrWhiteSpace(textBox2.Text))
+            {
+                MessageBox.Show("Выберите статус!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите изменить статус?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataUpdate.UpdateStatus(selectedStatusID, textBox2.Text.Trim()))
+            {
+                MessageBox.Show("Статус успешно изменен!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GetDate();
+
+                if (selectedRowIndex >= 0 && selectedRowIndex < dataGridView1.Rows.Count)
+                {
+                    dataGridView1.Rows[selectedRowIndex].Selected = true;
+                    textBox2.Text = dataGridView1.Rows[selectedRowIndex].Cells["StatusName"].Value.ToString();
+                }
+            }
         }
     }
 }

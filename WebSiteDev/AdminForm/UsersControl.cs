@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,11 +7,12 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.Remoting.Contexts;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 using WebSiteDev.AddForm;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 
 namespace WebSiteDev.AdminForm
 {
@@ -18,6 +20,8 @@ namespace WebSiteDev.AdminForm
     {
         public bool update = false;
         private DataManipulation dataManipulation;
+        private int selectedUserID = -1;
+        static readonly Random rand = new Random();
 
         public UsersControl()
         {
@@ -29,6 +33,7 @@ namespace WebSiteDev.AdminForm
         {
             dataGridView1.Columns["UserID"].Visible = false;
             comboBox3.SelectedIndex = 0;
+            dataGridView1.ClearSelection();
         }
 
         void GetDate()
@@ -38,7 +43,7 @@ namespace WebSiteDev.AdminForm
                 con.Open();
 
                 MySqlCommand cmd = new MySqlCommand(@"SELECT u.UserID, u.Surname, u.FirstName, u.MiddleName, u.UserLogin,
-                                                             u.UserPassword, r.RoleName AS RoleName, u.PhoneNumber
+                                                             u.UserPassword, r.RoleName AS RoleName, u.PhoneNumber, u.RoleID
                                                       FROM Users u
                                                       JOIN Role r ON u.RoleID = r.RoleID", con);
                 cmd.ExecuteNonQuery();
@@ -50,6 +55,7 @@ namespace WebSiteDev.AdminForm
 
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["UserID"].Visible = false;
+                dataGridView1.Columns["RoleID"].Visible = false;
                 dataGridView1.Columns["Surname"].HeaderText = "Фамилия";
                 dataGridView1.Columns["FirstName"].HeaderText = "Имя";
                 dataGridView1.Columns["MiddleName"].HeaderText = "Отчество";
@@ -163,6 +169,145 @@ namespace WebSiteDev.AdminForm
         private void textBox6_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.EnglishDigitsAndSpecial(e);
+        }
+
+        private string GetSha256(string text)
+        {
+            using (SHA256 sha = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(text);
+                byte[] hash = sha.ComputeHash(bytes);
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in hash)
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+
+                return sb.ToString();
+            }
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selectedUserID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["UserID"].Value);
+                textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["Surname"].Value.ToString();
+                textBox3.Text = dataGridView1.Rows[e.RowIndex].Cells["FirstName"].Value.ToString();
+                textBox4.Text = dataGridView1.Rows[e.RowIndex].Cells["MiddleName"].Value.ToString();
+                textBox5.Text = dataGridView1.Rows[e.RowIndex].Cells["UserLogin"].Value.ToString();
+                textBox6.Clear();
+                maskedTextBox1.Text = dataGridView1.Rows[e.RowIndex].Cells["PhoneNumber"].Value.ToString();
+
+                int roleID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["RoleID"].Value);
+                comboBox2.SelectedValue = roleID;
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (selectedUserID == -1 || string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox5.Text) || comboBox2.SelectedIndex == 0)
+            {
+                MessageBox.Show("Заполните все поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int roleID = Convert.ToInt32(comboBox2.SelectedValue);
+            string phone = maskedTextBox1.Text;
+            string password = null;
+
+            if (!string.IsNullOrWhiteSpace(textBox6.Text))
+            {
+                password = GetSha256(textBox6.Text);
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите изменить пользователя?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataUpdate.UpdateUser(selectedUserID, textBox2.Text.Trim(), textBox3.Text.Trim(),
+                textBox4.Text.Trim(), textBox5.Text.Trim(), password, roleID, phone))
+            {
+                MessageBox.Show("Пользователь успешно изменён!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GetDate();
+
+                DataGridViewRow foundRow = null;
+
+                for (int i = 0; i < dataGridView1.Rows.Count; i++)
+                {
+                    if (Convert.ToInt32(dataGridView1.Rows[i].Cells["UserID"].Value) == selectedUserID)
+                    {
+                        foundRow = dataGridView1.Rows[i];
+                        break;
+                    }
+                }
+
+                if (foundRow != null)
+                {
+                    foundRow.Selected = true;
+                    textBox2.Text = foundRow.Cells["Surname"].Value.ToString();
+                    textBox3.Text = foundRow.Cells["FirstName"].Value.ToString();
+                    textBox4.Text = foundRow.Cells["MiddleName"].Value.ToString();
+                    textBox5.Text = foundRow.Cells["UserLogin"].Value.ToString();
+                    textBox6.Clear();
+                    maskedTextBox1.Text = foundRow.Cells["PhoneNumber"].Value.ToString();
+                    int roleID2 = Convert.ToInt32(foundRow.Cells["RoleID"].Value);
+                    comboBox2.SelectedValue = roleID2;
+                }
+            }
+        }
+
+        static string Shuffle(string str)
+        {
+            var chars = str.ToCharArray();
+            for (int i = chars.Length - 1; i > 0; i--)
+            {
+                int j = rand.Next(i);
+                (chars[i], chars[j]) = (chars[j], chars[i]);
+            }
+            return new string(chars);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string lower = "abcdefghijklmnopqrstuvwxyz";
+            const string numbers = "0123456789";
+            const string special = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+            string allChars = upper + lower + numbers + special;
+            Random random = new Random();
+            StringBuilder password = new StringBuilder();
+
+            password.Append(upper[random.Next(upper.Length)]);
+            password.Append(upper[random.Next(upper.Length)]);
+            password.Append(numbers[random.Next(numbers.Length)]);
+            password.Append(upper[random.Next(upper.Length)]);
+
+            for (int i = 4; i < 12; i++)
+            {
+                password.Append(allChars[random.Next(allChars.Length)]);
+            }
+
+            string shufflepass = Shuffle(Convert.ToString(password));
+            textBox6.Text = shufflepass;
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (textBox6.UseSystemPasswordChar)
+            {
+                textBox6.UseSystemPasswordChar = false;
+                pictureBox2.BackgroundImage = Properties.Resources.EyeHide;
+            }
+            else
+            {
+                textBox6.UseSystemPasswordChar = true;
+                pictureBox2.BackgroundImage = Properties.Resources.EyeView;
+            }
         }
     }
 }

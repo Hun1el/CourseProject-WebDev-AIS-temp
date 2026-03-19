@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using WebSiteDev.AddForm;
@@ -17,14 +9,15 @@ namespace WebSiteDev.AdminForm
     public partial class RoleControl : UserControl
     {
         private DataManipulation dataManipulation;
+        public bool update = false;
+        private int selectedRoleID = -1;
+        private int selectedRowIndex = -1;
 
         public RoleControl()
         {
             InitializeComponent();
             GetDate();
         }
-
-        public bool update = false;
 
         void GetDate()
         {
@@ -96,6 +89,44 @@ namespace WebSiteDev.AdminForm
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyRussian(e);
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                selectedRowIndex = e.RowIndex;
+                selectedRoleID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["RoleID"].Value);
+                textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["RoleName"].Value.ToString();
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (selectedRoleID == -1 || string.IsNullOrWhiteSpace(textBox2.Text))
+            {
+                MessageBox.Show("Выберите роль!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Вы действительно хотите изменить роль?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            if (DataUpdate.UpdateRole(selectedRoleID, textBox2.Text.Trim()))
+            {
+                MessageBox.Show("Роль успешно изменена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GetDate();
+
+                if (selectedRowIndex >= 0 && selectedRowIndex < dataGridView1.Rows.Count)
+                {
+                    dataGridView1.Rows[selectedRowIndex].Selected = true;
+                    textBox2.Text = dataGridView1.Rows[selectedRowIndex].Cells["RoleName"].Value.ToString();
+                }
+            }
         }
     }
 }

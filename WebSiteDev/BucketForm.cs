@@ -376,7 +376,6 @@ namespace WebSiteDev
             checkbox3.AutoCheck = false;
         }
 
-
         private int GetClientOrderCount(int clientID)
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
