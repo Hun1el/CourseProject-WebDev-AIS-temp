@@ -2,12 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using WebSiteDev.AddForm;
@@ -116,9 +110,12 @@ namespace WebSiteDev.ManagerForm
 
         private void button2_Click(object sender, EventArgs e)
         {
-            AddOrderForm addOrderForm = new AddOrderForm(dataManipulation);
-            addOrderForm.ShowDialog();
-            GetDate();
+            ProductControl.CurrentOrder.Clear();
+
+            ManagerMainForm managerForm = (ManagerMainForm)this.FindForm();
+            managerForm.LoadControl(new ProductControl(userRole));
+            managerForm.Text = "Оформление заказа";
+            managerForm.StartOrderProcess();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)

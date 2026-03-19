@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace WebSiteDev
@@ -57,7 +58,8 @@ namespace WebSiteDev
 
         public static void EnglishDigitsAndSpecial(KeyPressEventArgs e)
         {
-            if (!((e.KeyChar >= 'A' && e.KeyChar <= 'z') || char.IsDigit(e.KeyChar) || char.IsPunctuation(e.KeyChar) || e.KeyChar == '\b'))
+            const string allowedSpecial = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+            if (!((e.KeyChar >= 'A' && e.KeyChar <= 'z') || char.IsDigit(e.KeyChar) || allowedSpecial.Contains(e.KeyChar) || e.KeyChar == '\b'))
             {
                 e.Handled = true;
             }

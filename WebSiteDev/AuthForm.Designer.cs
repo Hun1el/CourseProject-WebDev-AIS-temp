@@ -86,6 +86,7 @@ namespace WebSiteDev
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(270, 29);
             this.textBox1.TabIndex = 4;
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // textBox2
             // 
@@ -95,6 +96,7 @@ namespace WebSiteDev
             this.textBox2.Size = new System.Drawing.Size(270, 29);
             this.textBox2.TabIndex = 6;
             this.textBox2.UseSystemPasswordChar = true;
+            this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
             // button2
             // 

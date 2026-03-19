@@ -105,6 +105,12 @@
     <Compile Include="AdminForm\UsersControl.Designer.cs">
       <DependentUpon>UsersControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="BucketForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BucketForm.Designer.cs">
+      <DependentUpon>BucketForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Data.cs" />
     <Compile Include="DataManipulation.cs" />
     <Compile Include="DirectorForm\DirectorMainForm.cs">
@@ -169,11 +175,11 @@
     <Compile Include="ManagerForm\ClientsControl.Designer.cs">
       <DependentUpon>ClientsControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProductForm.cs">
+    <Compile Include="OrderProductForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProductForm.Designer.cs">
-      <DependentUpon>ProductForm.cs</DependentUpon>
+    <Compile Include="OrderProductForm.Designer.cs">
+      <DependentUpon>OrderProductForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -240,8 +246,8 @@
     <EmbeddedResource Include="ManagerForm\ClientsControl.resx">
       <DependentUpon>ClientsControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProductForm.resx">
-      <DependentUpon>ProductForm.cs</DependentUpon>
+    <EmbeddedResource Include="OrderProductForm.resx">
+      <DependentUpon>OrderProductForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -297,6 +303,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\no_image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Random_password1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Random_password.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Random_password2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

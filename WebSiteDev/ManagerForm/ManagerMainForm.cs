@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WebSiteDev.ManagerForm
@@ -16,6 +11,7 @@ namespace WebSiteDev.ManagerForm
         private string roleName;
         private Button currentSelectedButton = null;
         private UserControl currentControl = null;
+        private bool isOrderProcessActive = false;
 
         public ManagerMainForm(string fullName, string roleName)
         {
@@ -31,12 +27,17 @@ namespace WebSiteDev.ManagerForm
             
         }
 
-        private void LoadControl(UserControl control)
+        public void LoadControl(UserControl control)
         {
             pictureBox2.Visible = false;
             label1.Visible = false;
             label2.Visible = false;
             label3.Visible = false;
+
+            if (isOrderProcessActive)
+            {
+                EndOrderProcess();
+            }
 
             if (currentControl != null)
             {
@@ -164,6 +165,23 @@ namespace WebSiteDev.ManagerForm
             {
                 currentSelectedButton = selectedButton;
             }
+        }
+
+        public void StartOrderProcess()
+        {
+            isOrderProcessActive = true;
+
+            button2.Enabled = false;
+            button2.BackColor = Color.FromArgb(173, 216, 230);
+            button2.FlatStyle = FlatStyle.Flat;
+        }
+
+        public void EndOrderProcess()
+        {
+            isOrderProcessActive = false;
+            button2.Enabled = true;
+            button2.BackColor = SystemColors.Control;
+            button2.FlatStyle = FlatStyle.Standard;
         }
     }
 }
