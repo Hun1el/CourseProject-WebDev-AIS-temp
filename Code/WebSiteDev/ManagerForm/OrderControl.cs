@@ -5,6 +5,9 @@ using System.Windows.Forms;
 
 namespace WebSiteDev.ManagerForm
 {
+    /// <summary>
+    /// Контрол для управления заказами - отслеживание статусов, редактирование дат выполнения, статусов, печать чеков
+    /// </summary>
     public partial class OrderControl : UserControl
     {
         private DataManipulation dataManipulation;
@@ -20,6 +23,9 @@ namespace WebSiteDev.ManagerForm
 
         private DataSecurity dataSecurity = new DataSecurity();
 
+        /// <summary>
+        /// Инициализирует контрол и загружает данные заказов
+        /// </summary>
         public OrderControl(string role, int userID = 0, string userName = "")
         {
             InitializeComponent();
@@ -31,6 +37,9 @@ namespace WebSiteDev.ManagerForm
             GetDate();
         }
 
+        /// <summary>
+        /// При загрузке контрола - инициализирует UI элементы и скрывает кнопки для администраторов
+        /// </summary>
         private void OrderControl_Load(object sender, EventArgs e)
         {
             dataGridView1.ClearSelection();
@@ -41,6 +50,7 @@ namespace WebSiteDev.ManagerForm
 
             dataGridView1.ContextMenuStrip = contextMenuStrip1;
 
+            // Администраторы не могут создавать заказы, только просматривать
             if (userRole == "Администратор")
             {
                 button5.Visible = false;
@@ -49,12 +59,16 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Загружает все заказы из БД с информацией о клиентах, сотрудниках и товарах
+        /// </summary>
         void GetDate()
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
                 con.Open();
 
+                // Сложный запрос с несколькими JOIN для получения полной информации о заказах
                 MySqlCommand cmd = new MySqlCommand(@"
         SELECT o.OrderID,
             CONCAT(c.Surname, ' ', c.FirstName, ' ', COALESCE(c.MiddleName, '')) AS ClientName,
@@ -78,6 +92,7 @@ namespace WebSiteDev.ManagerForm
 
                 da.Fill(dt);
 
+                // Сохраняем оригинальные имена для маскирования
                 dataSecurity.LoadOriginalClientNames(dt, "ClientName");
                 dataSecurity.LoadOriginalUserNames(dt, "UserName");
                 lastRevealedRowIndex = -1;
@@ -92,6 +107,7 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["StatusName"].HeaderText = "Статус";
                 dataGridView1.Columns["OrderCost"].HeaderText = "Итоговая цена";
 
+                // Отключаем сортировку по клику
                 dataGridView1.Columns["OrderID"].SortMode = DataGridViewColumnSortMode.NotSortable;
                 dataGridView1.Columns["ClientName"].SortMode = DataGridViewColumnSortMode.NotSortable;
                 dataGridView1.Columns["UserName"].SortMode = DataGridViewColumnSortMode.NotSortable;
@@ -103,17 +119,23 @@ namespace WebSiteDev.ManagerForm
 
                 dataManipulation = new DataManipulation(dt);
 
+                // Заполняем выпадающие списки статусов
                 dataManipulation.FillComboBoxWithStatuses(comboBox6, "Статус не выбран");
                 dataManipulation.FillComboBoxWithStatuses(comboBox5, "Выберите статус");
 
+                // Показываем общее количество заказов
                 MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM `Order`", con);
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
                 label1.Text = $"Количество записей: {resultcount}";
 
+                // Окрашиваем строки в зависимости от статуса
                 ColorizeRowsByStatus();
             }
         }
 
+        /// <summary>
+        /// Форматирует отображение ячеек - окрашивает по статусу, маскирует/показывает имена
+        /// </summary>
         private void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -124,6 +146,7 @@ namespace WebSiteDev.ManagerForm
             int orderID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value);
             string status = dataGridView1.Rows[e.RowIndex].Cells["StatusName"].Value?.ToString();
 
+            // Окрашиваем строки в зависимости от статуса
             if (status == "Завершён")
             {
                 e.CellStyle.BackColor = System.Drawing.Color.LightGreen;
@@ -133,6 +156,7 @@ namespace WebSiteDev.ManagerForm
                 e.CellStyle.BackColor = System.Drawing.Color.IndianRed;
             }
 
+            // Если строка открыта (двойной клик) - показываем оригинальные данные
             if (e.RowIndex == lastRevealedRowIndex)
             {
                 if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
@@ -156,6 +180,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Маскируем имена для защиты данных
             if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
             {
                 string original = dataSecurity.GetOriginalClientName(orderID);
@@ -177,6 +202,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Обработка правого клика на таблице - выделение строки для контекстного меню
+        /// </summary>
         private void DataGridView1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -191,6 +219,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// При вводе номера заказа - фильтрует таблицу по данному номеру
+        /// </summary>
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
@@ -202,6 +233,9 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.Refresh();
         }
 
+        /// <summary>
+        /// Кнопка расширить панель - показывает дополнительные элементы управления
+        /// </summary>
         private void button1_Click(object sender, EventArgs e)
         {
             FormControl.Resize(this.FindForm(), 1500);
@@ -209,6 +243,9 @@ namespace WebSiteDev.ManagerForm
             button1.Enabled = false;
         }
 
+        /// <summary>
+        /// Кнопка свернуть панель - скрывает дополнительные элементы управления
+        /// </summary>
         private void button3_Click(object sender, EventArgs e)
         {
             FormControl.Resize(this.FindForm(), 1175);
@@ -216,6 +253,9 @@ namespace WebSiteDev.ManagerForm
             button1.Enabled = true;
         }
 
+        /// <summary>
+        /// Кнопка создать новый заказ - переходит к форме выбора товаров
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
             ProductControl.CurrentOrder.Clear();
@@ -227,6 +267,9 @@ namespace WebSiteDev.ManagerForm
             managerForm.SelectButtonPublic(managerForm.Button2);
         }
 
+        /// <summary>
+        /// При изменении фильтра по дате - обновляет отображение таблицы
+        /// </summary>
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
@@ -237,6 +280,9 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.Refresh();
         }
 
+        /// <summary>
+        /// При изменении фильтра по статусу - обновляет отображение таблицы
+        /// </summary>
         private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
@@ -247,6 +293,9 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.Refresh();
         }
 
+        /// <summary>
+        /// Кнопка сброс фильтров - отображает все заказы
+        /// </summary>
         private void button4_Click(object sender, EventArgs e)
         {
             dataManipulation.ResetFilters(comboBox1, comboBox6, textBox1);
@@ -256,11 +305,17 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.Refresh();
         }
 
+        /// <summary>
+        /// Ограничивает ввод только цифрами в поле поиска
+        /// </summary>
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyNumbers(e);
         }
 
+        /// <summary>
+        /// Двойной клик на ячейку таблицы - открывает форму со списком товаров в заказе
+        /// </summary>
         private void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.RowIndex >= 0 && dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value != null)
@@ -271,6 +326,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Пункт контекстного меню - просмотр состава заказа
+        /// </summary>
         private void просмотрСоставаЗаказаToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count > 0)
@@ -285,6 +343,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// При клике на строку таблицы - загружает данные заказа и доступные статусы для редактирования
+        /// </summary>
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -294,6 +355,7 @@ namespace WebSiteDev.ManagerForm
 
                 button5.Enabled = true;
 
+                // Загружаем дату выполнения заказа
                 DateTime orderDate = DateTime.Now;
                 bool isValidDate = false;
 
@@ -308,6 +370,7 @@ namespace WebSiteDev.ManagerForm
                 }
                 catch { }
 
+                // Устанавливаем минимальную дату для выпадающего календаря
                 if (isValidDate)
                 {
                     if (orderDate < DateTime.Now.Date)
@@ -327,6 +390,7 @@ namespace WebSiteDev.ManagerForm
                     dateTimePicker1.Value = DateTime.Now.Date;
                 }
 
+                // Определяем доступные статусы в зависимости от текущего статуса
                 string[] statuses = null;
 
                 if (currentStatus == "Новый")
@@ -349,6 +413,7 @@ namespace WebSiteDev.ManagerForm
                     comboBox5.SelectedIndex = 0;
                 }
 
+                // Заказы со статусом "Завершён" или "Отменён" нельзя редактировать
                 bool isEditable = !(currentStatus == "Завершён" || currentStatus == "Отменён");
                 comboBox5.Enabled = isEditable;
                 dateTimePicker1.Enabled = isEditable;
@@ -356,6 +421,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Кнопка сохранить - обновляет статус и дату выполнения заказа в БД
+        /// </summary>
         private void button6_Click(object sender, EventArgs e)
         {
             if (selectedOrderID == -1)
@@ -367,18 +435,21 @@ namespace WebSiteDev.ManagerForm
             string newStatus = comboBox5.SelectedItem.ToString();
             DateTime newDate = dateTimePicker1.Value;
 
+            // Если выбрана дата в прошлом - переносим на завтра
             if (newDate < DateTime.Now)
             {
                 newDate = DateTime.Now.AddDays(1);
                 dateTimePicker1.Value = newDate;
             }
 
+            // Завершённые и отменённые заказы нельзя редактировать
             if (currentStatus == "Отменён" || currentStatus == "Завершён")
             {
                 MessageBox.Show("Данный заказ нельзя редактировать!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // Проверяем логику переходов между статусами
             if ((currentStatus == "Новый" && (newStatus != "В работе" && newStatus != "Отменён" && newStatus != "Новый")) ||
                 (currentStatus == "В работе" && (newStatus != "Завершён" && newStatus != "Отменён" && newStatus != "В работе")))
             {
@@ -398,6 +469,7 @@ namespace WebSiteDev.ManagerForm
                 MessageBox.Show("Заказ успешно обновлён!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 GetDate();
 
+                // Находим обновленный заказ и выделяем его
                 for (int i = 0; i < dataGridView1.Rows.Count; i++)
                 {
                     int orderID = Convert.ToInt32(dataGridView1.Rows[i].Cells["OrderID"].Value);
@@ -456,6 +528,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Кнопка печать чека - создаёт документ Word с информацией о заказе
+        /// </summary>
         private void button5_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count == 0)
@@ -464,6 +539,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Проверяем установлен ли Microsoft Word на компьютере
             if (!IsWordInstalled())
             {
                 MessageBox.Show(
@@ -478,6 +554,8 @@ namespace WebSiteDev.ManagerForm
             }
 
             int orderID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["OrderID"].Value);
+
+            // Получаем оригинальное имя клиента из защитного хранилища
             string clientName = dataSecurity.GetOriginalClientName(orderID);
 
             if (clientName == null)
@@ -489,6 +567,7 @@ namespace WebSiteDev.ManagerForm
             string statusName = dataGridView1.SelectedRows[0].Cells["StatusName"].Value.ToString();
             string orderCost = dataGridView1.SelectedRows[0].Cells["OrderCost"].Value.ToString();
 
+            // Формируем сообщение подтверждения
             string message = "Вы хотите создать чек для следующего заказа?\n\n";
             message = message + "Номер заказа: " + orderID + "\n";
             message = message + "Клиент: " + clientName + "\n";
@@ -506,6 +585,9 @@ namespace WebSiteDev.ManagerForm
             Doc.CheckWord.CreateCheck(orderID);
         }
 
+        /// <summary>
+        /// Проверяет установлен ли Microsoft Word через COM объекты
+        /// </summary>
         private bool IsWordInstalled()
         {
             try
@@ -531,6 +613,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Двойной клик на ячейку - показывает/скрывает оригинальные имена на 20 секунд
+        /// </summary>
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -546,6 +631,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Закрываем предыдущую открытую строку
             if (lastRevealedRowIndex >= 0)
             {
                 int previousRow = lastRevealedRowIndex;
@@ -553,6 +639,7 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.InvalidateRow(previousRow);
             }
 
+            // Открываем новую строку
             lastRevealedRowIndex = e.RowIndex;
             dataGridView1.InvalidateRow(e.RowIndex);
 
@@ -560,6 +647,9 @@ namespace WebSiteDev.ManagerForm
             timer1.Start();
         }
 
+        /// <summary>
+        /// Таймер - срабатывает через 20 секунд и скрывает открытые данные
+        /// </summary>
         private void Timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
@@ -572,6 +662,10 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Окрашивает строки таблицы в зависимости от статуса заказа
+        /// Зелёный - Завершён, Красный - Отменён
+        /// </summary>
         private void ColorizeRowsByStatus()
         {
             foreach (DataGridViewRow row in dataGridView1.Rows)

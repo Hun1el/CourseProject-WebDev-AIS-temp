@@ -4,8 +4,12 @@ using System.Data;
 
 namespace WebSiteDev
 {
+    /// <summary>
+    /// Класс для защиты конфиденциальных данных
+    /// </summary>
     public class DataSecurity
     {
+        // Словари для хранения оригинальных данных
         private Dictionary<int, string> originalLogins = new Dictionary<int, string>();
         private Dictionary<int, string> originalPhones = new Dictionary<int, string>();
         private Dictionary<int, string> originalFirstNames = new Dictionary<int, string>();
@@ -13,6 +17,9 @@ namespace WebSiteDev
         private Dictionary<int, string> originalClientNames = new Dictionary<int, string>();
         private Dictionary<int, string> originalUserNames = new Dictionary<int, string>();
 
+        /// <summary>
+        /// Загружает оригинальные данные из DataTable в словари для последующей защиты
+        /// </summary>
         public void LoadOriginalData(DataTable dt, string loginColumn = "UserLogin", string phoneColumn = "PhoneNumber", string firstNameColumn = "FirstName", string middleNameColumn = "MiddleName")
         {
             originalLogins.Clear();
@@ -24,6 +31,7 @@ namespace WebSiteDev
             {
                 int id = -1;
 
+                // Определяем ID - может быть ClientID или UserID
                 if (dt.Columns.Contains("ClientID"))
                 {
                     id = Convert.ToInt32(dt.Rows[i]["ClientID"]);
@@ -37,6 +45,7 @@ namespace WebSiteDev
                     id = i;
                 }
 
+                // Загружаем оригинальные данные если колонки существуют
                 if (dt.Columns.Contains(loginColumn))
                 {
                     originalLogins[id] = dt.Rows[i][loginColumn].ToString();
@@ -56,6 +65,9 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Загружает оригинальные имена клиентов из таблицы заказов
+        /// </summary>
         public void LoadOriginalClientNames(DataTable dt, string clientNameColumn = "ClientName")
         {
             originalClientNames.Clear();
@@ -71,6 +83,9 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Загружает оригинальные имена сотрудников из таблицы заказов
+        /// </summary>
         public void LoadOriginalUserNames(DataTable dt, string userNameColumn = "UserName")
         {
             originalUserNames.Clear();
@@ -86,8 +101,15 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Обновляет оригинальные данные пользователя после изменений
+        /// </summary>
         public void UpdateOriginalData(int clientID, DataRow row)
         {
+            if (row.Table.Columns.Contains("UserLogin"))
+            {
+                originalLogins[clientID] = row["UserLogin"].ToString();
+            }
             if (row.Table.Columns.Contains("PhoneNumber"))
             {
                 originalPhones[clientID] = row["PhoneNumber"].ToString();
@@ -102,6 +124,9 @@ namespace WebSiteDev
             }
         }
 
+        /// <summary>
+        /// Получает оригинальный логин по ID
+        /// </summary>
         public string GetOriginalLogin(int id)
         {
             if (originalLogins.ContainsKey(id))
@@ -111,6 +136,9 @@ namespace WebSiteDev
             return null;
         }
 
+        /// <summary>
+        /// Получает оригинальный номер телефона по ID
+        /// </summary>
         public string GetOriginalPhone(int id)
         {
             if (originalPhones.ContainsKey(id))
@@ -120,6 +148,9 @@ namespace WebSiteDev
             return null;
         }
 
+        /// <summary>
+        /// Получает оригинальное имя по ID
+        /// </summary>
         public string GetOriginalFirstName(int id)
         {
             if (originalFirstNames.ContainsKey(id))
@@ -129,6 +160,9 @@ namespace WebSiteDev
             return null;
         }
 
+        /// <summary>
+        /// Получает оригинальное отчество по ID
+        /// </summary>
         public string GetOriginalMiddleName(int id)
         {
             if (originalMiddleNames.ContainsKey(id))
@@ -138,6 +172,9 @@ namespace WebSiteDev
             return null;
         }
 
+        /// <summary>
+        /// Получает оригинальное имя клиента по ID заказа
+        /// </summary>
         public string GetOriginalClientName(int id)
         {
             if (originalClientNames.ContainsKey(id))
@@ -147,6 +184,9 @@ namespace WebSiteDev
             return null;
         }
 
+        /// <summary>
+        /// Получает оригинальное имя сотрудника по ID заказа
+        /// </summary>
         public string GetOriginalUserName(int id)
         {
             if (originalUserNames.ContainsKey(id))
@@ -156,6 +196,9 @@ namespace WebSiteDev
             return null;
         }
 
+        /// <summary>
+        /// Маскирует логин полностью - заменяет все символы на •
+        /// </summary>
         public static string MaskLogin(string login)
         {
             if (string.IsNullOrEmpty(login))
@@ -165,6 +208,9 @@ namespace WebSiteDev
             return new string('•', login.Length);
         }
 
+        /// <summary>
+        /// Маскирует имя - оставляет первый символ, остальное заменяет на •
+        /// </summary>
         public static string MaskName(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -178,6 +224,9 @@ namespace WebSiteDev
             return name[0] + new string('•', name.Length - 1);
         }
 
+        /// <summary>
+        /// Маскирует номер телефона - показывает начало, скрывает последние 4-5 символов
+        /// </summary>
         public static string MaskPhone(string phone)
         {
             if (string.IsNullOrEmpty(phone) || phone.Length < 4)
@@ -197,6 +246,10 @@ namespace WebSiteDev
             return visiblePart + maskedPart;
         }
 
+        /// <summary>
+        /// Маскирует ФИО клиента - показывает фамилию и инициалы имени/отчества
+        /// Формат: "Иванов И. О."
+        /// </summary>
         public static string MaskClientName(string fullName)
         {
             if (string.IsNullOrEmpty(fullName))
@@ -211,15 +264,18 @@ namespace WebSiteDev
                 return fullName;
             }
 
+            // Фамилия - видна полностью
             string surname = parts[0];
             string firstInitial = "";
             string middleInitial = "";
 
+            // Имя - только инициал
             if (parts.Length > 1 && !string.IsNullOrEmpty(parts[1]))
             {
                 firstInitial = parts[1][0] + ".";
             }
 
+            // Отчество - только инициал
             if (parts.Length > 2 && !string.IsNullOrEmpty(parts[2]))
             {
                 middleInitial = parts[2][0] + ".";
@@ -228,6 +284,10 @@ namespace WebSiteDev
             return surname + " " + firstInitial + middleInitial;
         }
 
+        /// <summary>
+        /// Маскирует ФИО сотрудника - показывает фамилию и инициалы имени/отчества
+        /// Формат: "Петров И. О."
+        /// </summary>
         public static string MaskUserName(string fullName)
         {
             if (string.IsNullOrEmpty(fullName))
@@ -242,15 +302,18 @@ namespace WebSiteDev
                 return fullName;
             }
 
+            // Фамилия - видна полностью
             string surname = parts[0];
             string firstInitial = "";
             string middleInitial = "";
 
+            // Имя - только инициал
             if (parts.Length > 1 && !string.IsNullOrEmpty(parts[1]))
             {
                 firstInitial = parts[1][0] + ".";
             }
 
+            // Отчество - только инициал
             if (parts.Length > 2 && !string.IsNullOrEmpty(parts[2]))
             {
                 middleInitial = parts[2][0] + ".";

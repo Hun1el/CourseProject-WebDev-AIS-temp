@@ -5,6 +5,9 @@ using System.Data;
 using System.Windows.Forms;
 using WebSiteDev;
 
+/// <summary>
+/// Класс для управления фильтрацией, сортировкой и поиском данных в DataTable
+/// </summary>
 public class DataManipulation
 {
     public DataTable table { get; set; }
@@ -16,7 +19,11 @@ public class DataManipulation
         view = dt.DefaultView;
     }
 
-    // Методы для применения всех функций
+    // ===== МЕТОДЫ ДЛЯ ПРИМЕНЕНИЯ ВСЕХ ФУНКЦИЙ СРАЗУ =====
+
+    /// <summary>
+    /// Применяет поиск, фильтр и сортировку для таблицы пользователей
+    /// </summary>
     public void ApplyAllUser(ComboBox comboSort, ComboBox comboFilter, TextBox textSearch)
     {
         ApplySearchUser(textSearch);
@@ -24,12 +31,18 @@ public class DataManipulation
         ApplySortUser(comboSort);
     }
 
+    /// <summary>
+    /// Применяет поиск и сортировку для таблицы категорий
+    /// </summary>
     public void ApplyAllCategory(ComboBox comboSort, TextBox textSearch)
     {
         ApplySearchCategory(textSearch);
         ApplySortCategory(comboSort);
     }
 
+    /// <summary>
+    /// Применяет поиск, фильтр и сортировку для таблицы товаров
+    /// </summary>
     public void ApplyAllProduct(ComboBox comboSort, ComboBox comboFilter, TextBox textSearch)
     {
         ApplySearchProduct(textSearch);
@@ -37,6 +50,9 @@ public class DataManipulation
         ApplySortProduct(comboSort);
     }
 
+    /// <summary>
+    /// Применяет поиск, фильтр и сортировку для таблицы заказов менеджера
+    /// </summary>
     public void ApplyAllOrder(ComboBox comboSort, ComboBox comboFilter, TextBox textSearch)
     {
         ApplySearchOrder(textSearch);
@@ -44,12 +60,18 @@ public class DataManipulation
         ApplySortOrder(comboSort);
     }
 
+    /// <summary>
+    /// Применяет поиск и сортировку для таблицы клиентов
+    /// </summary>
     public void ApplyAllClient(ComboBox comboSort, TextBox textSearch)
     {
         ApplySearchClient(textSearch);
         ApplySortClient(comboSort);
     }
 
+    /// <summary>
+    /// Применяет поиск, фильтр и сортировку для таблицы заказов директора
+    /// </summary>
     public void ApplyAllDirector(ComboBox comboSort, ComboBox comboFilter, TextBox textSearch)
     {
         ApplySearchDirector(textSearch);
@@ -57,6 +79,11 @@ public class DataManipulation
         ApplySortDirector(comboSort);
     }
 
+    // ===== МЕТОДЫ ДЛЯ ЗАПОЛНЕНИЯ COMBOBOX =====
+
+    /// <summary>
+    /// Заполняет ComboBox ролями из БД
+    /// </summary>
     public void FillComboBoxWithRoles(ComboBox combo, string firstItem)
     {
         using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -66,6 +93,7 @@ public class DataManipulation
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
+            // Добавляем первый пустой элемент
             DataRow dr = dt.NewRow();
             dr["RoleID"] = 0;
             dr["RoleName"] = firstItem;
@@ -78,6 +106,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Заполняет ComboBox категориями из БД
+    /// </summary>
     public void FillComboBoxWithCategories(ComboBox combo, string firstItem)
     {
         using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -87,6 +118,7 @@ public class DataManipulation
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
+            // Добавляем первый пустой элемент
             DataRow dr = dt.NewRow();
             dr["CategoryID"] = 0;
             dr["CategoryName"] = firstItem;
@@ -99,6 +131,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Заполняет ComboBox статусами из БД
+    /// </summary>
     public void FillComboBoxWithStatuses(ComboBox combo, string firstItem)
     {
         using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -108,6 +143,7 @@ public class DataManipulation
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
+            // Добавляем первый пустой элемент
             DataRow dr = dt.NewRow();
             dr["StatusID"] = 0;
             dr["StatusName"] = firstItem;
@@ -120,6 +156,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Заполняет ComboBox товарами из БД
+    /// </summary>
     public void FillComboBoxWithProducts(ComboBox combo, string firstItem)
     {
         using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -129,6 +168,7 @@ public class DataManipulation
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
+            // Добавляем первый пустой элемент
             DataRow dr = dt.NewRow();
             dr["ProductID"] = 0;
             dr["ProductName"] = firstItem;
@@ -141,6 +181,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Заполняет ComboBox пользователями из БД
+    /// </summary>
     public void FillComboBoxWithUsers(ComboBox combo, string firstItem)
     {
         using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -150,6 +193,7 @@ public class DataManipulation
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
+            // Добавляем первый пустой элемент
             DataRow dr = dt.NewRow();
             dr["UserID"] = 0;
             dr["FullName"] = firstItem;
@@ -162,6 +206,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Заполняет ComboBox клиентами из БД
+    /// </summary>
     public void FillComboBoxWithClients(ComboBox combo, string firstItem)
     {
         using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -171,6 +218,7 @@ public class DataManipulation
             DataTable dt = new DataTable();
             adapter.Fill(dt);
 
+            // Добавляем первый пустой элемент
             DataRow dr = dt.NewRow();
             dr["ClientID"] = 0;
             dr["FullName"] = firstItem;
@@ -183,7 +231,11 @@ public class DataManipulation
         }
     }
 
-    // Методы поиска
+    // ===== МЕТОДЫ ПОИСКА =====
+
+    /// <summary>
+    /// Применяет поиск по фамилии пользователя
+    /// </summary>
     public void ApplySearchUser(TextBox textSearch)
     {
         string searchText = textSearch.Text.Trim().Replace("'", "''");
@@ -198,6 +250,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет поиск по названию категории
+    /// </summary>
     public void ApplySearchCategory(TextBox textSearch)
     {
         string searchText = textSearch.Text.Trim().Replace("'", "''");
@@ -212,6 +267,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет поиск по названию роли
+    /// </summary>
     public void ApplySearchRole(TextBox textSearch)
     {
         string searchText = textSearch.Text.Trim().Replace("'", "''");
@@ -226,6 +284,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет поиск по названию статуса
+    /// </summary>
     public void ApplySearchStatus(TextBox textSearch)
     {
         string searchText = textSearch.Text.Trim().Replace("'", "''");
@@ -240,6 +301,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет поиск по названию товара
+    /// </summary>
     public void ApplySearchProduct(TextBox textSearch)
     {
         string searchText = textSearch.Text.Trim().Replace("'", "''");
@@ -254,6 +318,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет поиск по номеру заказа
+    /// </summary>
     public void ApplySearchOrder(TextBox textSearch)
     {
         string searchText = textSearch.Text.Trim().Replace("'", "''");
@@ -266,17 +333,11 @@ public class DataManipulation
         {
             view.RowFilter = "";
         }
-
-        //if (int.TryParse(textSearch.Text.Trim(), out int orderId))
-        //{
-        //    view.RowFilter = $"OrderID = {orderId}";
-        //}
-        //else
-        //{
-        //    view.RowFilter = "";
-        //}
     }
 
+    /// <summary>
+    /// Применяет поиск по фамилии клиента
+    /// </summary>
     public void ApplySearchClient(TextBox textSearch)
     {
         string searchText = textSearch.Text.Trim().Replace("'", "''");
@@ -291,6 +352,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет поиск по номеру заказа для директора
+    /// </summary>
     public void ApplySearchDirector(TextBox textSearch)
     {
         string searchText = textSearch.Text.Trim().Replace("'", "''");
@@ -305,7 +369,11 @@ public class DataManipulation
         }
     }
 
-    // Методы фильтрации
+    // ===== МЕТОДЫ ФИЛЬТРАЦИИ =====
+
+    /// <summary>
+    /// Применяет фильтр по роли для пользователей
+    /// </summary>
     public void ApplyFilterUser(ComboBox comboFilter)
     {
         List<string> filters = new List<string>();
@@ -335,6 +403,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет фильтр по категории для товаров
+    /// </summary>
     public void ApplyFilterProduct(ComboBox comboFilter)
     {
         List<string> filters = new List<string>();
@@ -364,6 +435,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет фильтр по статусу для заказов менеджера
+    /// </summary>
     public void ApplyFilterOrder(ComboBox comboFilter)
     {
         List<string> filters = new List<string>();
@@ -393,6 +467,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет фильтр по статусу для заказов директора
+    /// </summary>
     public void ApplyFilterDirector(ComboBox comboFilter)
     {
         List<string> filters = new List<string>();
@@ -422,8 +499,11 @@ public class DataManipulation
         }
     }
 
+    // ===== МЕТОДЫ СОРТИРОВКИ =====
 
-    // Методы сортировки
+    /// <summary>
+    /// Применяет сортировку по фамилии для пользователей
+    /// </summary>
     public void ApplySortUser(ComboBox comboSort)
     {
         if (comboSort.SelectedIndex == 1)
@@ -440,6 +520,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет сортировку по названию для категорий
+    /// </summary>
     public void ApplySortCategory(ComboBox comboSort)
     {
         if (comboSort.SelectedIndex == 1)
@@ -456,6 +539,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет сортировку по цене для товаров
+    /// </summary>
     public void ApplySortProduct(ComboBox comboSort)
     {
         if (comboSort.SelectedIndex == 1)
@@ -472,6 +558,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет сортировку по датам для заказов менеджера
+    /// </summary>
     public void ApplySortOrder(ComboBox comboSort)
     {
         if (comboSort.SelectedIndex == 1)
@@ -496,6 +585,9 @@ public class DataManipulation
         }
     }
 
+    /// <summary>
+    /// Применяет сортировку по фамилии для клиентов
+    /// </summary>
     public void ApplySortClient(ComboBox comboSort)
     {
         if (comboSort.SelectedIndex == 1)
@@ -511,7 +603,9 @@ public class DataManipulation
             view.Sort = "";
         }
     }
-
+    /// <summary>
+    /// Применяет сортировку по датам для заказов директора
+    /// </summary>
     public void ApplySortDirector(ComboBox comboSort)
     {
         if (comboSort.SelectedIndex == 1)
@@ -536,7 +630,11 @@ public class DataManipulation
         }
     }
 
-    // Метод сброса всего
+    // ===== МЕТОДЫ СБРОСА И ОБНОВЛЕНИЯ =====
+
+    /// <summary>
+    /// Сбрасывает все фильтры и сортировку - очищает ComboBox и TextBox
+    /// </summary>
     public void ResetFilters(ComboBox comboSort = null, ComboBox comboFilter = null, TextBox textSearch = null)
     {
         if (comboSort != null)
@@ -556,6 +654,9 @@ public class DataManipulation
         view.Sort = "";
     }
 
+    /// <summary>
+    /// Обновляет Label с количеством отображаемых записей после фильтрации
+    /// </summary>
     public void UpdateRecordCountLabel(Label label)
     {
         int visibleCount = view.Count;

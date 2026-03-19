@@ -30,11 +30,16 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.ClearSelection();
         }
 
+        /// <summary>
+        /// Устанавливает минимальную и максимальную дату в календарях на основе первого и последнего заказа
+        /// </summary>
         private void SetDatePickerRange()
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
                 con.Open();
+
+                // Получаем первую и последнюю дату заказов из БД
                 MySqlCommand cmd = new MySqlCommand("SELECT MIN(OrderDate) AS FirstDate, MAX(OrderDate) AS LastDate FROM `Order`", con);
 
                 using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -44,6 +49,7 @@ namespace WebSiteDev.ManagerForm
                         DateTime firstDate = DateTime.Now;
                         DateTime lastDate = DateTime.Now;
 
+                        // Если дата не null - используем её, иначе используем текущую дату
                         if (reader["FirstDate"] != DBNull.Value)
                         {
                             firstDate = Convert.ToDateTime(reader["FirstDate"]);
@@ -54,11 +60,13 @@ namespace WebSiteDev.ManagerForm
                             lastDate = Convert.ToDateTime(reader["LastDate"]);
                         }
 
+                        // Устанавливаем диапазон для первого календаря (начальная дата)
                         dateTimePicker1.MinDate = firstDate;
                         dateTimePicker1.MaxDate = lastDate;
                         dateTimePicker1.Value = firstDate;
                         dateTimePicker1.CustomFormat = "dd.MM.yyyy";
 
+                        // Устанавливаем диапазон для второго календаря (конечная дата)
                         dateTimePicker2.MinDate = firstDate;
                         dateTimePicker2.MaxDate = lastDate;
                         dateTimePicker2.Value = lastDate;
@@ -68,15 +76,20 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Загружает заказы за выбранный период из БД и отображает их в таблице
+        /// </summary>
         private void GetDate()
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
                 con.Open();
 
+                // Формируем даты для фильтрации
                 string dateFromStr = dateTimePicker1.Value.Date.ToString("yyyy-MM-dd");
                 string dateToStr = dateTimePicker2.Value.Date.ToString("yyyy-MM-dd");
 
+                // Получаем заказы за выбранный период
                 MySqlCommand cmd = new MySqlCommand($@"
                     SELECT 
                         o.OrderID,
@@ -101,11 +114,14 @@ namespace WebSiteDev.ManagerForm
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
+                // Сохраняем оригинальные имена для маскирования
                 dataSecurity.LoadOriginalClientNames(dt, "ClientName");
                 dataSecurity.LoadOriginalUserNames(dt, "UserName");
                 lastRevealedRowIndex = -1;
 
                 dataGridView1.DataSource = dt;
+
+                // Устанавливаем заголовки колонок
                 dataGridView1.Columns["OrderID"].HeaderText = "№ заказа";
                 dataGridView1.Columns["ClientName"].HeaderText = "Клиент";
                 dataGridView1.Columns["UserName"].HeaderText = "Сотрудник";
@@ -115,6 +131,7 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["StatusName"].HeaderText = "Статус";
                 dataGridView1.Columns["OrderCost"].HeaderText = "Итоговая цена";
 
+                // Отключаем сортировку по клику
                 dataGridView1.Columns["OrderID"].SortMode = DataGridViewColumnSortMode.NotSortable;
                 dataGridView1.Columns["ClientName"].SortMode = DataGridViewColumnSortMode.NotSortable;
                 dataGridView1.Columns["UserName"].SortMode = DataGridViewColumnSortMode.NotSortable;
@@ -126,17 +143,23 @@ namespace WebSiteDev.ManagerForm
 
                 dataManipulation = new DataManipulation(dt);
 
+                // Показываем количество заказов за период
                 MySqlCommand count = new MySqlCommand($"SELECT COUNT(*) FROM `Order` WHERE DATE(OrderDate) BETWEEN '{dateFromStr}' AND '{dateToStr}'", con);
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
                 label1.Text = "Количество записей: " + resultcount;
 
+                // Применяем фильтры и сортировку
                 dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
                 dataManipulation.UpdateRecordCountLabel(label1);
 
+                // Окрашиваем строки в зависимости от статуса
                 ColorizeRowsByStatus();
             }
         }
 
+        /// <summary>
+        /// При вводе номера заказа - фильтрует таблицу
+        /// </summary>
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             if (dataManipulation == null)
@@ -152,14 +175,19 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.Refresh();
         }
 
+        /// <summary>
+        /// Кнопка "Создать отчёт" - экспортирует данные в Excel файл
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
+            // Проверяем есть ли данные
             if (dataGridView1.Rows.Count == 0)
             {
                 MessageBox.Show("Нет данных для формирования отчёта!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
+            // Проверяем установлен ли Microsoft Excel
             if (!IsExcelInstalled())
             {
                 MessageBox.Show(
@@ -173,6 +201,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Формируем сообщение подтверждения с параметрами отчёта
             string message = "Вы хотите создать отчёт со следующими параметрами:\n\n";
             message = message + "Период: с " + dateTimePicker1.Value.ToString("dd.MM.yyyy") + " по " + dateTimePicker2.Value.ToString("dd.MM.yyyy") + "\n";
 
@@ -181,6 +210,7 @@ namespace WebSiteDev.ManagerForm
                 message = message + "Поиск по номеру заказа: " + textBox1.Text + "\n";
             }
 
+            // Получаем выбранный статус
             string selectedStatus = "";
             if (comboBox1.SelectedIndex > 0)
             {
@@ -200,6 +230,7 @@ namespace WebSiteDev.ManagerForm
                 }
             }
 
+            // Получаем выбранную сортировку
             string selectedSort = "";
             if (comboBox3.SelectedIndex > 0)
             {
@@ -221,6 +252,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Собираем стоимости всех заказов
             List<decimal> orderCosts = new List<decimal>();
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
@@ -233,6 +265,7 @@ namespace WebSiteDev.ManagerForm
                 }
             }
 
+            // Экспортируем в Excel
             ExcelReport.ExportToExcel(
                 dataGridView1,
                 orderCosts,
@@ -244,6 +277,9 @@ namespace WebSiteDev.ManagerForm
             );
         }
 
+        /// <summary>
+        /// Проверяет установлен ли Microsoft Excel на компьютере
+        /// </summary>
         private bool IsExcelInstalled()
         {
             try
@@ -269,6 +305,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// При изменении сортировки - применяет фильтры
+        /// </summary>
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (dataManipulation == null)
@@ -283,6 +322,9 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.Refresh();
         }
 
+        /// <summary>
+        /// При изменении фильтра по статусу - применяет фильтры
+        /// </summary>
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (dataManipulation == null)
@@ -297,6 +339,9 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.Refresh();
         }
 
+        /// <summary>
+        /// Кнопка "Сброс фильтров" - очищает все фильтры и загружает заново
+        /// </summary>
         private void button4_Click(object sender, EventArgs e)
         {
             dataManipulation.ResetFilters(comboBox3, comboBox1, textBox1);
@@ -307,11 +352,17 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.Refresh();
         }
 
+        /// <summary>
+        /// Ограничивает ввод в поле поиска только цифрами
+        /// </summary>
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyNumbers(e);
         }
 
+        /// <summary>
+        /// Двойной клик на строку таблицы - открывает форму со составом заказа
+        /// </summary>
         private void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.RowIndex >= 0 && dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value != null)
@@ -322,6 +373,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Пункт контекстного меню - просмотр состава заказа
+        /// </summary>
         private void просмотрСоставаЗаказаToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedRows.Count > 0)
@@ -336,6 +390,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Правый клик на таблице - выделяет строку для контекстного меню
+        /// </summary>
         private void dataGridView1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -349,6 +406,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// При изменении начальной даты - обновляет минимальную дату конечной и перезагружает данные
+        /// </summary>
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
             dateTimePicker2.MinDate = dateTimePicker1.Value;
@@ -357,6 +417,9 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.ClearSelection();
         }
 
+        /// <summary>
+        /// При изменении конечной даты - перезагружает данные
+        /// </summary>
         private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
         {
             GetDate();
@@ -364,6 +427,9 @@ namespace WebSiteDev.ManagerForm
             dataGridView1.ClearSelection();
         }
 
+        /// <summary>
+        /// Форматирует отображение ячеек - окрашивает по статусу, маскирует/показывает имена
+        /// </summary>
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -374,6 +440,7 @@ namespace WebSiteDev.ManagerForm
             int orderID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value);
             string status = dataGridView1.Rows[e.RowIndex].Cells["StatusName"].Value?.ToString();
 
+            // Окрашиваем строки в зависимости от статуса
             if (status == "Завершён")
             {
                 e.CellStyle.BackColor = System.Drawing.Color.LightGreen;
@@ -383,6 +450,7 @@ namespace WebSiteDev.ManagerForm
                 e.CellStyle.BackColor = System.Drawing.Color.IndianRed;
             }
 
+            // Если строка открыта (двойной клик) - показываем оригинальные данные
             if (e.RowIndex == lastRevealedRowIndex)
             {
                 if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
@@ -406,6 +474,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Маскируем имена для защиты данных
             if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
             {
                 string original = dataSecurity.GetOriginalClientName(orderID);
@@ -427,6 +496,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Двойной клик на ячейку - показывает/скрывает оригинальные имена на 20 секунд
+        /// </summary>
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -442,6 +514,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Закрываем предыдущую открытую строку
             if (lastRevealedRowIndex >= 0)
             {
                 int previousRow = lastRevealedRowIndex;
@@ -449,6 +522,7 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.InvalidateRow(previousRow);
             }
 
+            // Открываем новую строку
             lastRevealedRowIndex = e.RowIndex;
             dataGridView1.InvalidateRow(e.RowIndex);
 
@@ -456,6 +530,9 @@ namespace WebSiteDev.ManagerForm
             timer1.Start();
         }
 
+        /// <summary>
+        /// Таймер - срабатывает через 20 секунд и скрывает открытые данные
+        /// </summary>
         private void Timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
@@ -468,6 +545,10 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Окрашивает строки таблицы в зависимости от статуса заказа
+        /// Зелёный - Завершён, Красный - Отменён
+        /// </summary>
         private void ColorizeRowsByStatus()
         {
             foreach (DataGridViewRow row in dataGridView1.Rows)

@@ -6,6 +6,9 @@ using WebSiteDev.AddForm;
 
 namespace WebSiteDev.ManagerForm
 {
+    /// <summary>
+    /// Контрол для управления клиентами с маскированием личных данных
+    /// </summary>
     public partial class ClientsControl : UserControl
     {
         private DataManipulation dataManipulation;
@@ -26,10 +29,14 @@ namespace WebSiteDev.ManagerForm
             comboBox2.SelectedIndex = 0;
             dataGridView1.ClearSelection();
 
+            // Таймер для скрытия данных через 20 секунд
             timer1.Interval = 20000;
             timer1.Stop();
         }
 
+        /// <summary>
+        /// Загружает всех клиентов из БД и отображает их в таблице
+        /// </summary>
         void GetDate()
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
@@ -44,6 +51,7 @@ namespace WebSiteDev.ManagerForm
 
                 da.Fill(dt);
 
+                // Сохраняем оригинальные данные для маскирования
                 dataSecurity.LoadOriginalData(dt, "", "PhoneNumber", "FirstName", "MiddleName");
                 lastRevealedRowIndex = -1;
 
@@ -55,6 +63,7 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["PhoneNumber"].HeaderText = "Телефон";
                 dataGridView1.Columns["Email"].HeaderText = "Эл. почта";
 
+                // Отключаем сортировку по клику на заголовок
                 dataGridView1.Columns["Surname"].SortMode = DataGridViewColumnSortMode.NotSortable;
                 dataGridView1.Columns["FirstName"].SortMode = DataGridViewColumnSortMode.NotSortable;
                 dataGridView1.Columns["MiddleName"].SortMode = DataGridViewColumnSortMode.NotSortable;
@@ -63,6 +72,7 @@ namespace WebSiteDev.ManagerForm
 
                 dataManipulation = new DataManipulation(dt);
 
+                // Показываем количество клиентов
                 MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM Clients", con);
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
                 label1.Text = $"Количество записей: {resultcount}";
@@ -165,6 +175,9 @@ namespace WebSiteDev.ManagerForm
             InputRest.EmailInput(e);
         }
 
+        /// <summary>
+        /// При клике на строку - загружает данные клиента в поля редактирования
+        /// </summary>
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -179,6 +192,7 @@ namespace WebSiteDev.ManagerForm
 
                 textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["Surname"].Value.ToString();
 
+                // Получаем оригинальное имя из защитного хранилища
                 string firstName = dataSecurity.GetOriginalFirstName(selectedClientID);
                 if (firstName != null)
                 {
@@ -189,6 +203,7 @@ namespace WebSiteDev.ManagerForm
                     textBox3.Text = dataGridView1.Rows[e.RowIndex].Cells["FirstName"].Value.ToString();
                 }
 
+                // Получаем оригинальное отчество из защитного хранилища
                 string middleName = dataSecurity.GetOriginalMiddleName(selectedClientID);
                 if (middleName != null)
                 {
@@ -199,6 +214,7 @@ namespace WebSiteDev.ManagerForm
                     textBox4.Text = dataGridView1.Rows[e.RowIndex].Cells["MiddleName"].Value.ToString();
                 }
 
+                // Получаем оригинальный номер телефона из защитного хранилища
                 string phoneNumber = dataSecurity.GetOriginalPhone(selectedClientID);
                 if (phoneNumber != null)
                 {
@@ -211,6 +227,7 @@ namespace WebSiteDev.ManagerForm
 
                 string email = dataGridView1.Rows[e.RowIndex].Cells["Email"].Value.ToString();
 
+                // Разбиваем email на часть и домен
                 if (email.Contains("@"))
                 {
                     string[] emailParts = email.Split('@');
@@ -239,11 +256,38 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Редактирует выбранного клиента
+        /// </summary>
         private void button6_Click(object sender, EventArgs e)
         {
-            if (selectedClientID == -1 || string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox3.Text) || string.IsNullOrWhiteSpace(textBox5.Text) || comboBox2.SelectedIndex < 0)
+            if (selectedClientID == -1)
             {
                 MessageBox.Show("Клиент не выбран!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(textBox2.Text))
+            {
+                MessageBox.Show("Заполните фамилию!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(textBox3.Text))
+            {
+                MessageBox.Show("Заполните имя!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!maskedTextBox1.MaskFull)
+            {
+                MessageBox.Show("Введите корректный номер телефона!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(textBox5.Text))
+            {
+                MessageBox.Show("Заполните логин электронную почту!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -256,6 +300,7 @@ namespace WebSiteDev.ManagerForm
             string phone = maskedTextBox1.Text;
             string domain = comboBox2.SelectedItem.ToString();
 
+            // Формируем полный email
             string fullEmail;
             if (textBox5.Text.Contains("@"))
             {
@@ -277,6 +322,7 @@ namespace WebSiteDev.ManagerForm
             {
                 MessageBox.Show("Клиент успешно изменён!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                // Обновляем защитное хранилище с новыми данными
                 using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
                 {
                     con.Open();
@@ -293,12 +339,20 @@ namespace WebSiteDev.ManagerForm
                     }
                 }
 
+                // Обновляем таблицу
                 for (int i = 0; i < dataGridView1.Rows.Count; i++)
                 {
                     int clientID = Convert.ToInt32(dataGridView1.Rows[i].Cells["ClientID"].Value);
                     if (clientID == selectedClientID)
                     {
+                        dataGridView1.Rows[i].Cells["Surname"].Value = textBox2.Text.Trim();
+                        dataGridView1.Rows[i].Cells["FirstName"].Value = textBox3.Text.Trim();
+                        dataGridView1.Rows[i].Cells["MiddleName"].Value = textBox4.Text.Trim();
+                        dataGridView1.Rows[i].Cells["PhoneNumber"].Value = maskedTextBox1.Text;
+                        dataGridView1.Rows[i].Cells["Email"].Value = fullEmail;
+
                         dataGridView1.Rows[i].Selected = true;
+                        dataGridView1.InvalidateRow(i);
 
                         textBox2.Text = dataGridView1.Rows[i].Cells["Surname"].Value.ToString();
 
@@ -364,6 +418,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Удаляет выбранного клиента
+        /// </summary>
         private void button7_Click(object sender, EventArgs e)
         {
             if (selectedClientID == -1)
@@ -389,6 +446,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Форматирует отображение ячеек: показывает оригинальные данные для открытой строки или маскирует
+        /// </summary>
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -398,6 +458,7 @@ namespace WebSiteDev.ManagerForm
 
             int clientID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ClientID"].Value);
 
+            // Если строка открыта - показываем оригинальные значения
             if (e.RowIndex == lastRevealedRowIndex)
             {
                 if (dataGridView1.Columns[e.ColumnIndex].Name == "PhoneNumber")
@@ -430,6 +491,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Маскируем чувствительные данные для других строк
             if (dataGridView1.Columns[e.ColumnIndex].Name == "PhoneNumber")
             {
                 string original = dataSecurity.GetOriginalPhone(clientID);
@@ -459,6 +521,9 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        /// <summary>
+        /// Двойной клик на ячейку - показывает/скрывает чувствительные данные на 20 секунд
+        /// </summary>
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -474,6 +539,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            // Закрываем предыдущую открытую строку если она была
             if (lastRevealedRowIndex >= 0)
             {
                 int previousRow = lastRevealedRowIndex;
@@ -481,6 +547,7 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.InvalidateRow(previousRow);
             }
 
+            // Открываем новую строку
             lastRevealedRowIndex = e.RowIndex;
             dataGridView1.InvalidateRow(e.RowIndex);
 
@@ -488,6 +555,9 @@ namespace WebSiteDev.ManagerForm
             timer1.Start();
         }
 
+        /// <summary>
+        /// Таймер срабатывает через 20 секунд - скрывает открытые чувствительные данные
+        /// </summary>
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
