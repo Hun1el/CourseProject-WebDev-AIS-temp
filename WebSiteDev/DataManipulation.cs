@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using WebSiteDev;
 
 public class DataManipulation
 {
@@ -12,6 +13,10 @@ public class DataManipulation
     {
         data = table;
         view = data.DefaultView;
+    }
+    public DataTable Table
+    {
+        get { return data; }
     }
 
     // Методы для применения всех функций
@@ -204,16 +209,22 @@ public class DataManipulation
         if (comboFilter.SelectedIndex > 0)
         {
             string selectedCategory = comboFilter.SelectedItem.ToString().Replace("'", "''");
-            filters.Add($"Category = '{selectedCategory}'");
+            filters.Add("Category = '" + selectedCategory + "'");
         }
 
-        string currentSearch = view.RowFilter;
-        if (!string.IsNullOrEmpty(currentSearch))
+        if (!string.IsNullOrEmpty(view.RowFilter))
         {
-            filters.Add(currentSearch);
+            filters.Add(view.RowFilter);
         }
 
-        view.RowFilter = string.Join(" AND ", filters);
+        if (filters.Count > 0)
+        {
+            view.RowFilter = string.Join(" AND ", filters);
+        }
+        else
+        {
+            view.RowFilter = "";
+        }
     }
 
     public void ApplyFilterOrder(ComboBox comboFilter)

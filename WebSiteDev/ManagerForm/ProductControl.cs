@@ -24,6 +24,7 @@ namespace WebSiteDev.ManagerForm
             InitializeComponent();
             userRole = role;
             GetDate();
+            LoadCategoriesFromDataTable();
         }
 
         public bool update = false;
@@ -77,9 +78,35 @@ namespace WebSiteDev.ManagerForm
 
         }
 
+        private void LoadCategoriesFromDataTable()
+        {
+            using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+            {
+                try
+                {
+                    con.Open();
+                    MySqlCommand cmd = new MySqlCommand("SELECT CategoryName FROM Category ORDER BY CategoryName", con);
+                    MySqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        comboBox1.Items.Add(reader.GetString("CategoryName"));
+                    }
+
+                    comboBox1.SelectedIndex = 0;
+                    dataGridView1.Columns["ProductID"].Visible = false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка загрузки категорий: " + ex.Message);
+                }
+            }
+        }
+
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllProduct(comboBox3, comboBox1, textBox1);
+            InputRest.FirstLetter(textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -137,6 +164,36 @@ namespace WebSiteDev.ManagerForm
         {
             dataManipulation.ResetFilters(comboSort: comboBox3, comboFilter: comboBox1, textSearch: textBox1);
             dataManipulation.ApplyAllProduct(comboBox3, comboBox1, textBox1);
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.AllowAll(e);
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox2);
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox3);
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.AllowAll(e);
+        }
+
+        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.RussianEnglishAndDigits(e);
+        }
+
+        private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyNumbers(e);
         }
     }
 }

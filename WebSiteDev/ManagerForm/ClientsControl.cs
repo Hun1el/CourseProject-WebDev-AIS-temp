@@ -60,6 +60,7 @@ namespace WebSiteDev.ManagerForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllClient(comboBox3, textBox1);
+            InputRest.FirstLetter(textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -122,6 +123,41 @@ namespace WebSiteDev.ManagerForm
         {
             dataManipulation.ResetFilters(comboSort: comboBox3, textSearch: textBox1);
             dataManipulation.ApplyAllClient(comboBox3, textBox1);
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox2);
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox3);
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox4);
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussianAndDash(e);
+        }
+
+        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussianAndDash(e);
+        }
+
+        private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussian(e);
+        }
+
+        private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.EmailInput(e);
         }
     }
 }
