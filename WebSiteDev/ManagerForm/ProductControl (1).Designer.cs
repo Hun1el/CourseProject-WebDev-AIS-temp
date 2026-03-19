@@ -221,9 +221,9 @@
             // 
             this.button1.BackColor = System.Drawing.SystemColors.Control;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(346, 5);
+            this.button1.Location = new System.Drawing.Point(341, 5);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(139, 35);
+            this.button1.Size = new System.Drawing.Size(144, 35);
             this.button1.TabIndex = 4;
             this.button1.Text = "Корзина\r\n";
             this.button1.UseVisualStyleBackColor = false;
