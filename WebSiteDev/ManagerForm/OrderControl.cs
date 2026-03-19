@@ -1,10 +1,12 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 using WebSiteDev.AddForm;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace WebSiteDev.ManagerForm
 {
@@ -14,10 +16,15 @@ namespace WebSiteDev.ManagerForm
         private string userRole;
         public bool update = false;
 
-        public OrderControl(string role)
+        public static int CurrentUserID { get; set; } = 0;
+        public static string CurrentUserName { get; set; } = "";
+
+        public OrderControl(string role, int userID = 0, string userName = "")
         {
             InitializeComponent();
             userRole = role;
+            CurrentUserID = userID;
+            CurrentUserName = userName;
             GetDate();
         }
 
@@ -113,9 +120,10 @@ namespace WebSiteDev.ManagerForm
             ProductControl.CurrentOrder.Clear();
 
             ManagerMainForm managerForm = (ManagerMainForm)this.FindForm();
-            managerForm.LoadControl(new ProductControl(userRole));
+            managerForm.LoadControl(new ProductControl(userRole, CurrentUserID, CurrentUserName));
             managerForm.Text = "Оформление заказа";
-            managerForm.StartOrderProcess();
+
+            managerForm.SelectButtonPublic(managerForm.Button2);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)

@@ -37,7 +37,7 @@ namespace WebSiteDev
                 try
                 {
                     connection.Open();
-                    string query = @"SELECT u.FirstName, u.Surname, u.MiddleName, r.RoleName 
+                    string query = @"SELECT u.UserID, u.FirstName, u.Surname, u.MiddleName, r.RoleName 
                                      FROM Users u JOIN Role r ON u.RoleID = r.RoleID 
                                      WHERE u.UserLogin = @login AND u.UserPassword = @password
                                      LIMIT 1;";
@@ -50,6 +50,7 @@ namespace WebSiteDev
                     {
                         if (reader.Read())
                         {
+                            int userID = Convert.ToInt32(reader["UserID"]);
                             string fullName = $"{reader["Surname"]} {reader["FirstName"]} {reader["MiddleName"]}";
                             string role = reader["RoleName"].ToString();
 
@@ -62,7 +63,7 @@ namespace WebSiteDev
                             }
                             else if (role == "Менеджер")
                             {
-                                ManagerMainForm managerForm = new ManagerMainForm(fullName, role);
+                                ManagerMainForm managerForm = new ManagerMainForm(fullName, role, userID);
                                 this.Hide();
                                 managerForm.ShowDialog();
                                 this.Show();

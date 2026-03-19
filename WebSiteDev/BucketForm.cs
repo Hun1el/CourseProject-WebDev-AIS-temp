@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using WebSiteDev.ManagerForm;
@@ -9,14 +10,18 @@ namespace WebSiteDev
     {
         private DataManipulation dataManipulation;
 
-        public BucketForm(DataManipulation dm)
+        public BucketForm(DataManipulation dm, int userID = 0, string userName = "")
         {
             InitializeComponent();
             LoadCartItems();
 
+            ProductControl.CurrentUserID = userID;
+            ProductControl.CurrentUserName = userName;
+
             dataManipulation = dm;
             dataManipulation.FillComboBoxWithClients(comboBox1, "Клиент не выбран");
             dataManipulation.FillComboBoxWithUsers(comboBox2, "Сотрудник не выбран");
+
         }
 
         private void BucketForm_Load(object sender, EventArgs e)
@@ -24,6 +29,17 @@ namespace WebSiteDev
             LoadCartItems();
             DateTime dateTimeNow = DateTime.Now;
             textBox1.Text = dateTimeNow.ToString("yyyy.MM.dd");
+
+            SelectCurrentUser();
+        }
+
+        private void SelectCurrentUser()
+        {
+            if (ProductControl.CurrentUserID > 0)
+            {
+                comboBox2.SelectedValue = ProductControl.CurrentUserID;
+                comboBox2.Enabled = false;
+            }
         }
 
         private void LoadCartItems()
@@ -77,7 +93,6 @@ namespace WebSiteDev
                 ForeColor = Color.Black
             };
 
-            // Картинка товара
             PictureBox pic = new PictureBox
             {
                 Size = new Size(135, 135),
@@ -103,16 +118,12 @@ namespace WebSiteDev
                             }
                         }
                     }
-                    catch 
-                    { 
-
-                    }
+                    catch { }
                 }
             }
 
             panel.Controls.Add(pic);
 
-            // Название товара
             Label labelName = new Label
             {
                 Text = item.ProductName,
@@ -135,7 +146,6 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelCategory);
 
-            // Количество
             Label labelQuantity = new Label
             {
                 Text = $"Кол-во: {item.Quantity}",
@@ -146,7 +156,6 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelQuantity);
 
-            // Цена за единицу
             Label labelPrice = new Label
             {
                 Text = $"Цена: {item.BasePrice} руб.",
@@ -157,7 +166,6 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelPrice);
 
-            // Общая стоимость
             Label labelSubtotal = new Label
             {
                 Text = $"Сумма: {item.BasePrice * item.Quantity} руб.",
@@ -169,7 +177,6 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelSubtotal);
 
-            // Кнопка "Удалить"
             Button buttonRemove = new Button
             {
                 Text = "Удалить",
@@ -233,11 +240,103 @@ namespace WebSiteDev
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (ProductControl.CurrentOrder.Items.Count > 0)
+            if (comboBox1.SelectedIndex == 0)
             {
-                MessageBox.Show("Заказ оформлен!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Выберите клиента!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (comboBox2.SelectedIndex == 0)
+            {
+                MessageBox.Show("Выберите сотрудника!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (ProductControl.CurrentOrder.Items.Count == 0)
+            {
+                MessageBox.Show("Корзина пуста!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (CreateOrderWithProducts())
+            {
+                MessageBox.Show("Заказ успешно оформлен!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ProductControl.CurrentOrder.Clear();
                 LoadCartItems();
+            }
+            else
+            {
+                MessageBox.Show("Ошибка при оформлении заказа!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private bool CreateOrderWithProducts()
+        {
+            using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+            {
+                try
+                {
+                    con.Open();
+                    MySqlTransaction transaction = con.BeginTransaction();
+
+                    try
+                    {
+                        if (comboBox1.SelectedValue == null || comboBox2.SelectedValue == null)
+                        {
+                            MessageBox.Show("Не выбран клиент или сотрудник", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
+
+                        int clientID = Convert.ToInt32(comboBox1.SelectedValue);
+                        int userID = Convert.ToInt32(comboBox2.SelectedValue);
+                        DateTime orderDate = DateTime.Now;
+                        DateTime orderCompDate = dateTimePicker1.Value;
+
+                        decimal totalCost = 0;
+
+                        foreach (var item in ProductControl.CurrentOrder.Items)
+                        {
+                            totalCost += item.BasePrice * item.Quantity;
+                        }
+
+                        string totalCostStr = totalCost.ToString().Replace(",", ".");
+
+                        string insertOrderQuery = "INSERT INTO `Order` (UserID, ClientID, OrderDate, OrderCompDate, ProductID, StatusID, OrderCost) " +
+                        "VALUES (" + userID + ", " + clientID + ", '" + orderDate.ToString("yyyy-MM-dd") + "', '" +
+                        orderCompDate.ToString("yyyy-MM-dd") + "', " + ProductControl.CurrentOrder.Items[0].ProductID +
+                        ", 1, " + totalCostStr + ")";
+
+                        MySqlCommand cmdOrder = new MySqlCommand(insertOrderQuery, con, transaction);
+                        cmdOrder.ExecuteNonQuery();
+
+                        MySqlCommand cmdGetOrderID = new MySqlCommand("SELECT LAST_INSERT_ID()", con, transaction);
+                        int orderID = Convert.ToInt32(cmdGetOrderID.ExecuteScalar());
+
+                        foreach (var item in ProductControl.CurrentOrder.Items)
+                        {
+                            string insertProductQuery = "INSERT INTO orderproduct (OrderID, ProductID, ProductCount) " +
+                                                        "VALUES (" + orderID + ", " + item.ProductID + ", " + item.Quantity + ")";
+
+                            MySqlCommand cmdProduct = new MySqlCommand(insertProductQuery, con, transaction);
+                            cmdProduct.ExecuteNonQuery();
+                        }
+
+                        transaction.Commit();
+
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show($"Ошибка БД: {ex.Message}", "Детали ошибки", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка подключения: {ex.Message}", "Детали ошибки", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
             }
         }
 

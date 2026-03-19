@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using WebSiteDev.AddForm;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace WebSiteDev.ManagerForm
 {
@@ -51,10 +52,15 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
-        public ProductControl(string role)
+        public static int CurrentUserID { get; set; } = 0;
+        public static string CurrentUserName { get; set; } = "";
+
+        public ProductControl(string role, int userID = 0, string userName = "")
         {
             InitializeComponent();
             userRole = role;
+            CurrentUserID = userID;
+            CurrentUserName = userName;
 
             GetDate();
             EnableLazyLoading();
@@ -62,7 +68,7 @@ namespace WebSiteDev.ManagerForm
 
             if (button1 != null)
             {
-                button1.Visible = true;
+                button1.Visible = false;
                 button1.Enabled = false;
                 button1.Text = "Просмотр заказа\n(0 товаров)";
             }
@@ -73,6 +79,10 @@ namespace WebSiteDev.ManagerForm
             if (userRole == "Менеджер")
             {
                 button2.Visible = false;
+            }
+            else if (this.FindForm().Text == "Список услуг")
+            {
+                button1.Visible = false;
             }
 
             comboBox3.SelectedIndex = 0;
@@ -239,12 +249,6 @@ namespace WebSiteDev.ManagerForm
             ApplyFilters();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            FormControl.Resize(this.FindForm(), 1500);
-            update = true;
-        }
-
         private void button3_Click(object sender, EventArgs e)
         {
             FormControl.Resize(this.FindForm(), 1175);
@@ -364,10 +368,13 @@ namespace WebSiteDev.ManagerForm
                 button1.ForeColor = Color.White;
                 button1.BackColor = Color.FromArgb(45, 156, 219);
                 int totalQuantity = 0;
+
                 foreach (var item in CurrentOrder.Items)
                 {
                     totalQuantity += item.Quantity;
                 }
+
+                button1.Visible = totalQuantity > 0;
 
                 string wordEnding = GetWordEnding(totalQuantity);
                 button1.Text = $"Просмотр заказа\n({totalQuantity} {wordEnding})";
@@ -408,7 +415,7 @@ namespace WebSiteDev.ManagerForm
         {
             if (selectedCard != null && selectedCard.Tag is int)
             {
-                int productID = (int)selectedCard.Tag;
+                int productID = Convert.ToInt32(selectedCard.Tag);
 
                 DataRowView row = null;
                 foreach (DataRowView drv in dataManipulation.view)
@@ -447,10 +454,16 @@ namespace WebSiteDev.ManagerForm
 
                         CurrentOrder.Items.Add(newItem);
                         UpdateOrderButtonVisibility();
+
+                        contextMenuStrip1.Close();                  
+                    }
+                    else
+                    {
+                        contextMenuStrip1.Close();
+                        MessageBox.Show($"Товар \"{productName}\" уже в корзине.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
             }
-
         }
 
         private void ProductControl_Leave(object sender, EventArgs e)
@@ -458,16 +471,13 @@ namespace WebSiteDev.ManagerForm
             CurrentOrder.Clear();
             UpdateOrderButtonVisibility();
             var managerForm = this.FindForm() as ManagerMainForm;
-            if (managerForm != null)
-            {
-                managerForm.EndOrderProcess();
-            }
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            BucketForm bucketForm = new BucketForm(dataManipulation);
+            BucketForm bucketForm = new BucketForm(dataManipulation, CurrentUserID, CurrentUserName);
             bucketForm.ShowDialog();
+            UpdateOrderButtonVisibility();
         }
     }
 }
