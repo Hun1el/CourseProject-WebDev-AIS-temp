@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -118,7 +119,7 @@
     <Compile Include="DirectorForm\DirectorOrderControl.Designer.cs">
       <DependentUpon>DirectorOrderControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormResizer.cs" />
+    <Compile Include="FormControl.cs" />
     <Compile Include="InputRest.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -293,6 +294,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\no_image.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

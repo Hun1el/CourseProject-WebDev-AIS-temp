@@ -86,6 +86,8 @@ namespace WebSiteDev
                 catch (Exception ex)
                 {
                     MessageBox.Show("Ошибка подключения к базе данных:\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    textBox1.Text = "";
+                    textBox2.Text = "";
                 }
             }
         }

@@ -31,7 +31,7 @@ namespace WebSiteDev.AdminForm
             comboBox3.SelectedIndex = 0;
         }
 
-        void GetDate()
+        public void GetDate()
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
@@ -50,8 +50,11 @@ namespace WebSiteDev.AdminForm
                 dataGridView1.Columns["CategoryName"].HeaderText = "Категория";
 
                 dataManipulation = new DataManipulation(dt);
-            }
 
+                MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM Category", con);
+                int resultcount = Convert.ToInt32(count.ExecuteScalar());
+                label1.Text = $"Количество записей: {resultcount}";
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -62,13 +65,13 @@ namespace WebSiteDev.AdminForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1500);
+            FormControl.Resize(this.FindForm(), 1500);
             update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1175);
+            FormControl.Resize(this.FindForm(), 1175);
             update = true;
         }
 
@@ -76,6 +79,7 @@ namespace WebSiteDev.AdminForm
         {
             AddCategoryForm addCategoryForm = new AddCategoryForm();
             addCategoryForm.ShowDialog();
+            GetDate();
         }
 
         private void button4_Click(object sender, EventArgs e)

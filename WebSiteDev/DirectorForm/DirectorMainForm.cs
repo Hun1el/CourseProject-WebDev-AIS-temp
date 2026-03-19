@@ -15,6 +15,7 @@ namespace WebSiteDev.ManagerForm
         private string fullName;
         private string roleName;
         private Button currentSelectedButton = null;
+        private UserControl currentControl = null;
 
         public DirectorMainForm(string fullName, string roleName)
         {
@@ -31,18 +32,31 @@ namespace WebSiteDev.ManagerForm
 
         private void LoadControl(UserControl control)
         {
-            foreach (Control c in panel2.Controls)
+            pictureBox2.Visible = false;
+            label1.Visible = false;
+            label2.Visible = false;
+            label3.Visible = false;
+
+            if (currentControl != null)
             {
-                c.Dispose();
+                panel2.Controls.Remove(currentControl);
+                currentControl.Dispose();
+                currentControl = null;
             }
-            panel2.Controls.Clear();
 
             control.Dock = DockStyle.Fill;
             panel2.Controls.Add(control);
+
+            currentControl = control;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button3)
+            {
+                return;
+            }
+
             SelectButton(button3);
             LoadControl(new DirectorOrderControl());
             this.Text = "Учет заказов";
@@ -55,6 +69,12 @@ namespace WebSiteDev.ManagerForm
 
             if (result == DialogResult.Yes)
             {
+                if (currentControl != null)
+                {
+                    FormControl.ClearPanelControls(panel2);
+                    currentControl = null;
+                }
+
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

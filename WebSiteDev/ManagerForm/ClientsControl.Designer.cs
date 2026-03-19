@@ -86,7 +86,7 @@ namespace WebSiteDev.ManagerForm
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(277, 333);
+            this.button2.Location = new System.Drawing.Point(191, 333);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(106, 32);
             this.button2.TabIndex = 10;
@@ -119,11 +119,10 @@ namespace WebSiteDev.ManagerForm
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(0, 294);
+            this.label1.Location = new System.Drawing.Point(2, 294);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(114, 13);
+            this.label1.Size = new System.Drawing.Size(0, 13);
             this.label1.TabIndex = 17;
-            this.label1.Text = "Количество записей:";
             // 
             // label2
             // 
@@ -253,7 +252,7 @@ namespace WebSiteDev.ManagerForm
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(134, 333);
+            this.button7.Location = new System.Drawing.Point(8, 333);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(106, 32);
             this.button7.TabIndex = 37;

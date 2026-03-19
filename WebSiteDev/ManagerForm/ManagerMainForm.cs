@@ -15,6 +15,7 @@ namespace WebSiteDev.ManagerForm
         private string fullName;
         private string roleName;
         private Button currentSelectedButton = null;
+        private UserControl currentControl = null;
 
         public ManagerMainForm(string fullName, string roleName)
         {
@@ -32,18 +33,31 @@ namespace WebSiteDev.ManagerForm
 
         private void LoadControl(UserControl control)
         {
-            foreach (Control c in panel2.Controls)
+            pictureBox2.Visible = false;
+            label1.Visible = false;
+            label2.Visible = false;
+            label3.Visible = false;
+
+            if (currentControl != null)
             {
-                c.Dispose();
+                panel2.Controls.Remove(currentControl);
+                currentControl.Dispose();
+                currentControl = null;
             }
-            panel2.Controls.Clear();
 
             control.Dock = DockStyle.Fill;
             panel2.Controls.Add(control);
+
+            currentControl = control;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button1)
+            {
+                return;
+            }
+
             LoadControl(new ManagerForm.ClientsControl());
             this.Text = "Список клиентов";
             SelectButton(button1);
@@ -51,6 +65,11 @@ namespace WebSiteDev.ManagerForm
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button2)
+            {
+                return;
+            }
+
             LoadControl(new ManagerForm.ProductControl(roleName));
             this.Text = "Список услуг";
             SelectButton(button2);
@@ -58,6 +77,11 @@ namespace WebSiteDev.ManagerForm
 
         private void button3_Click(object sender, EventArgs e)
         {
+            if (currentSelectedButton == button3)
+            {
+                return;
+            }
+
             LoadControl(new ManagerForm.OrderControl(roleName));
             this.Text = "Список заказов";
             SelectButton(button3);
@@ -70,6 +94,12 @@ namespace WebSiteDev.ManagerForm
 
             if (result == DialogResult.Yes)
             {
+                if (currentControl != null)
+                {
+                    FormControl.ClearPanelControls(panel2);
+                    currentControl = null;
+                }
+
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

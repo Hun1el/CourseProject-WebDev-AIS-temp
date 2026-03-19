@@ -37,7 +37,6 @@ namespace WebSiteDev.ManagerForm
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.button1 = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -63,7 +62,7 @@ namespace WebSiteDev.ManagerForm
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(264, 320);
+            this.button2.Location = new System.Drawing.Point(207, 322);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(123, 32);
             this.button2.TabIndex = 10;
@@ -115,11 +114,10 @@ namespace WebSiteDev.ManagerForm
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(0, 294);
+            this.label1.Location = new System.Drawing.Point(2, 294);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(114, 13);
+            this.label1.Size = new System.Drawing.Size(0, 13);
             this.label1.TabIndex = 17;
-            this.label1.Text = "Количество записей:";
             // 
             // label2
             // 
@@ -141,15 +139,6 @@ namespace WebSiteDev.ManagerForm
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(182, 20);
             this.dateTimePicker1.TabIndex = 44;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(135, 320);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(123, 32);
-            this.button1.TabIndex = 45;
-            this.button1.Text = "Печать чека";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // label11
             // 
@@ -202,7 +191,6 @@ namespace WebSiteDev.ManagerForm
             this.Controls.Add(this.label10);
             this.Controls.Add(this.comboBox3);
             this.Controls.Add(this.label11);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.dateTimePicker1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -230,7 +218,6 @@ namespace WebSiteDev.ManagerForm
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Label label10;

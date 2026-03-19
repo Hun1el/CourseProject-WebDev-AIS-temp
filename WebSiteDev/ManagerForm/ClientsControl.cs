@@ -55,6 +55,10 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["Email"].HeaderText = "Эл. почта";
 
                 dataManipulation = new DataManipulation(dt);
+
+                MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM Clients", con);
+                int resultcount = Convert.ToInt32(count.ExecuteScalar());
+                label1.Text = $"Количество записей: {resultcount}";
             }
         }
 
@@ -66,13 +70,13 @@ namespace WebSiteDev.ManagerForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1500);
+            FormControl.Resize(this.FindForm(), 1500);
             update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            FormResizer.Resize(this.FindForm(), 1175);
+            FormControl.Resize(this.FindForm(), 1175);
             update = true;
         }
         private void maskedTextBox1_Enter(object sender, EventArgs e)
@@ -89,6 +93,7 @@ namespace WebSiteDev.ManagerForm
         {
             AddClientsForm addClientsForm = new AddClientsForm();
             addClientsForm.ShowDialog();
+            GetDate();
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
