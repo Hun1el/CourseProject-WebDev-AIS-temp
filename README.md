@@ -174,3 +174,13 @@
 ### Подключение к базе данных
 
 Зайдите в настройки на форме авторизации для изменения строки подключения к базе данных.
+
+
+---
+
+<div align="center">
+  
+  [![GitHub](https://img.shields.io/badge/GitHub-Hun1el-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Hun1el)
+  [![Email](https://img.shields.io/badge/Email-Anton-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:antonsolonikov@gmail.com)
+  
+</div>
