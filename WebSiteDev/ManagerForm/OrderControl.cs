@@ -55,22 +55,20 @@ namespace WebSiteDev.ManagerForm
                 con.Open();
 
                 MySqlCommand cmd = new MySqlCommand(@"
-            SELECT 
-                o.OrderID,
-                CONCAT(c.Surname, ' ', c.FirstName, ' ', c.MiddleName) AS ClientName,
-                CONCAT(u.Surname, ' ', u.FirstName, ' ', u.MiddleName) AS UserName,
-                o.OrderDate,
-                o.OrderCompDate,
-                GROUP_CONCAT(p.ProductName SEPARATOR ', ') AS ProductName,
-                s.StatusName,
-                o.OrderCost
-            FROM `Order` o
-            LEFT JOIN Clients c ON o.ClientID = c.ClientID
-            LEFT JOIN Users u ON o.UserID = u.UserID
-            LEFT JOIN orderproduct op ON o.OrderID = op.OrderID
-            LEFT JOIN Product p ON op.ProductID = p.ProductID
-            LEFT JOIN Status s ON o.StatusID = s.StatusID
-            GROUP BY o.OrderID", con);
+                SELECT o.OrderID,
+                    CONCAT(c.Surname, ' ', c.FirstName, ' ', COALESCE(c.MiddleName, '')) AS ClientName,
+                    CONCAT(u.Surname, ' ', u.FirstName, ' ', COALESCE(u.MiddleName, '')) AS UserName,
+                    o.OrderDate, o.OrderCompDate,
+                GROUP_CONCAT(DISTINCT p.ProductName SEPARATOR ', ') AS ProductName,
+                    s.StatusName, o.OrderCost
+                FROM `Order` o
+                LEFT JOIN Clients c ON o.ClientID = c.ClientID
+                LEFT JOIN Users u ON o.UserID = u.UserID
+                LEFT JOIN orderproduct op ON o.OrderID = op.OrderID
+                LEFT JOIN Product p ON op.ProductID = p.ProductID
+                LEFT JOIN Status s ON o.StatusID = s.StatusID
+                GROUP BY o.OrderID
+                ORDER BY o.OrderDate ASC", con);
 
                 cmd.ExecuteNonQuery();
 
@@ -117,6 +115,7 @@ namespace WebSiteDev.ManagerForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
         }
 
@@ -124,14 +123,14 @@ namespace WebSiteDev.ManagerForm
         {
             FormControl.Resize(this.FindForm(), 1500);
             update = true;
-            button1.Visible = false;
+            button1.Enabled = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             FormControl.Resize(this.FindForm(), 1175);
             update = true;
-            button1.Visible = true;
+            button1.Enabled = true;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -148,11 +147,13 @@ namespace WebSiteDev.ManagerForm
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
         }
 
         private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -161,11 +162,6 @@ namespace WebSiteDev.ManagerForm
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            InputRest.OnlyNumbers(e);
-        }
-
-        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyNumbers(e);
         }
@@ -200,6 +196,8 @@ namespace WebSiteDev.ManagerForm
             {
                 selectedOrderID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value);
                 currentStatus = dataGridView1.Rows[e.RowIndex].Cells["StatusName"].Value.ToString();
+
+                button5.Enabled = true;
 
                 try
                 {
@@ -346,6 +344,37 @@ namespace WebSiteDev.ManagerForm
             {
                 MessageBox.Show("Ошибка обновления.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите заказ для создания чека!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int orderID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["OrderID"].Value);
+            string clientName = dataGridView1.SelectedRows[0].Cells["ClientName"].Value.ToString();
+            string orderDate = Convert.ToDateTime(dataGridView1.SelectedRows[0].Cells["OrderDate"].Value).ToString("dd.MM.yyyy");
+            string statusName = dataGridView1.SelectedRows[0].Cells["StatusName"].Value.ToString();
+            string orderCost = dataGridView1.SelectedRows[0].Cells["OrderCost"].Value.ToString();
+
+            string message = "Вы хотите создать чек для следующего заказа?\n\n";
+            message = message + "Номер заказа: " + orderID + "\n";
+            message = message + "Клиент: " + clientName + "\n";
+            message = message + "Дата заказа: " + orderDate + "\n";
+            message = message + "Сумма: " + orderCost + " руб.\n\n";
+            message = message + "Продолжить?";
+
+            var result = MessageBox.Show(message, "Подтверждение создания чека", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            Doc.CheckWord.CreateCheck(orderID);
         }
     }
 }

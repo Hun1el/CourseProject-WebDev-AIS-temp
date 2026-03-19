@@ -228,9 +228,9 @@ namespace WebSiteDev.ManagerForm
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(503, 255);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(52, 13);
+            this.label9.Size = new System.Drawing.Size(93, 13);
             this.label9.TabIndex = 33;
-            this.label9.Text = "Телефон";
+            this.label9.Text = "Номер телефона";
             // 
             // button6
             // 
@@ -264,44 +264,45 @@ namespace WebSiteDev.ManagerForm
             // 
             // comboBox2
             // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.IntegralHeight = false;
             this.comboBox2.Items.AddRange(new object[] {
             "Домен не выбран",
-            "gmail.com",
-            "yahoo.com",
-            "hotmail.com",
-            "outlook.com",
-            "yandex.com",
-            "live.com",
-            "icloud.com",
-            "aol.com",
-            "protonmail.com",
-            "mail.com",
-            "gmx.com",
-            "zoho.com",
-            "fastmail.com",
-            "hey.com",
-            "pm.me",
-            "mail.ru",
-            "yandex.ru",
-            "bk.ru",
-            "inbox.ru",
-            "list.ru",
-            "rambler.ru",
-            "mail.ua",
-            "ukr.net",
-            "mail.kz",
-            "tut.by",
-            "yahoo.co.uk",
-            "yahoo.fr",
-            "yahoo.com.br",
-            "qq.com",
-            "163.com",
-            "126.com",
-            "sina.com",
-            "naver.com",
-            "daum.net"});
+            "@gmail.com",
+            "@yahoo.com",
+            "@hotmail.com",
+            "@outlook.com",
+            "@yandex.com",
+            "@live.com",
+            "@icloud.com",
+            "@aol.com",
+            "@protonmail.com",
+            "@mail.com",
+            "@gmx.com",
+            "@zoho.com",
+            "@fastmail.com",
+            "@hey.com",
+            "@pm.me",
+            "@mail.ru",
+            "@yandex.ru",
+            "@bk.ru",
+            "@inbox.ru",
+            "@list.ru",
+            "@rambler.ru",
+            "@mail.ua",
+            "@ukr.net",
+            "@mail.kz",
+            "@tut.by",
+            "@yahoo.co.uk",
+            "@yahoo.fr",
+            "@yahoo.com.br",
+            "@qq.com",
+            "@163.com",
+            "@126.com",
+            "@sina.com",
+            "@naver.com",
+            "@daum.net"});
             this.comboBox2.Location = new System.Drawing.Point(506, 231);
             this.comboBox2.MaxDropDownItems = 6;
             this.comboBox2.Name = "comboBox2";

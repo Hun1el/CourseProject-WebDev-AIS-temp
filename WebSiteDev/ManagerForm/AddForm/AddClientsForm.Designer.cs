@@ -50,7 +50,7 @@
             this.maskedTextBox1.Location = new System.Drawing.Point(12, 386);
             this.maskedTextBox1.Mask = "+7 (999) 000-00-00";
             this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(322, 29);
+            this.maskedTextBox1.Size = new System.Drawing.Size(335, 29);
             this.maskedTextBox1.TabIndex = 51;
             // 
             // label9
@@ -58,16 +58,16 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(8, 359);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(90, 24);
+            this.label9.Size = new System.Drawing.Size(162, 24);
             this.label9.TabIndex = 49;
-            this.label9.Text = "Телефон";
+            this.label9.Text = "Номер телефона";
             // 
             // textBox5
             // 
             this.textBox5.Location = new System.Drawing.Point(12, 246);
             this.textBox5.MaxLength = 100;
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(322, 29);
+            this.textBox5.Size = new System.Drawing.Size(335, 29);
             this.textBox5.TabIndex = 45;
             this.textBox5.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox5_KeyPress);
             // 
@@ -85,7 +85,7 @@
             this.textBox4.Location = new System.Drawing.Point(12, 176);
             this.textBox4.MaxLength = 90;
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(322, 29);
+            this.textBox4.Size = new System.Drawing.Size(335, 29);
             this.textBox4.TabIndex = 42;
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             this.textBox4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox4_KeyPress);
@@ -95,7 +95,7 @@
             this.textBox3.Location = new System.Drawing.Point(12, 106);
             this.textBox3.MaxLength = 75;
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(322, 29);
+            this.textBox3.Size = new System.Drawing.Size(335, 29);
             this.textBox3.TabIndex = 41;
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             this.textBox3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox3_KeyPress);
@@ -132,30 +132,35 @@
             this.textBox2.Location = new System.Drawing.Point(12, 36);
             this.textBox2.MaxLength = 90;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(322, 29);
+            this.textBox2.Size = new System.Drawing.Size(335, 29);
             this.textBox2.TabIndex = 37;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
             // button2
             // 
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.ForeColor = System.Drawing.Color.White;
             this.button2.Location = new System.Drawing.Point(12, 461);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(335, 43);
             this.button2.TabIndex = 52;
             this.button2.Text = "Добавить";
-            this.button2.UseVisualStyleBackColor = true;
+            this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
-            this.button1.ForeColor = System.Drawing.Color.Red;
+            this.button1.BackColor = System.Drawing.Color.Crimson;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(12, 510);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(335, 43);
             this.button1.TabIndex = 53;
             this.button1.Text = "Вернуться";
-            this.button1.UseVisualStyleBackColor = true;
+            this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label1
@@ -169,6 +174,7 @@
             // 
             // comboBox1
             // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.IntegralHeight = false;
             this.comboBox1.Items.AddRange(new object[] {
@@ -210,7 +216,7 @@
             this.comboBox1.Location = new System.Drawing.Point(12, 316);
             this.comboBox1.MaxDropDownItems = 6;
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(322, 32);
+            this.comboBox1.Size = new System.Drawing.Size(335, 32);
             this.comboBox1.TabIndex = 56;
             // 
             // AddClientsForm

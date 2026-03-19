@@ -97,12 +97,6 @@ namespace WebSiteDev.ManagerForm
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.IntegralHeight = false;
-            this.comboBox1.Items.AddRange(new object[] {
-            "Статус не выбран",
-            "Новый",
-            "В работе",
-            "Завершён",
-            "Отменён"});
             this.comboBox1.Location = new System.Drawing.Point(315, 52);
             this.comboBox1.MaxDropDownItems = 6;
             this.comboBox1.Name = "comboBox1";

@@ -254,7 +254,6 @@
             this.Name = "ProductControl";
             this.Size = new System.Drawing.Size(679, 371);
             this.Load += this.ProductControl_Load;
-            this.Leave += this.ProductControl_Leave;
 
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();

@@ -145,7 +145,7 @@ namespace WebSiteDev.ManagerForm
 
                     if (btn == button6)
                     {
-                        btn.ForeColor = Color.Red;
+                        btn.ForeColor = Color.White;
                         btn.BackColor = Color.Crimson;
                     }
                     else

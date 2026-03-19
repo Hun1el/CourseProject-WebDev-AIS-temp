@@ -13,6 +13,8 @@ namespace WebSiteDev
         public event EventHandler CancelEditClicked;
         public event EventHandler SaveButtonClicked;
 
+        private string originalImagePath;
+
         public DataRowView RowData { get; set; }
 
         public ProductCard()
@@ -73,18 +75,21 @@ namespace WebSiteDev
             if (img != null)
             {
                 img.CancelEdit();
-                img.InitializeImage(RowData["ProductPhoto"].ToString());
+                img.InitializeImage(originalImagePath);
             }
 
             if (CancelEditClicked != null)
             {
                 CancelEditClicked(this, e);
             }
+
             HideEditMode();
         }
 
         public void ShowEditMode(DataManipulation dataManipulation)
         {
+            originalImagePath = RowData["ProductPhoto"].ToString();
+
             textBox1.Text = label1.Text;
             textBox2.Text = label2.Text;
             textBox3.Text = RowData["BasePrice"].ToString();
@@ -185,6 +190,16 @@ namespace WebSiteDev
             {
                 e.Handled = true;
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox1);
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox2);
         }
     }
 }

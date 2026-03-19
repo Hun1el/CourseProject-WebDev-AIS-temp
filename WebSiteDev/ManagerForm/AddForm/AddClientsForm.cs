@@ -101,17 +101,30 @@ namespace WebSiteDev.AddForm
                 {
                     con.Open();
 
-                    string checkQuery = "SELECT COUNT(*) FROM Clients WHERE Email = '" + FullEmail + "' OR PhoneNumber = '" + PhoneNumber + "'";
-                    using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, con))
+                    string checkEmailQuery = "SELECT COUNT(*) FROM Clients WHERE Email = '" + FullEmail + "'";
+                    using (MySqlCommand checkEmailCmd = new MySqlCommand(checkEmailQuery, con))
                     {
-                        int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                        int emailCount = Convert.ToInt32(checkEmailCmd.ExecuteScalar());
 
-                        if (count > 0)
+                        if (emailCount > 0)
                         {
-                            MessageBox.Show("Клиент с таким email или телефоном уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("Клиент с таким email уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                     }
+
+                    string checkPhoneQuery = "SELECT COUNT(*) FROM Clients WHERE PhoneNumber = '" + PhoneNumber + "'";
+                    using (MySqlCommand checkPhoneCmd = new MySqlCommand(checkPhoneQuery, con))
+                    {
+                        int phoneCount = Convert.ToInt32(checkPhoneCmd.ExecuteScalar());
+
+                        if (phoneCount > 0)
+                        {
+                            MessageBox.Show("Клиент с таким номером телефона уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
 
                     string insertQuery = "INSERT INTO Clients (Surname, FirstName, MiddleName, Email, PhoneNumber) " +
                                          "VALUES ('" + SurName + "', '" + FirstName + "', '" + MiddleName + "', '" + FullEmail + "', '" + PhoneNumber + "')";

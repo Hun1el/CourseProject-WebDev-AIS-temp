@@ -78,9 +78,9 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(8, 458);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(90, 24);
+            this.label9.Size = new System.Drawing.Size(162, 24);
             this.label9.TabIndex = 49;
-            this.label9.Text = "Телефон";
+            this.label9.Text = "Номер телефона";
             // 
             // comboBox1
             // 

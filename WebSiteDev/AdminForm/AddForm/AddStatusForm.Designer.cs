@@ -40,9 +40,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(8, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(72, 24);
+            this.label1.Size = new System.Drawing.Size(218, 24);
             this.label1.TabIndex = 38;
-            this.label1.Text = "Статус";
+            this.label1.Text = "Наименование статуса";
             // 
             // textBox1
             // 

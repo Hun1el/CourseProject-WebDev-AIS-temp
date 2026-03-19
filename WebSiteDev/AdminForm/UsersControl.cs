@@ -76,6 +76,7 @@ namespace WebSiteDev.AdminForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
         }
 
@@ -120,11 +121,13 @@ namespace WebSiteDev.AdminForm
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
@@ -164,7 +167,7 @@ namespace WebSiteDev.AdminForm
 
         private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
         {
-            InputRest.EnglishDigitsAndSpecial(e);
+            InputRest.LoginInput(e);
         }
 
         private void textBox6_KeyPress(object sender, KeyPressEventArgs e)

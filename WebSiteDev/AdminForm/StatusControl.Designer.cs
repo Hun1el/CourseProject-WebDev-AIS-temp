@@ -141,9 +141,9 @@ namespace WebSiteDev.AdminForm
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(503, 59);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(41, 13);
+            this.label3.Size = new System.Drawing.Size(125, 13);
             this.label3.TabIndex = 21;
-            this.label3.Text = "Статус";
+            this.label3.Text = "Наименование статуса";
             // 
             // button6
             // 

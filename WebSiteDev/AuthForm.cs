@@ -81,6 +81,8 @@ namespace WebSiteDev
                         else
                         {
                             MessageBox.Show("Неверный логин или пароль!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            textBox1.Text = "";
+                            textBox2.Text = "";
                         }
                     }
                 }

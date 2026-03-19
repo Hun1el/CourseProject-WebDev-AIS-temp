@@ -54,6 +54,7 @@ namespace WebSiteDev.AdminForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllCategory(comboBox3, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
         }
 
@@ -88,6 +89,7 @@ namespace WebSiteDev.AdminForm
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllCategory(comboBox3, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -97,12 +99,12 @@ namespace WebSiteDev.AdminForm
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            InputRest.OnlyRussian(e);
+            InputRest.CategoryInput(e);
         }
 
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
-            InputRest.OnlyRussian(e);
+            InputRest.CategoryInput(e);
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)

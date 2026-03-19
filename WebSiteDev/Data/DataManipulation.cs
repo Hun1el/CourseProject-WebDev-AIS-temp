@@ -555,4 +555,10 @@ public class DataManipulation
         view.RowFilter = "";
         view.Sort = "";
     }
+
+    public void UpdateRecordCountLabel(Label label)
+    {
+        int visibleCount = view.Count;
+        label.Text = $"Количество записей: {visibleCount}";
+    }
 }

@@ -76,7 +76,7 @@ namespace WebSiteDev.ManagerForm
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(391, 333);
+            this.button1.Location = new System.Drawing.Point(390, 333);
             this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(106, 32);
@@ -262,12 +262,14 @@ namespace WebSiteDev.ManagerForm
             // 
             // button5
             // 
+            this.button5.Enabled = false;
             this.button5.Location = new System.Drawing.Point(390, 297);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(106, 32);
             this.button5.TabIndex = 58;
             this.button5.Text = "Печать чека";
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // contextMenuStrip1
             // 

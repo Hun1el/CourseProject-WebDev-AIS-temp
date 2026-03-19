@@ -24,6 +24,14 @@ namespace WebSiteDev
             }
         }
 
+        public static void LoginInput(KeyPressEventArgs e)
+        {
+            if (!((e.KeyChar >= 'A' && e.KeyChar <= 'Z') || (e.KeyChar >= 'a' && e.KeyChar <= 'z') || (e.KeyChar >= '0' && e.KeyChar <= '9') || e.KeyChar == '_' || e.KeyChar == '.'  || e.KeyChar == '-' || e.KeyChar == '\b'))
+            {
+                e.Handled = true;
+            }
+        }
+
         public static void OnlyRussian(KeyPressEventArgs e)
         {
             if (!((e.KeyChar >= 'А' && e.KeyChar <= 'я') || e.KeyChar == 'Ё' || e.KeyChar == 'ё' || e.KeyChar == '\b'))
@@ -81,6 +89,18 @@ namespace WebSiteDev
         public static void RussianEnglishAndDigits(KeyPressEventArgs e)
         {
             if (!((e.KeyChar >= 'А' && e.KeyChar <= 'я') || e.KeyChar == 'Ё' || e.KeyChar == 'ё' || (e.KeyChar >= 'A' && e.KeyChar <= 'z') || char.IsDigit(e.KeyChar) || e.KeyChar == '\b'))
+            {
+                e.Handled = true;
+            }
+        }
+
+        public static void CategoryInput(KeyPressEventArgs e)
+        {
+            if (!((e.KeyChar >= 'А' && e.KeyChar <= 'я') || e.KeyChar == 'Ё' || e.KeyChar == 'ё' ||
+                  (e.KeyChar >= 'A' && e.KeyChar <= 'Z') || (e.KeyChar >= 'a' && e.KeyChar <= 'z') ||
+                  (e.KeyChar >= '0' && e.KeyChar <= '9') ||
+                  e.KeyChar == '-' || e.KeyChar == '(' || e.KeyChar == ')' || e.KeyChar == ' ' ||
+                  e.KeyChar == '/' || e.KeyChar == '&' || e.KeyChar == '+' || e.KeyChar == '\b'))
             {
                 e.Handled = true;
             }

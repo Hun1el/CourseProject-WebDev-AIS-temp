@@ -106,6 +106,18 @@ namespace WebSiteDev
                         return false;
                     }
 
+                    string checkPhoneQuery = "SELECT COUNT(*) FROM `Users` WHERE PhoneNumber = '" + phone + "'";
+                    using (MySqlCommand checkPhoneCmd = new MySqlCommand(checkPhoneQuery, con))
+                    {
+                        int phoneCount = Convert.ToInt32(checkPhoneCmd.ExecuteScalar());
+
+                        if (phoneCount > 0)
+                        {
+                            MessageBox.Show("Пользователь с таким номером телефона уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return false;
+                        }
+                    }
+
                     string query = "UPDATE Users SET Surname = '" + surname + "', FirstName = '" + firstName + "', " +
                         "MiddleName = '" + middleName + "', UserLogin = '" + login + "', " +
                         "RoleID = " + roleID + ", PhoneNumber = '" + phone + "'";
@@ -167,12 +179,26 @@ namespace WebSiteDev
                 {
                     con.Open();
 
-                    MySqlCommand checkEmail = new MySqlCommand("SELECT COUNT(*) FROM Clients WHERE Email = '" + email + "' AND ClientID != " + clientID, con);
-                    
-                    if (Convert.ToInt32(checkEmail.ExecuteScalar()) > 0)
+                    string checkEmailQuery = "SELECT COUNT(*) FROM Clients WHERE Email = '" + email + "' AND ClientID != " + clientID;
+                    using (MySqlCommand checkEmailCmd = new MySqlCommand(checkEmailQuery, con))
                     {
-                        MessageBox.Show("Email уже используется!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return false;
+                        int emailCount = Convert.ToInt32(checkEmailCmd.ExecuteScalar());
+                        if (emailCount > 0)
+                        {
+                            MessageBox.Show("Клиент с таким email уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return false;
+                        }
+                    }
+
+                    string checkPhoneQuery = "SELECT COUNT(*) FROM Clients WHERE PhoneNumber = '" + phone + "' AND ClientID != " + clientID;
+                    using (MySqlCommand checkPhoneCmd = new MySqlCommand(checkPhoneQuery, con))
+                    {
+                        int phoneCount = Convert.ToInt32(checkPhoneCmd.ExecuteScalar());
+                        if (phoneCount > 0)
+                        {
+                            MessageBox.Show("Клиент с таким номером телефона уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return false;
+                        }
                     }
 
                     string query = "UPDATE Clients SET Surname = '" + surname + "', FirstName = '" + firstName + "', " +

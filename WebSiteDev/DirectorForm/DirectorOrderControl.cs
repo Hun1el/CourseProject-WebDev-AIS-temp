@@ -1,22 +1,14 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 
 namespace WebSiteDev.ManagerForm
 {
     public partial class DirectorOrderControl : UserControl
     {
         private DataManipulation dataManipulation;
-        public bool update = false;
 
         public DirectorOrderControl()
         {
@@ -26,14 +18,17 @@ namespace WebSiteDev.ManagerForm
 
         private void DirectorOrderControl_Load(object sender, EventArgs e)
         {
-            comboBox1.SelectedIndex = 0;
             comboBox3.SelectedIndex = 0;
             dataGridView1.ContextMenuStrip = contextMenuStrip1;
+            SetDatePickerRange();
+            dataManipulation.FillComboBoxWithStatuses(comboBox1, "Выберите статус");
+        }
 
+        private void SetDatePickerRange()
+        {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
                 con.Open();
-
                 MySqlCommand cmd = new MySqlCommand("SELECT MIN(OrderDate) AS FirstDate, MAX(OrderDate) AS LastDate FROM `Order`", con);
 
                 using (MySqlDataReader reader = cmd.ExecuteReader())
@@ -67,42 +62,41 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
-        void GetDate()
+        private void GetDate()
         {
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
                 con.Open();
 
-                DateTime dateFrom = dateTimePicker1.Value.Date;
-                DateTime dateTo = dateTimePicker2.Value.Date;
+                string dateFromStr = dateTimePicker1.Value.Date.ToString("yyyy-MM-dd");
+                string dateToStr = dateTimePicker2.Value.Date.ToString("yyyy-MM-dd");
 
-                string dateFromStr = dateFrom.ToString("yyyy-MM-dd");
-                string dateToStr = dateTo.ToString("yyyy-MM-dd");
-
-                MySqlCommand cmd = new MySqlCommand(@"
-            SELECT 
-                o.OrderID,
-                CONCAT(c.Surname, ' ', c.FirstName, ' ', c.MiddleName) AS ClientName,
-                CONCAT(u.Surname, ' ', u.FirstName, ' ', u.MiddleName) AS UserName,
-                o.OrderDate,
-                o.OrderCompDate,
-                GROUP_CONCAT(p.ProductName SEPARATOR ', ') AS ProductName,
-                s.StatusName,
-                o.OrderCost
-            FROM `Order` o
-            LEFT JOIN Clients c ON o.ClientID = c.ClientID
-            LEFT JOIN Users u ON o.UserID = u.UserID
-            LEFT JOIN orderproduct op ON o.OrderID = op.OrderID
-            LEFT JOIN Product p ON op.ProductID = p.ProductID
-            LEFT JOIN Status s ON o.StatusID = s.StatusID
-            WHERE DATE(o.OrderDate) BETWEEN '" + dateFromStr + "' AND '" + dateToStr + "'GROUP BY o.OrderID", con);
-        
+                MySqlCommand cmd = new MySqlCommand($@"
+                    SELECT 
+                        o.OrderID,
+                        CONCAT(c.Surname, ' ', c.FirstName, ' ', COALESCE(c.MiddleName, '')) AS ClientName,
+                        CONCAT(u.Surname, ' ', u.FirstName, ' ', COALESCE(u.MiddleName, '')) AS UserName,
+                        o.OrderDate,
+                        o.OrderCompDate,
+                        GROUP_CONCAT(DISTINCT p.ProductName SEPARATOR ', ') AS ProductName,
+                        s.StatusName,
+                        o.OrderCost
+                    FROM `Order` o
+                    LEFT JOIN Clients c ON o.ClientID = c.ClientID
+                    LEFT JOIN Users u ON o.UserID = u.UserID
+                    LEFT JOIN orderproduct op ON o.OrderID = op.OrderID
+                    LEFT JOIN Product p ON op.ProductID = p.ProductID
+                    LEFT JOIN Status s ON o.StatusID = s.StatusID
+                    WHERE DATE(o.OrderDate) BETWEEN '{dateFromStr}' AND '{dateToStr}'
+                    GROUP BY o.OrderID 
+                    ORDER BY o.OrderDate ASC", con);
 
                 MySqlDataAdapter da = new MySqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
                 dataGridView1.DataSource = dt;
+
                 dataGridView1.Columns["OrderID"].HeaderText = "Номер заказа";
                 dataGridView1.Columns["ClientName"].HeaderText = "Клиент";
                 dataGridView1.Columns["UserName"].HeaderText = "Сотрудник";
@@ -114,68 +108,133 @@ namespace WebSiteDev.ManagerForm
 
                 dataManipulation = new DataManipulation(dt);
 
-                MySqlCommand count = new MySqlCommand("SELECT COUNT(*) FROM `Order` WHERE DATE(OrderDate) BETWEEN '" + dateFromStr + "' AND '" + dateToStr + "'", con);
-
+                MySqlCommand count = new MySqlCommand($"SELECT COUNT(*) FROM `Order` WHERE DATE(OrderDate) BETWEEN '{dateFromStr}' AND '{dateToStr}'", con);
                 int resultcount = Convert.ToInt32(count.ExecuteScalar());
-                label1.Text = $"Количество записей: {resultcount}";
+                label1.Text = "Количество записей: " + resultcount;
+
+                dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
+                dataManipulation.UpdateRecordCountLabel(label1);
             }
         }
 
-
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
+            if (dataManipulation == null)
+            {
+                return;
+
+            }
+
             dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (dataGridView1.Rows.Count == 0)
+            {
+                MessageBox.Show("Нет данных для формирования отчёта!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
+            string message = "Вы хотите создать отчёт со следующими параметрами:\n\n";
+            message = message + "Период: с " + dateTimePicker1.Value.ToString("dd.MM.yyyy") + " по " + dateTimePicker2.Value.ToString("dd.MM.yyyy") + "\n";
+
+            if (string.IsNullOrWhiteSpace(textBox1.Text) == false)
+            {
+                message = message + "Поиск по номеру заказа: " + textBox1.Text + "\n";
+            }
+
+            string selectedStatus = "";
+            if (comboBox1.SelectedIndex > 0)
+            {
+                object selected = comboBox1.SelectedItem;
+                if (selected != null)
+                {
+                    if (selected is DataRowView row)
+                    {
+                        selectedStatus = row["StatusName"].ToString();
+                        message = message + "Фильтр по статусу: " + selectedStatus + "\n";
+                    }
+                    else
+                    {
+                        selectedStatus = selected.ToString();
+                        message = message + "Фильтр по статусу: " + selectedStatus + "\n";
+                    }
+                }
+            }
+
+            string selectedSort = "";
+            if (comboBox3.SelectedIndex > 0)
+            {
+                selectedSort = comboBox3.SelectedItem.ToString();
+                message = message + "Сортировка: " + selectedSort + "\n";
+            }
+
+            if (string.IsNullOrWhiteSpace(textBox1.Text) && comboBox1.SelectedIndex <= 0 && comboBox3.SelectedIndex <= 0)
+            {
+                message = message + "\nВсе заказы без поиска, фильтров и сортировки\n";
+            }
+
+            message = message + "\nВсего записей: " + dataGridView1.Rows.Count + "\n\nПродолжить?";
+
+            var result = MessageBox.Show(message, "Подтверждение создания отчёта", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+
+            List<decimal> orderCosts = new List<decimal>();
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells["OrderCost"].Value != null)
+                {
+                    if (decimal.TryParse(row.Cells["OrderCost"].Value.ToString(), out decimal cost))
+                    {
+                        orderCosts.Add(cost);
+                    }
+                }
+            }
+
+            ExcelReport.ExportToExcel(
+                dataGridView1,
+                orderCosts,
+                dateTimePicker1.Value,
+                dateTimePicker2.Value,
+                textBox1.Text,
+                selectedStatus,
+                selectedSort
+            );
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (dataManipulation == null)
+            {
+                return;
+            }
+
             dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (dataManipulation == null)
+            {
+                return;
+            }
+
             dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             dataManipulation.ResetFilters(comboBox3, comboBox1, textBox1);
-
-            using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
-            {
-                con.Open();
-
-                MySqlCommand cmd = new MySqlCommand("SELECT MIN(OrderDate) AS FirstDate, MAX(OrderDate) AS LastDate FROM `Order`", con);
-
-                using (MySqlDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        DateTime firstDate = DateTime.Now;
-                        DateTime lastDate = DateTime.Now;
-
-                        if (reader["FirstDate"] != DBNull.Value)
-                        {
-                            firstDate = Convert.ToDateTime(reader["FirstDate"]);
-                        }
-
-                        if (reader["LastDate"] != DBNull.Value)
-                        {
-                            lastDate = Convert.ToDateTime(reader["LastDate"]);
-                        }
-
-                        dateTimePicker1.Value = firstDate;
-                        dateTimePicker2.Value = lastDate;
-                    }
-                }
-            }
-
+            SetDatePickerRange();
             GetDate();
         }
 
@@ -213,7 +272,6 @@ namespace WebSiteDev.ManagerForm
             if (e.Button == MouseButtons.Right)
             {
                 DataGridView.HitTestInfo hit = dataGridView1.HitTest(e.X, e.Y);
-
                 if (hit.RowIndex >= 0)
                 {
                     dataGridView1.ClearSelection();

@@ -107,6 +107,7 @@
             this.textBox1.Size = new System.Drawing.Size(400, 35);
             this.textBox1.TabIndex = 7;
             this.textBox1.Visible = false;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox2
             // 
@@ -118,6 +119,7 @@
             this.textBox2.Size = new System.Drawing.Size(400, 70);
             this.textBox2.TabIndex = 8;
             this.textBox2.Visible = false;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // comboBox1
             // 
