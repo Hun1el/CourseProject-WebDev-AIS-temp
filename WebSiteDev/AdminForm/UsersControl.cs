@@ -68,12 +68,12 @@ namespace WebSiteDev.AdminForm
 
                 dataManipulation = new DataManipulation(dt);
             }
-
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
+            InputRest.FirstLetter(textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -141,6 +141,51 @@ namespace WebSiteDev.AdminForm
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllUser(comboBox3, comboBox1, textBox1);
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussianAndDash(e);
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox2);
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox3);
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox4);
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussianAndDash(e);
+        }
+
+        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussianAndDash(e);
+        }
+
+        private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussian(e);
+        }
+
+        private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.EnglishDigitsAndSpecial(e);
+        }
+
+        private void textBox6_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.EnglishDigitsAndSpecial(e);
         }
     }
 }

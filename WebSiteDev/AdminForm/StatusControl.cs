@@ -25,7 +25,6 @@ namespace WebSiteDev.AdminForm
         }
 
         public bool update = false;
-        string search = "";
 
         void GetDate()
         {
@@ -53,6 +52,7 @@ namespace WebSiteDev.AdminForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplySearchStatus(textBox1);
+            InputRest.FirstLetter(textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -99,6 +99,21 @@ namespace WebSiteDev.AdminForm
         private void button4_Click(object sender, EventArgs e)
         {
             dataManipulation.ResetFilters(textSearch: textBox1);
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox2);
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussian(e);
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussian(e);
         }
     }
 }

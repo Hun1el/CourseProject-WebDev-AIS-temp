@@ -76,10 +76,12 @@ namespace WebSiteDev.ManagerForm
             this.textBox1.AccessibleDescription = "";
             this.textBox1.AccessibleName = "";
             this.textBox1.Location = new System.Drawing.Point(3, 33);
+            this.textBox1.MaxLength = 10;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(125, 20);
             this.textBox1.TabIndex = 11;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // comboBox1
             // 
@@ -133,6 +135,7 @@ namespace WebSiteDev.ManagerForm
             // 
             this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dateTimePicker1.Location = new System.Drawing.Point(315, 0);
+            this.dateTimePicker1.MinDate = new System.DateTime(2024, 12, 31, 0, 0, 0, 0);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(182, 20);
             this.dateTimePicker1.TabIndex = 44;

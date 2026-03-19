@@ -64,9 +64,11 @@
             // textBox5
             // 
             this.textBox5.Location = new System.Drawing.Point(108, 144);
+            this.textBox5.MaxLength = 100;
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(244, 29);
             this.textBox5.TabIndex = 45;
+            this.textBox5.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox5_KeyPress);
             // 
             // label6
             // 
@@ -80,16 +82,22 @@
             // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(108, 87);
+            this.textBox4.MaxLength = 90;
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(244, 29);
             this.textBox4.TabIndex = 42;
+            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
+            this.textBox4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox4_KeyPress);
             // 
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(109, 45);
+            this.textBox3.MaxLength = 75;
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(243, 29);
             this.textBox3.TabIndex = 41;
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
+            this.textBox3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox3_KeyPress);
             // 
             // label5
             // 
@@ -121,9 +129,12 @@
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(109, 6);
+            this.textBox2.MaxLength = 90;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(243, 29);
             this.textBox2.TabIndex = 37;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
             // button2
             // 

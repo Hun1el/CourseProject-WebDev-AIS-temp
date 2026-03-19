@@ -76,6 +76,7 @@ namespace WebSiteDev.ManagerForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
+            InputRest.FirstLetter(textBox1);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -131,6 +132,11 @@ namespace WebSiteDev.ManagerForm
         private void button4_Click(object sender, EventArgs e)
         {
             dataManipulation.ResetFilters(comboBox3, comboBox1, textBox1);
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyNumbers(e);
         }
     }
 }

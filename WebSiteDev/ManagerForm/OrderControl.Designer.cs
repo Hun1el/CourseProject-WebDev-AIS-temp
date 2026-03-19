@@ -103,10 +103,12 @@ namespace WebSiteDev.ManagerForm
             this.textBox1.AccessibleDescription = "";
             this.textBox1.AccessibleName = "";
             this.textBox1.Location = new System.Drawing.Point(3, 33);
+            this.textBox1.MaxLength = 10;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(125, 20);
             this.textBox1.TabIndex = 11;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // label1
             // 
@@ -206,7 +208,6 @@ namespace WebSiteDev.ManagerForm
             // maskedTextBox1
             // 
             this.maskedTextBox1.Location = new System.Drawing.Point(562, 137);
-            this.maskedTextBox1.Mask = "0000-00-00";
             this.maskedTextBox1.Name = "maskedTextBox1";
             this.maskedTextBox1.ReadOnly = true;
             this.maskedTextBox1.Size = new System.Drawing.Size(105, 20);
@@ -225,9 +226,12 @@ namespace WebSiteDev.ManagerForm
             // 
             this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dateTimePicker1.Location = new System.Drawing.Point(562, 163);
+            this.dateTimePicker1.MaxDate = new System.DateTime(2026, 12, 31, 0, 0, 0, 0);
+            this.dateTimePicker1.MinDate = new System.DateTime(2025, 10, 17, 18, 46, 20, 0);
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(105, 20);
             this.dateTimePicker1.TabIndex = 44;
+            this.dateTimePicker1.Value = new System.DateTime(2025, 10, 17, 18, 46, 20, 0);
             // 
             // label7
             // 
@@ -277,9 +281,11 @@ namespace WebSiteDev.ManagerForm
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(562, 216);
+            this.textBox2.MaxLength = 6;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(105, 20);
             this.textBox2.TabIndex = 50;
+            this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
             // comboBox1
             // 

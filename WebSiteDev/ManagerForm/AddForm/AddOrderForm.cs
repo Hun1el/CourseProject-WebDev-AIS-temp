@@ -28,5 +28,10 @@ namespace WebSiteDev.AddForm
         {
             this.Close();
         }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyNumbers(e);
+        }
     }
 }

@@ -21,5 +21,40 @@ namespace WebSiteDev.AddForm
         {
             this.Close();
         }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox2);
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox3);
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            InputRest.FirstLetter(textBox4);
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussianAndDash(e);
+        }
+
+        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussianAndDash(e);
+        }
+
+        private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussian(e);
+        }
+
+        private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.EmailInput(e);
+        }
     }
 }

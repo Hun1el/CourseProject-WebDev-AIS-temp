@@ -99,29 +99,19 @@ namespace WebSiteDev.ManagerForm
             this.textBox1.AccessibleDescription = "";
             this.textBox1.AccessibleName = "";
             this.textBox1.Location = new System.Drawing.Point(3, 33);
+            this.textBox1.MaxLength = 100;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(125, 20);
             this.textBox1.TabIndex = 11;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // comboBox1
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "Категория не выбрана",
-            "Сайт-визитка",
-            "Интернет-магазин",
-            "Корпоративный сайт",
-            "Лендинг (Landing Page)",
-            "Портфолио",
-            "Блог",
-            "Информационный портал",
-            "Новостной сайт",
-            "Форум",
-            "Персональный сайт",
-            "Промо-сайт",
-            "Образовательный портал"});
+            "Все категории"});
             this.comboBox1.Location = new System.Drawing.Point(315, 32);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(115, 21);
@@ -174,9 +164,12 @@ namespace WebSiteDev.ManagerForm
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(557, 57);
+            this.textBox2.MaxLength = 100;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(100, 20);
             this.textBox2.TabIndex = 20;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
             // label3
             // 
@@ -203,6 +196,8 @@ namespace WebSiteDev.ManagerForm
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(100, 35);
             this.textBox3.TabIndex = 24;
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
+            this.textBox3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox3_KeyPress);
             // 
             // button6
             // 
@@ -252,9 +247,11 @@ namespace WebSiteDev.ManagerForm
             // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(557, 151);
+            this.textBox4.MaxLength = 6;
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(100, 20);
             this.textBox4.TabIndex = 25;
+            this.textBox4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox4_KeyPress);
             // 
             // pictureBox1
             // 

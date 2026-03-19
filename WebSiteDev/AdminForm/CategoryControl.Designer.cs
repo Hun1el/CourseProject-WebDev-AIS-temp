@@ -89,10 +89,12 @@ namespace WebSiteDev.AdminForm
             this.textBox1.AccessibleDescription = "";
             this.textBox1.AccessibleName = "";
             this.textBox1.Location = new System.Drawing.Point(3, 33);
+            this.textBox1.MaxLength = 45;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(125, 20);
             this.textBox1.TabIndex = 11;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // label1
             // 
@@ -129,9 +131,12 @@ namespace WebSiteDev.AdminForm
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(559, 57);
+            this.textBox2.MaxLength = 45;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(100, 20);
             this.textBox2.TabIndex = 20;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
             // label3
             // 
