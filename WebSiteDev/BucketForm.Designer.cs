@@ -37,6 +37,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.label5 = new System.Windows.Forms.Label();
@@ -44,9 +45,14 @@
             this.label3 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label7 = new System.Windows.Forms.Label();
+            this.checkbox3 = new System.Windows.Forms.CheckBox();
+            this.checkbox2 = new System.Windows.Forms.CheckBox();
+            this.checkbox1 = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -58,7 +64,7 @@
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 450);
+            this.panel1.Location = new System.Drawing.Point(0, 630);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1046, 70);
             this.panel1.TabIndex = 0;
@@ -120,7 +126,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label1.ForeColor = System.Drawing.Color.DarkGreen;
-            this.label1.Location = new System.Drawing.Point(12, 10);
+            this.label1.Location = new System.Drawing.Point(9, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(153, 25);
             this.label1.TabIndex = 2;
@@ -136,7 +142,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 65);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(10);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1046, 385);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1046, 465);
             this.flowLayoutPanel1.TabIndex = 1;
             this.flowLayoutPanel1.WrapContents = false;
             // 
@@ -157,6 +163,15 @@
             this.panel2.Padding = new System.Windows.Forms.Padding(8, 5, 8, 5);
             this.panel2.Size = new System.Drawing.Size(1046, 65);
             this.panel2.TabIndex = 2;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Enabled = false;
+            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textBox1.Location = new System.Drawing.Point(609, 30);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(154, 26);
+            this.textBox1.TabIndex = 65;
             // 
             // label6
             // 
@@ -181,6 +196,7 @@
             this.dateTimePicker1.Size = new System.Drawing.Size(200, 26);
             this.dateTimePicker1.TabIndex = 62;
             this.dateTimePicker1.Value = new System.DateTime(2025, 10, 28, 14, 52, 28, 0);
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // label5
             // 
@@ -227,6 +243,7 @@
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(280, 28);
             this.comboBox1.TabIndex = 59;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -238,21 +255,76 @@
             this.label4.TabIndex = 56;
             this.label4.Text = "Клиент";
             // 
-            // textBox1
+            // panel3
             // 
-            this.textBox1.Enabled = false;
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox1.Location = new System.Drawing.Point(609, 30);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(154, 26);
-            this.textBox1.TabIndex = 65;
+            this.panel3.BackColor = System.Drawing.Color.White;
+            this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel3.Controls.Add(this.label7);
+            this.panel3.Controls.Add(this.checkbox3);
+            this.panel3.Controls.Add(this.checkbox2);
+            this.panel3.Controls.Add(this.checkbox1);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel3.Location = new System.Drawing.Point(0, 530);
+            this.panel3.Name = "panel3";
+            this.panel3.Padding = new System.Windows.Forms.Padding(10);
+            this.panel3.Size = new System.Drawing.Size(1046, 100);
+            this.panel3.TabIndex = 3;
+            // 
+            // label7
+            // 
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label7.ForeColor = System.Drawing.Color.DarkBlue;
+            this.label7.Location = new System.Drawing.Point(400, 10);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(600, 80);
+            this.label7.TabIndex = 104;
+            // 
+            // checkbox3
+            // 
+            this.checkbox3.AutoSize = true;
+            this.checkbox3.Enabled = false;
+            this.checkbox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.checkbox3.Location = new System.Drawing.Point(13, 68);
+            this.checkbox3.Name = "checkbox3";
+            this.checkbox3.Size = new System.Drawing.Size(299, 21);
+            this.checkbox3.TabIndex = 102;
+            this.checkbox3.Text = "Скидка за количество (от 3 товаров, 7%)";
+            this.checkbox3.UseVisualStyleBackColor = true;
+            this.checkbox3.CheckedChanged += new System.EventHandler(this.checkbox_CheckedChanged);
+            // 
+            // checkbox2
+            // 
+            this.checkbox2.AutoSize = true;
+            this.checkbox2.Enabled = false;
+            this.checkbox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.checkbox2.Location = new System.Drawing.Point(13, 40);
+            this.checkbox2.Name = "checkbox2";
+            this.checkbox2.Size = new System.Drawing.Size(235, 21);
+            this.checkbox2.TabIndex = 101;
+            this.checkbox2.Text = "Срочный заказ (надбавка 15%)";
+            this.checkbox2.UseVisualStyleBackColor = true;
+            this.checkbox2.CheckedChanged += new System.EventHandler(this.checkbox_CheckedChanged);
+            // 
+            // checkbox1
+            // 
+            this.checkbox1.AutoSize = true;
+            this.checkbox1.Enabled = false;
+            this.checkbox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.checkbox1.Location = new System.Drawing.Point(13, 12);
+            this.checkbox1.Name = "checkbox1";
+            this.checkbox1.Size = new System.Drawing.Size(242, 21);
+            this.checkbox1.TabIndex = 100;
+            this.checkbox1.Text = "Постоянный клиент (скидка 5%)";
+            this.checkbox1.UseVisualStyleBackColor = true;
+            this.checkbox1.CheckedChanged += new System.EventHandler(this.checkbox_CheckedChanged);
             // 
             // BucketForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1046, 520);
+            this.ClientSize = new System.Drawing.Size(1046, 700);
             this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -268,6 +340,8 @@
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -290,5 +364,10 @@
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.CheckBox checkbox1;
+        private System.Windows.Forms.CheckBox checkbox2;
+        private System.Windows.Forms.CheckBox checkbox3;
+        private System.Windows.Forms.Label label7;
     }
 }

@@ -6,7 +6,6 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using WebSiteDev.AddForm;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace WebSiteDev.ManagerForm
 {
@@ -35,6 +34,8 @@ namespace WebSiteDev.ManagerForm
             DateTime dateTimeNow = DateTime.Now;
             maskedTextBox1.Text = dateTimeNow.ToString("yyyy.MM.dd");
             dateTimePicker1.CustomFormat = "yyyy.MM.dd";
+
+            dataGridView1.ContextMenuStrip = contextMenuStrip1;
 
             if (userRole == "Администратор")
             {
@@ -97,6 +98,20 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        private void DataGridView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                DataGridView.HitTestInfo hit = dataGridView1.HitTest(e.X, e.Y);
+
+                if (hit.RowIndex >= 0)
+                {
+                    dataGridView1.ClearSelection();
+                    dataGridView1.Rows[hit.RowIndex].Selected = true;
+                }
+            }
+        }
+
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllOrder(comboBox1, comboBox6, textBox1);
@@ -123,7 +138,7 @@ namespace WebSiteDev.ManagerForm
             managerForm.LoadControl(new ProductControl(userRole, CurrentUserID, CurrentUserName));
             managerForm.Text = "Оформление заказа";
 
-            managerForm.SelectButtonPublic(managerForm.Button2);
+            SelectButton(button2, managerForm);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -149,6 +164,35 @@ namespace WebSiteDev.ManagerForm
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             InputRest.OnlyNumbers(e);
+        }
+
+        private void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0 && dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value != null)
+            {
+                int orderID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value);
+                OrderProductForm form = new OrderProductForm(orderID);
+                form.ShowDialog();
+            }
+        }
+
+        private void просмотрСоставаЗаказаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                int orderID = Convert.ToInt32(dataGridView1.SelectedRows[0].Cells["OrderID"].Value);
+                OrderProductForm form = new OrderProductForm(orderID);
+                form.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("Выберите заказ для просмотра!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void SelectButton(Button button, ManagerMainForm managerForm)
+        {
+            managerForm.SelectButtonPublic(button);
         }
     }
 }

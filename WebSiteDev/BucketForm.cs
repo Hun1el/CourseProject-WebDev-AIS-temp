@@ -13,7 +13,6 @@ namespace WebSiteDev
         public BucketForm(DataManipulation dm, int userID = 0, string userName = "")
         {
             InitializeComponent();
-            LoadCartItems();
 
             ProductControl.CurrentUserID = userID;
             ProductControl.CurrentUserName = userName;
@@ -21,16 +20,20 @@ namespace WebSiteDev
             dataManipulation = dm;
             dataManipulation.FillComboBoxWithClients(comboBox1, "Клиент не выбран");
             dataManipulation.FillComboBoxWithUsers(comboBox2, "Сотрудник не выбран");
-
         }
 
         private void BucketForm_Load(object sender, EventArgs e)
         {
-            LoadCartItems();
             DateTime dateTimeNow = DateTime.Now;
             textBox1.Text = dateTimeNow.ToString("yyyy.MM.dd");
+            dateTimePicker1.Value = dateTimeNow.AddDays(7);
+            dateTimePicker1.MinDate = dateTimeNow.AddDays(1);
 
+            checkbox1.AutoCheck = false;
+            checkbox2.AutoCheck = false;
+            checkbox3.AutoCheck = false;
             SelectCurrentUser();
+            LoadCartItems();
         }
 
         private void SelectCurrentUser()
@@ -79,7 +82,7 @@ namespace WebSiteDev
                 flowLayoutPanel1.Controls.Add(spacer);
             }
 
-            UpdateTotal();
+            CheckQuantityDiscount();
         }
 
         private Panel CreateCartItemPanel(ProductControl.OrderItem item)
@@ -118,7 +121,10 @@ namespace WebSiteDev
                             }
                         }
                     }
-                    catch { }
+                    catch 
+                    { 
+
+                    }
                 }
             }
 
@@ -156,19 +162,105 @@ namespace WebSiteDev
             };
             panel.Controls.Add(labelQuantity);
 
-            Label labelPrice = new Label
+            decimal itemBasePrice = item.BasePrice * item.Quantity;
+            decimal itemDiscount = 0;
+            decimal itemSurcharge = 0;
+            string priceInfo = "";
+
+            if (checkbox1.Checked)
             {
-                Text = $"Цена: {item.BasePrice} руб.",
-                Font = new Font("Comic Sans Serif", 12),
-                Location = new Point(175, 110),
-                Size = new Size(180, 20),
-                ForeColor = Color.Black
-            };
-            panel.Controls.Add(labelPrice);
+                itemDiscount += itemBasePrice * 0.05m;
+            }
+
+            if (checkbox3.Checked)
+            {
+                itemDiscount += itemBasePrice * 0.07m;
+            }
+
+            if (checkbox2.Checked)
+            {
+                itemSurcharge += itemBasePrice * 0.15m;
+            }
+
+            decimal itemFinalPrice = itemBasePrice - itemDiscount + itemSurcharge;
+
+            if (itemDiscount > 0 || itemSurcharge > 0)
+            {
+                Label labelOldPrice = new Label
+                {
+                    Text = $"Было: {itemBasePrice:F2} руб.",
+                    Font = new Font("Comic Sans Serif", 11, FontStyle.Strikeout),
+                    Location = new Point(175, 110),
+                    Size = new Size(200, 20),
+                    ForeColor = Color.Gray,
+                    AutoSize = false
+                };
+
+                panel.Controls.Add(labelOldPrice);
+
+                Label labelNewPrice = new Label
+                {
+                    Text = $"Сейчас: {itemFinalPrice:F2} руб.",
+                    Font = new Font("Comic Sans Serif", 12, FontStyle.Bold),
+                    Location = new Point(175, 130),
+                    Size = new Size(200, 20),
+                    ForeColor = Color.Red,
+                    AutoSize = false
+                };
+
+                if (itemDiscount > 0)
+                {
+                    labelNewPrice.ForeColor = Color.Green;
+                }
+
+                panel.Controls.Add(labelNewPrice);
+
+                if (itemDiscount > 0)
+                {
+                    priceInfo += $"Скидка: -{itemDiscount:F2} руб.\n";
+                }
+                if (itemSurcharge > 0)
+                {
+                    priceInfo += $"Надбавка: +{itemSurcharge:F2} руб.\n";
+                }
+
+                Label labelPriceInfo = new Label
+                {
+                    Text = priceInfo.TrimEnd('\n'),
+                    Font = new Font("Comic Sans Serif", 9),
+                    Location = new Point(400, 110),
+                    Size = new Size(220, 40),
+                    ForeColor = Color.DarkBlue,
+                    AutoSize = false
+                };
+                panel.Controls.Add(labelPriceInfo);
+            }
+            else
+            {
+                Label labelPrice = new Label
+                {
+                    Text = $"Цена: {item.BasePrice} руб.",
+                    Font = new Font("Comic Sans Serif", 12),
+                    Location = new Point(175, 110),
+                    Size = new Size(180, 20),
+                    ForeColor = Color.Black
+                };
+                panel.Controls.Add(labelPrice);
+            }
+
+            decimal subtotalPrice;
+            if (itemDiscount > 0 || itemSurcharge > 0)
+            {
+                subtotalPrice = itemFinalPrice;
+            }
+            else
+            {
+                subtotalPrice = itemBasePrice;
+            }
 
             Label labelSubtotal = new Label
             {
-                Text = $"Сумма: {item.BasePrice * item.Quantity} руб.",
+                Text = $"Сумма: {subtotalPrice:F2} руб.",
                 Font = new Font("Comic Sans Serif", 12, FontStyle.Bold),
                 Location = new Point(650, 90),
                 Size = new Size(210, 25),
@@ -198,9 +290,10 @@ namespace WebSiteDev
 
         private void button4_Click(object sender, EventArgs e)
         {
-            Button btn = sender as Button;
-            if (btn?.Tag is int productID)
+            Button button = sender as Button;
+            if (button != null && button.Tag is int)
             {
+                int productID = Convert.ToInt32(button.Tag);
                 RemoveItem(productID);
             }
         }
@@ -216,6 +309,90 @@ namespace WebSiteDev
                 }
             }
             LoadCartItems();
+            UpdateTotal();
+        }
+
+        private void CheckLoyalClient()
+        {
+            if (comboBox1.SelectedIndex > 0 && comboBox1.SelectedValue != null)
+            {
+                int clientID = Convert.ToInt32(comboBox1.SelectedValue);
+                int orderCount = GetClientOrderCount(clientID);
+
+                if (orderCount > 5)
+                {
+                    checkbox1.Enabled = true;
+                    checkbox1.Checked = true;
+                }
+                else
+                {
+                    checkbox1.Enabled = false;
+                    checkbox1.Checked = false;
+                }
+            }
+            else
+            {
+                checkbox1.Enabled = false;
+                checkbox1.Checked = false;
+            }
+
+            checkbox1.AutoCheck = false;
+        }
+
+        private void CheckUrgency()
+        {
+            DateTime selectedDate = dateTimePicker1.Value.Date;
+            DateTime standardDate = DateTime.Now.AddDays(7).Date;
+
+            if (selectedDate < standardDate)
+            {
+                checkbox2.Enabled = true;
+                checkbox2.Checked = true;
+            }
+            else
+            {
+                checkbox2.Enabled = false;
+                checkbox2.Checked = false;
+            }
+
+            checkbox2.AutoCheck = false;
+        }
+
+        private void CheckQuantityDiscount()
+        {
+            int uniqueProductCount = ProductControl.CurrentOrder.Items.Count;
+
+            if (uniqueProductCount >= 3)
+            {
+                checkbox3.Enabled = true;
+                checkbox3.Checked = true;
+            }
+            else
+            {
+                checkbox3.Enabled = false;
+                checkbox3.Checked = false;
+            }
+
+            checkbox3.AutoCheck = false;
+        }
+
+
+        private int GetClientOrderCount(int clientID)
+        {
+            using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
+            {
+                try
+                {
+                    con.Open();
+                    string query = "SELECT COUNT(*) FROM `Order` WHERE ClientID = " + clientID;
+                    MySqlCommand cmd = new MySqlCommand(query, con);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
         }
 
         private void UpdateTotal()
@@ -229,8 +406,59 @@ namespace WebSiteDev
                 totalQuantity += item.Quantity;
             }
 
-            label1.Text = $"Итого: {total} руб.";
+            decimal discount = 0;
+            decimal surcharge = 0;
+            string discountInfo = "";
+
+            // Скидка постоянного клиента
+            if (checkbox1.Checked)
+            {
+                decimal loyalDiscount = total * 0.05m;
+                discount += loyalDiscount;
+                discountInfo += $"Скидка постоянного клиента: -{loyalDiscount:F2} руб. (5%)\n";
+            }
+
+            // Скидка от количества товаров
+            if (checkbox3.Checked)
+            {
+                decimal quantityDiscount = total * 0.07m;
+                discount += quantityDiscount;
+                discountInfo += $"Скидка за количество: -{quantityDiscount:F2} руб. (7%)\n";
+            }
+
+            // Надбавка за срочность
+            if (checkbox2.Checked)
+            {
+                decimal urgencySurcharge = total * 0.15m;
+                surcharge += urgencySurcharge;
+                discountInfo += $"Надбавка за срочность: +{urgencySurcharge:F2} руб. (15%)\n";
+            }
+
+            decimal finalTotal = total - discount + surcharge;
+
+            label1.Text = $"Итого: {finalTotal:F2} руб.";
             label2.Text = $"Кол-во товаров: {totalQuantity}";
+            label7.Text = discountInfo.TrimEnd('\n');
+        }
+
+        private void checkbox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateTotal();
+            LoadCartItems();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CheckLoyalClient();
+            UpdateTotal();
+            LoadCartItems();
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            CheckUrgency();
+            UpdateTotal();
+            LoadCartItems();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -263,6 +491,9 @@ namespace WebSiteDev
                 MessageBox.Show("Заказ успешно оформлен!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ProductControl.CurrentOrder.Clear();
                 LoadCartItems();
+                comboBox1.SelectedIndex = 0;
+                dateTimePicker1.Value = DateTime.Now.AddDays(7);
+                UpdateTotal();
             }
             else
             {
@@ -299,12 +530,34 @@ namespace WebSiteDev
                             totalCost += item.BasePrice * item.Quantity;
                         }
 
-                        string totalCostStr = totalCost.ToString().Replace(",", ".");
+                        decimal discount = 0;
+                        decimal surcharge = 0;
 
-                        string insertOrderQuery = "INSERT INTO `Order` (UserID, ClientID, OrderDate, OrderCompDate, ProductID, StatusID, OrderCost) " +
+                        if (checkbox1.Checked)
+                        {
+                            discount += totalCost * 0.05m;
+                        }
+
+                        if (checkbox3.Checked)
+                        {
+                            discount += totalCost * 0.07m;
+                        }
+
+                        if (checkbox2.Checked)
+                        {
+                            surcharge += totalCost * 0.15m;
+                        }
+
+                        decimal finalTotal = totalCost - discount + surcharge;
+
+                        string totalCostStr = finalTotal.ToString().Replace(",", ".");
+                        string discountStr = discount.ToString().Replace(",", ".");
+                        string surchargeStr = surcharge.ToString().Replace(",", ".");
+
+                        string insertOrderQuery = "INSERT INTO `Order` (UserID, ClientID, OrderDate, OrderCompDate, ProductID, StatusID, OrderCost, Discount, Surcharge) " +
                         "VALUES (" + userID + ", " + clientID + ", '" + orderDate.ToString("yyyy-MM-dd") + "', '" +
                         orderCompDate.ToString("yyyy-MM-dd") + "', " + ProductControl.CurrentOrder.Items[0].ProductID +
-                        ", 1, " + totalCostStr + ")";
+                        ", 1, " + totalCostStr + ", " + discountStr + ", " + surchargeStr + ")";
 
                         MySqlCommand cmdOrder = new MySqlCommand(insertOrderQuery, con, transaction);
                         cmdOrder.ExecuteNonQuery();
@@ -348,6 +601,7 @@ namespace WebSiteDev
             {
                 ProductControl.CurrentOrder.Clear();
                 LoadCartItems();
+                UpdateTotal();
             }
         }
     }

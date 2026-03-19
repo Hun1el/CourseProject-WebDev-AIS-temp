@@ -166,6 +166,8 @@ namespace WebSiteDev.ManagerForm
                 card.Controls.Add(btn1);
                 card.Controls.Add(btn2);
                 button1.Visible = false;
+
+                button2.FlatStyle = FlatStyle.Standard;
             }
 
             return card;
