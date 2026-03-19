@@ -21,16 +21,6 @@ namespace WebSiteDev.ManagerForm
         private Font categoryFont = new Font("Comic Sans Serif", 12);
         private Font priceFont = new Font("Comic Sans Serif", 18, FontStyle.Bold);
 
-        public class OrderItem
-        {
-            public int ProductID { get; set; }
-            public string ProductName { get; set; }
-            public string CategoryName { get; set; }
-            public decimal BasePrice { get; set; }
-            public int Quantity { get; set; }
-            public string ProductPhoto { get; set; }
-        }
-
         public static class CurrentOrder
         {
             public static BindingList<OrderItem> Items { get; set; } = new BindingList<OrderItem>();
@@ -38,16 +28,6 @@ namespace WebSiteDev.ManagerForm
             public static void Clear()
             {
                 Items.Clear();
-            }
-
-            public static decimal GetTotal()
-            {
-                decimal total = 0;
-                foreach (OrderItem item in Items)
-                {
-                    total += (item.BasePrice * item.Quantity);
-                }
-                return total;
             }
         }
 
@@ -106,6 +86,14 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+        public class OrderItem
+        {
+            public int ProductID { get; set; }
+            public string ProductName { get; set; }
+            public decimal BasePrice { get; set; }
+            public int Quantity { get; set; }
+        }
+
         private Panel CreateProductCard(DataRowView row)
         {
             Panel card = new Panel
@@ -152,9 +140,6 @@ namespace WebSiteDev.ManagerForm
             }
             else
             {
-                var (btn1, btn2) = CreateButtons(row);
-                card.Controls.Add(btn1);
-                card.Controls.Add(btn2);
                 button1.Visible = false;
             }
 
@@ -441,32 +426,26 @@ namespace WebSiteDev.ManagerForm
                         newItem.ProductID = productID;
                         newItem.ProductName = productName;
                         newItem.BasePrice = basePrice;
-                        newItem.CategoryName = row["Category"].ToString();
                         newItem.Quantity = 1;
-                        newItem.ProductPhoto = row["ProductPhoto"].ToString();
 
                         CurrentOrder.Items.Add(newItem);
                         UpdateOrderButtonVisibility();
                     }
                 }
             }
-
         }
 
         private void ProductControl_Leave(object sender, EventArgs e)
         {
             CurrentOrder.Clear();
             UpdateOrderButtonVisibility();
-            var managerForm = this.FindForm() as ManagerMainForm;
-            if (managerForm != null)
-            {
-                managerForm.EndOrderProcess();
-            }
+            ManagerMainForm managerForm = (ManagerMainForm)this.FindForm();
+            managerForm?.EndOrderProcess();
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            BucketForm bucketForm = new BucketForm(dataManipulation);
+            BucketForm bucketForm = new BucketForm();
             bucketForm.ShowDialog();
         }
     }

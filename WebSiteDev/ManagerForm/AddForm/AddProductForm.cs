@@ -82,7 +82,7 @@ namespace WebSiteDev.AddForm
 
                     try
                     {
-                        pictureBox1.Image = Image.FromFile(sourcePath); // показываем превью
+                        pictureBox1.Image = Image.FromFile(sourcePath);
                     }
                     catch (Exception ex)
                     {
@@ -159,7 +159,7 @@ namespace WebSiteDev.AddForm
                     textBox2.Clear();
                     textBox3.Clear();
                     comboBox1.SelectedIndex = 0;
-                    pictureBox1.Image = null;
+                    pictureBox1.Image = Properties.Resources.no_image;
                     SelectedFileName = null;
                 }
             }

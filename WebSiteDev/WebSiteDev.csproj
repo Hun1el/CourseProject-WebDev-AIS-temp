@@ -216,6 +216,9 @@
     <EmbeddedResource Include="AdminForm\UsersControl.resx">
       <DependentUpon>UsersControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BucketForm.resx">
+      <DependentUpon>BucketForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DirectorForm\DirectorMainForm.resx">
       <DependentUpon>DirectorMainForm.cs</DependentUpon>
     </EmbeddedResource>
