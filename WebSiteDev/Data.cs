@@ -10,17 +10,17 @@ namespace WebSiteDev
     {
         public static string GetConnectionString()
         {
-            return $"host=localhost;" +
-                   $"uid=root;" +
-                   $"pwd=;" +
-                   $"database=DBWebShop";
+            return $"host={Properties.Settings.Default.DbHost};" +
+                   $"uid={Properties.Settings.Default.DbUser};" +
+                   $"pwd={Properties.Settings.Default.DbPassword};" +
+                   $"database={Properties.Settings.Default.DbName};";
         }
 
         public static string GetConnectionStringNoDB()
         {
-            return $"host=localhost;" +
-                   $"uid=root;" +
-                   $"pwd=";
+            return $"host={Properties.Settings.Default.DbHost};" +
+                   $"uid={Properties.Settings.Default.DbUser};" +
+                   $"pwd={Properties.Settings.Default.DbPassword};";
         }
     }
 }

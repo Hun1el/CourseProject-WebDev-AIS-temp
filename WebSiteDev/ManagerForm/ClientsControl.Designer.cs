@@ -262,9 +262,46 @@ namespace WebSiteDev.ManagerForm
             // 
             // comboBox2
             // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.IntegralHeight = false;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Домен не выбран",
+            "@gmail.com",
+            "@yahoo.com",
+            "@hotmail.com",
+            "@outlook.com",
+            "@yandex.com",
+            "@live.com",
+            "@icloud.com",
+            "@aol.com",
+            "@protonmail.com",
+            "@mail.com",
+            "@gmx.com",
+            "@zoho.com",
+            "@fastmail.com",
+            "@hey.com",
+            "@pm.me",
+            "@mail.ru",
+            "@yandex.ru",
+            "@bk.ru",
+            "@inbox.ru",
+            "@list.ru",
+            "@rambler.ru",
+            "@mail.ua",
+            "@ukr.net",
+            "@mail.kz",
+            "@tut.by",
+            "@yahoo.co.uk",
+            "@yahoo.fr",
+            "@yahoo.com.br",
+            "@qq.com",
+            "@163.com",
+            "@126.com",
+            "@sina.com",
+            "@naver.com",
+            "@daum.net"});
             this.comboBox2.Location = new System.Drawing.Point(557, 165);
+            this.comboBox2.MaxDropDownItems = 6;
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(100, 21);
             this.comboBox2.TabIndex = 38;
@@ -282,11 +319,13 @@ namespace WebSiteDev.ManagerForm
             // 
             this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.IntegralHeight = false;
             this.comboBox3.Items.AddRange(new object[] {
             "Сортировка не выбрана",
             "От А до Я",
             "От Я до А"});
             this.comboBox3.Location = new System.Drawing.Point(315, 32);
+            this.comboBox3.MaxDropDownItems = 6;
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(115, 21);
             this.comboBox3.TabIndex = 41;

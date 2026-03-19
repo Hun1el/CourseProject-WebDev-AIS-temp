@@ -167,9 +167,46 @@
             // 
             // comboBox1
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.IntegralHeight = false;
+            this.comboBox1.Items.AddRange(new object[] {
+            "Домен не выбран",
+            "@gmail.com",
+            "@yahoo.com",
+            "@hotmail.com",
+            "@outlook.com",
+            "@yandex.com",
+            "@live.com",
+            "@icloud.com",
+            "@aol.com",
+            "@protonmail.com",
+            "@mail.com",
+            "@gmx.com",
+            "@zoho.com",
+            "@fastmail.com",
+            "@hey.com",
+            "@pm.me",
+            "@mail.ru",
+            "@yandex.ru",
+            "@bk.ru",
+            "@inbox.ru",
+            "@list.ru",
+            "@rambler.ru",
+            "@mail.ua",
+            "@ukr.net",
+            "@mail.kz",
+            "@tut.by",
+            "@yahoo.co.uk",
+            "@yahoo.fr",
+            "@yahoo.com.br",
+            "@qq.com",
+            "@163.com",
+            "@126.com",
+            "@sina.com",
+            "@naver.com",
+            "@daum.net"});
             this.comboBox1.Location = new System.Drawing.Point(108, 202);
+            this.comboBox1.MaxDropDownItems = 6;
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(244, 32);
             this.comboBox1.TabIndex = 56;
@@ -202,6 +239,7 @@
             this.Name = "AddClientsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Добавление клиента";
+            this.Load += new System.EventHandler(this.AddClientsForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

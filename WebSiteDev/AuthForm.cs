@@ -130,5 +130,13 @@ namespace WebSiteDev
                 return sb.ToString();
             }
         }
+
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            SettingsForm settingsForm = new SettingsForm();
+            this.Visible = false;
+            settingsForm.ShowDialog();
+            this.Visible = true;
+        }
     }
 }

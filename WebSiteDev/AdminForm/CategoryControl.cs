@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebSiteDev.AddForm;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WebSiteDev.AdminForm
 {
@@ -63,37 +62,14 @@ namespace WebSiteDev.AdminForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1500, true);
+            FormResizer.Resize(this.FindForm(), 1500);
+            update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1175, true);
-        }
-
-        private void ResizeParentForm(int newWidth, bool updateFlag)
-        {
-            var parentForm = this.FindForm();
-            if (parentForm == null)
-            {
-                return;
-            }
-
-            parentForm.SuspendLayout();
-
-            int delta = newWidth - parentForm.Width;
-            parentForm.Width = newWidth;
-
-            var panelRight = parentForm.Controls["panel2"];
-            if (panelRight != null)
-            {
-                panelRight.Width += delta;
-            }
-
-            parentForm.ResumeLayout();
-            parentForm.Invalidate();
-
-            update = updateFlag;
+            FormResizer.Resize(this.FindForm(), 1175);
+            update = true;
         }
 
         private void button2_Click(object sender, EventArgs e)

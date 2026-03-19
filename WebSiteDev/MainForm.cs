@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WebSiteDev.AdminForm;
 using WebSiteDev.ManagerForm;
 
 namespace WebSiteDev
@@ -37,6 +38,8 @@ namespace WebSiteDev
                 c.Dispose();
             }
             panel2.Controls.Clear();
+
+            FormResizer.Resize(this, 1175);
 
             control.Dock = DockStyle.Fill;
             panel2.Controls.Add(control);

@@ -27,7 +27,7 @@ namespace WebSiteDev.AdminForm
 
         private void UsersControl_Load(object sender, EventArgs e)
         {
-            comboBox1.SelectedIndex = 0;
+            dataGridView1.Columns["UserID"].Visible = false;
             comboBox3.SelectedIndex = 0;
         }
 
@@ -67,6 +67,9 @@ namespace WebSiteDev.AdminForm
                 dataGridView1.Columns["PhoneNumber"].HeaderText = "Телефон";
 
                 dataManipulation = new DataManipulation(dt);
+
+                dataManipulation.FillComboBoxWithRoles(comboBox1, "Роль не выбрана");
+                dataManipulation.FillComboBoxWithRoles(comboBox2, "Выберите роль");
             }
         }
 
@@ -78,37 +81,14 @@ namespace WebSiteDev.AdminForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1500, true);
+            FormResizer.Resize(this.FindForm(), 1500);
+            update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1175, true);
-        }
-
-        private void ResizeParentForm(int newWidth, bool updateFlag)
-        {
-            var parentForm = this.FindForm();
-            if (parentForm == null)
-            {
-                return;
-            }
-
-            parentForm.SuspendLayout();
-
-            int delta = newWidth - parentForm.Width;
-            parentForm.Width = newWidth;
-
-            var panelRight = parentForm.Controls["panel2"];
-            if (panelRight != null)
-            {
-                panelRight.Width += delta;
-            }
-
-            parentForm.ResumeLayout();
-            parentForm.Invalidate();
-
-            update = updateFlag;
+            FormResizer.Resize(this.FindForm(), 1175);
+            update = true;
         }
 
         private void maskedTextBox1_Enter(object sender, EventArgs e)
@@ -123,7 +103,7 @@ namespace WebSiteDev.AdminForm
 
         private void button2_Click(object sender, EventArgs e)
         {
-            AddUsersForm addUsersForm = new AddUsersForm();
+            AddUsersForm addUsersForm = new AddUsersForm(dataManipulation);
             addUsersForm.ShowDialog();
         }
 

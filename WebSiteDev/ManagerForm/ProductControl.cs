@@ -24,7 +24,7 @@ namespace WebSiteDev.ManagerForm
             InitializeComponent();
             userRole = role;
             GetDate();
-            LoadCategoriesFromDataTable();
+            dataGridView1.Columns["ProductID"].Visible = false;
         }
 
         public bool update = false;
@@ -74,32 +74,9 @@ namespace WebSiteDev.ManagerForm
                 dataGridView1.Columns["BasePrice"].HeaderText = "Цена";
 
                 dataManipulation = new DataManipulation(dt);
-            }
 
-        }
-
-        private void LoadCategoriesFromDataTable()
-        {
-            using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
-            {
-                try
-                {
-                    con.Open();
-                    MySqlCommand cmd = new MySqlCommand("SELECT CategoryName FROM Category ORDER BY CategoryName", con);
-                    MySqlDataReader reader = cmd.ExecuteReader();
-
-                    while (reader.Read())
-                    {
-                        comboBox1.Items.Add(reader.GetString("CategoryName"));
-                    }
-
-                    comboBox1.SelectedIndex = 0;
-                    dataGridView1.Columns["ProductID"].Visible = false;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка загрузки категорий: " + ex.Message);
-                }
+                dataManipulation.FillComboBoxWithCategories(comboBox1, "Все категории");
+                dataManipulation.FillComboBoxWithCategories(comboBox2, "Выберите категорию");
             }
         }
 
@@ -111,42 +88,18 @@ namespace WebSiteDev.ManagerForm
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1500, true);
+            FormResizer.Resize(this.FindForm(), 1500);
+            update = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ResizeParentForm(1175, true);
+            FormResizer.Resize(this.FindForm(), 1175);
+            update = true;
         }
-
-        private void ResizeParentForm(int newWidth, bool updateFlag)
-        {
-            var parentForm = this.FindForm();
-            if (parentForm == null)
-            {
-                return;
-            }
-
-            parentForm.SuspendLayout();
-
-            int delta = newWidth - parentForm.Width;
-            parentForm.Width = newWidth;
-
-            var panelRight = parentForm.Controls["panel2"];
-            if (panelRight != null)
-            {
-                panelRight.Width += delta;
-            }
-
-            parentForm.ResumeLayout();
-            parentForm.Invalidate();
-
-            update = updateFlag;
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
-            AddProductForm addProductForm = new AddProductForm();
+            AddProductForm addProductForm = new AddProductForm(dataManipulation);
             addProductForm.ShowDialog();
         }
 

@@ -191,7 +191,9 @@ namespace WebSiteDev.ManagerForm
             // 
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.IntegralHeight = false;
             this.comboBox2.Location = new System.Drawing.Point(562, 56);
+            this.comboBox2.MaxDropDownItems = 6;
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(105, 21);
             this.comboBox2.TabIndex = 38;
@@ -200,7 +202,9 @@ namespace WebSiteDev.ManagerForm
             // 
             this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.IntegralHeight = false;
             this.comboBox3.Location = new System.Drawing.Point(562, 83);
+            this.comboBox3.MaxDropDownItems = 6;
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(105, 21);
             this.comboBox3.TabIndex = 40;
@@ -238,15 +242,17 @@ namespace WebSiteDev.ManagerForm
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(503, 113);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(49, 13);
+            this.label7.Size = new System.Drawing.Size(43, 13);
             this.label7.TabIndex = 45;
-            this.label7.Text = "Продукт";
+            this.label7.Text = "Услуга";
             // 
             // comboBox4
             // 
             this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox4.FormattingEnabled = true;
+            this.comboBox4.IntegralHeight = false;
             this.comboBox4.Location = new System.Drawing.Point(562, 110);
+            this.comboBox4.MaxDropDownItems = 6;
             this.comboBox4.Name = "comboBox4";
             this.comboBox4.Size = new System.Drawing.Size(105, 21);
             this.comboBox4.TabIndex = 46;
@@ -255,7 +261,9 @@ namespace WebSiteDev.ManagerForm
             // 
             this.comboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox5.FormattingEnabled = true;
+            this.comboBox5.IntegralHeight = false;
             this.comboBox5.Location = new System.Drawing.Point(562, 189);
+            this.comboBox5.MaxDropDownItems = 6;
             this.comboBox5.Name = "comboBox5";
             this.comboBox5.Size = new System.Drawing.Size(105, 21);
             this.comboBox5.TabIndex = 47;
@@ -318,6 +326,7 @@ namespace WebSiteDev.ManagerForm
             // 
             this.comboBox6.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox6.FormattingEnabled = true;
+            this.comboBox6.IntegralHeight = false;
             this.comboBox6.Items.AddRange(new object[] {
             "Статус не выбран",
             "Новый",
@@ -325,6 +334,7 @@ namespace WebSiteDev.ManagerForm
             "Завершён",
             "Отменён"});
             this.comboBox6.Location = new System.Drawing.Point(315, 32);
+            this.comboBox6.MaxDropDownItems = 6;
             this.comboBox6.Name = "comboBox6";
             this.comboBox6.Size = new System.Drawing.Size(115, 21);
             this.comboBox6.TabIndex = 51;
