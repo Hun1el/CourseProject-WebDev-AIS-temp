@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddClientsForm));
             this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
@@ -46,16 +47,16 @@
             // 
             // maskedTextBox1
             // 
-            this.maskedTextBox1.Location = new System.Drawing.Point(108, 256);
+            this.maskedTextBox1.Location = new System.Drawing.Point(12, 386);
             this.maskedTextBox1.Mask = "+7 (999) 000-00-00";
             this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(244, 29);
+            this.maskedTextBox1.Size = new System.Drawing.Size(322, 29);
             this.maskedTextBox1.TabIndex = 51;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(12, 259);
+            this.label9.Location = new System.Drawing.Point(8, 359);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(90, 24);
             this.label9.TabIndex = 49;
@@ -63,38 +64,38 @@
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(108, 144);
+            this.textBox5.Location = new System.Drawing.Point(12, 246);
             this.textBox5.MaxLength = 100;
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(244, 29);
+            this.textBox5.Size = new System.Drawing.Size(322, 29);
             this.textBox5.TabIndex = 45;
             this.textBox5.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox5_KeyPress);
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 125);
+            this.label6.Location = new System.Drawing.Point(8, 219);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(95, 48);
+            this.label6.Size = new System.Drawing.Size(245, 24);
             this.label6.TabIndex = 43;
-            this.label6.Text = "Логин\r\nэл. почты";
+            this.label6.Text = "Логин электронной почты";
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(108, 87);
+            this.textBox4.Location = new System.Drawing.Point(12, 176);
             this.textBox4.MaxLength = 90;
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(244, 29);
+            this.textBox4.Size = new System.Drawing.Size(322, 29);
             this.textBox4.TabIndex = 42;
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             this.textBox4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox4_KeyPress);
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(109, 45);
+            this.textBox3.Location = new System.Drawing.Point(12, 106);
             this.textBox3.MaxLength = 75;
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(243, 29);
+            this.textBox3.Size = new System.Drawing.Size(322, 29);
             this.textBox3.TabIndex = 41;
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             this.textBox3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox3_KeyPress);
@@ -102,7 +103,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 90);
+            this.label5.Location = new System.Drawing.Point(8, 149);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(98, 24);
             this.label5.TabIndex = 40;
@@ -111,7 +112,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 48);
+            this.label4.Location = new System.Drawing.Point(8, 79);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(46, 24);
             this.label4.TabIndex = 39;
@@ -120,7 +121,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 9);
+            this.label3.Location = new System.Drawing.Point(8, 9);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(91, 24);
             this.label3.TabIndex = 38;
@@ -128,19 +129,19 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(109, 6);
+            this.textBox2.Location = new System.Drawing.Point(12, 36);
             this.textBox2.MaxLength = 90;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(243, 29);
+            this.textBox2.Size = new System.Drawing.Size(322, 29);
             this.textBox2.TabIndex = 37;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             this.textBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox2_KeyPress);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(17, 321);
+            this.button2.Location = new System.Drawing.Point(12, 461);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(327, 43);
+            this.button2.Size = new System.Drawing.Size(335, 43);
             this.button2.TabIndex = 52;
             this.button2.Text = "Добавить";
             this.button2.UseVisualStyleBackColor = true;
@@ -149,9 +150,9 @@
             // button1
             // 
             this.button1.ForeColor = System.Drawing.Color.Red;
-            this.button1.Location = new System.Drawing.Point(17, 370);
+            this.button1.Location = new System.Drawing.Point(12, 510);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(327, 43);
+            this.button1.Size = new System.Drawing.Size(335, 43);
             this.button1.TabIndex = 53;
             this.button1.Text = "Вернуться";
             this.button1.UseVisualStyleBackColor = true;
@@ -160,11 +161,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 186);
+            this.label1.Location = new System.Drawing.Point(8, 289);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(95, 48);
+            this.label1.Size = new System.Drawing.Size(251, 24);
             this.label1.TabIndex = 55;
-            this.label1.Text = "Домен\r\nэл. почты";
+            this.label1.Text = "Домен электронной почты";
             // 
             // comboBox1
             // 
@@ -206,18 +207,17 @@
             "@sina.com",
             "@naver.com",
             "@daum.net"});
-            this.comboBox1.Location = new System.Drawing.Point(108, 202);
+            this.comboBox1.Location = new System.Drawing.Point(12, 316);
             this.comboBox1.MaxDropDownItems = 6;
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(244, 32);
+            this.comboBox1.Size = new System.Drawing.Size(322, 32);
             this.comboBox1.TabIndex = 56;
             // 
             // AddClientsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(364, 425);
-            this.ControlBox = false;
+            this.ClientSize = new System.Drawing.Size(359, 565);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button1);
@@ -234,6 +234,7 @@
             this.Controls.Add(this.textBox2);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;

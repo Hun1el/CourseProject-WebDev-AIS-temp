@@ -140,5 +140,15 @@ namespace WebSiteDev
             settingsForm.ShowDialog();
             this.Visible = true;
         }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.EnglishDigitsAndSpecial(e);
+        }
+
+        private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.EnglishDigitsAndSpecial(e);
+        }
     }
 }

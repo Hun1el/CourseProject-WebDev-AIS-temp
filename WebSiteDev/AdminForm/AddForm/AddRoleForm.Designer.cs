@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddRoleForm));
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
@@ -37,7 +38,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
+            this.label1.Location = new System.Drawing.Point(8, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(54, 24);
             this.label1.TabIndex = 38;
@@ -45,19 +46,19 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(72, 12);
+            this.textBox1.Location = new System.Drawing.Point(12, 36);
             this.textBox1.MaxLength = 30;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(280, 29);
+            this.textBox1.Size = new System.Drawing.Size(340, 29);
             this.textBox1.TabIndex = 37;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(16, 67);
+            this.button2.Location = new System.Drawing.Point(12, 104);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(327, 43);
+            this.button2.Size = new System.Drawing.Size(340, 43);
             this.button2.TabIndex = 52;
             this.button2.Text = "Добавить";
             this.button2.UseVisualStyleBackColor = true;
@@ -66,9 +67,9 @@
             // button1
             // 
             this.button1.ForeColor = System.Drawing.Color.Red;
-            this.button1.Location = new System.Drawing.Point(16, 116);
+            this.button1.Location = new System.Drawing.Point(12, 153);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(327, 43);
+            this.button1.Size = new System.Drawing.Size(340, 43);
             this.button1.TabIndex = 53;
             this.button1.Text = "Вернуться";
             this.button1.UseVisualStyleBackColor = true;
@@ -78,14 +79,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(364, 171);
-            this.ControlBox = false;
+            this.ClientSize = new System.Drawing.Size(364, 206);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(6);
             this.MaximizeBox = false;
             this.MinimizeBox = false;

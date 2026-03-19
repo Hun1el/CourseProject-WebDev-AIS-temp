@@ -9,13 +9,13 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WebSiteDev.AddForm
 {
     public partial class AddUsersForm : Form
     {
         private DataManipulation dataManipulation;
+        static readonly Random rand = new Random();
 
         public AddUsersForm(DataManipulation dm)
         {
@@ -150,6 +150,56 @@ namespace WebSiteDev.AddForm
 
                 return sb.ToString();
             }
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            if (textBox6.UseSystemPasswordChar)
+            {
+                textBox6.UseSystemPasswordChar = false;
+                pictureBox2.BackgroundImage = Properties.Resources.EyeHide;
+            }
+            else
+            {
+                textBox6.UseSystemPasswordChar = true;
+                pictureBox2.BackgroundImage = Properties.Resources.EyeView;
+            }
+        }
+
+        static string Shuffle(string str)
+        {
+            var chars = str.ToCharArray();
+            for (int i = chars.Length - 1; i > 0; i--)
+            {
+                int j = rand.Next(i);
+                (chars[i], chars[j]) = (chars[j], chars[i]);
+            }
+            return new string(chars);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string lower = "abcdefghijklmnopqrstuvwxyz";
+            const string numbers = "0123456789";
+            const string special = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+            string allChars = upper + lower + numbers + special;
+            Random random = new Random();
+            StringBuilder password = new StringBuilder();
+
+            password.Append(upper[random.Next(upper.Length)]);
+            password.Append(upper[random.Next(upper.Length)]);
+            password.Append(numbers[random.Next(numbers.Length)]);
+            password.Append(upper[random.Next(upper.Length)]);
+
+            for (int i = 4; i < 12; i++)
+            {
+                password.Append(allChars[random.Next(allChars.Length)]);
+            }
+
+            string shufflepass = Shuffle(Convert.ToString(password));
+            textBox6.Text = shufflepass;
         }
     }
 }
