@@ -74,6 +74,9 @@ namespace WebSiteDev.ManagerForm
             dataManipulation.ApplyAllClient(comboBox3, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
+
+            dataGridView1.ClearSelection();
+            ClearClientFields();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -105,18 +108,26 @@ namespace WebSiteDev.ManagerForm
             AddClientsForm addClientsForm = new AddClientsForm();
             addClientsForm.ShowDialog();
             GetDate();
+            dataGridView1.ClearSelection();
+            ClearClientFields();
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllClient(comboBox3, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
+
+            dataGridView1.ClearSelection();
+            ClearClientFields();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             dataManipulation.ResetFilters(comboSort: comboBox3, textSearch: textBox1);
             dataManipulation.ApplyAllClient(comboBox3, textBox1);
+
+            dataGridView1.ClearSelection();
+            ClearClientFields();
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -136,12 +147,12 @@ namespace WebSiteDev.ManagerForm
 
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
-            InputRest.OnlyRussianAndDash(e);
+            InputRest.OnlyRussianAndDash(e, textBox2);
         }
 
         private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
         {
-            InputRest.OnlyRussianAndDash(e);
+            InputRest.OnlyRussianAndDash(e, textBox3);
         }
 
         private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
@@ -158,16 +169,17 @@ namespace WebSiteDev.ManagerForm
         {
             if (e.RowIndex >= 0)
             {
+                selectedClientID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ClientID"].Value);
+
                 if (e.RowIndex == lastRevealedRowIndex)
                 {
                     timer1.Stop();
                     timer1.Start();
                 }
 
-                selectedClientID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ClientID"].Value);
                 textBox2.Text = dataGridView1.Rows[e.RowIndex].Cells["Surname"].Value.ToString();
 
-                string firstName = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                string firstName = dataSecurity.GetOriginalFirstName(selectedClientID);
                 if (firstName != null)
                 {
                     textBox3.Text = firstName;
@@ -177,7 +189,7 @@ namespace WebSiteDev.ManagerForm
                     textBox3.Text = dataGridView1.Rows[e.RowIndex].Cells["FirstName"].Value.ToString();
                 }
 
-                string middleName = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                string middleName = dataSecurity.GetOriginalMiddleName(selectedClientID);
                 if (middleName != null)
                 {
                     textBox4.Text = middleName;
@@ -187,7 +199,7 @@ namespace WebSiteDev.ManagerForm
                     textBox4.Text = dataGridView1.Rows[e.RowIndex].Cells["MiddleName"].Value.ToString();
                 }
 
-                string phoneNumber = dataSecurity.GetOriginalPhone(e.RowIndex);
+                string phoneNumber = dataSecurity.GetOriginalPhone(selectedClientID);
                 if (phoneNumber != null)
                 {
                     maskedTextBox1.Text = phoneNumber;
@@ -231,7 +243,7 @@ namespace WebSiteDev.ManagerForm
         {
             if (selectedClientID == -1 || string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox3.Text) || string.IsNullOrWhiteSpace(textBox5.Text) || comboBox2.SelectedIndex < 0)
             {
-                MessageBox.Show("Заполните все поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Клиент не выбран!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -264,80 +276,89 @@ namespace WebSiteDev.ManagerForm
             if (DataUpdate.UpdateClient(selectedClientID, textBox2.Text.Trim(), textBox3.Text.Trim(), textBox4.Text.Trim(), phone, fullEmail))
             {
                 MessageBox.Show("Клиент успешно изменён!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                GetDate();
 
-                DataGridViewRow foundRow = null;
-
-                for (int i = 0; i < dataGridView1.Rows.Count; i++)
+                using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
                 {
-                    if (Convert.ToInt32(dataGridView1.Rows[i].Cells["ClientID"].Value) == selectedClientID)
+                    con.Open();
+                    MySqlCommand cmd = new MySqlCommand("SELECT * FROM `Clients` WHERE ClientID = @id", con);
+                    cmd.Parameters.AddWithValue("@id", selectedClientID);
+
+                    MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    if (dt.Rows.Count > 0)
                     {
-                        foundRow = dataGridView1.Rows[i];
-                        break;
+                        dataSecurity.UpdateOriginalData(selectedClientID, dt.Rows[0]);
                     }
                 }
 
-                if (foundRow != null)
+                for (int i = 0; i < dataGridView1.Rows.Count; i++)
                 {
-                    foundRow.Selected = true;
-                    int foundRowIndex = foundRow.Index;
-
-                    textBox2.Text = foundRow.Cells["Surname"].Value.ToString();
-
-                    string firstName = dataSecurity.GetOriginalFirstName(foundRowIndex);
-                    if (firstName != null)
+                    int clientID = Convert.ToInt32(dataGridView1.Rows[i].Cells["ClientID"].Value);
+                    if (clientID == selectedClientID)
                     {
-                        textBox3.Text = firstName;
-                    }
-                    else
-                    {
-                        textBox3.Text = foundRow.Cells["FirstName"].Value.ToString();
-                    }
+                        dataGridView1.Rows[i].Selected = true;
 
-                    string middleName = dataSecurity.GetOriginalMiddleName(foundRowIndex);
-                    if (middleName != null)
-                    {
-                        textBox4.Text = middleName;
-                    }
-                    else
-                    {
-                        textBox4.Text = foundRow.Cells["MiddleName"].Value.ToString();
-                    }
+                        textBox2.Text = dataGridView1.Rows[i].Cells["Surname"].Value.ToString();
 
-                    string phoneNumber = dataSecurity.GetOriginalPhone(foundRowIndex);
-                    if (phoneNumber != null)
-                    {
-                        maskedTextBox1.Text = phoneNumber;
-                    }
-                    else
-                    {
-                        maskedTextBox1.Text = foundRow.Cells["PhoneNumber"].Value.ToString();
-                    }
-
-                    string email = foundRow.Cells["Email"].Value.ToString();
-
-                    if (email.Contains("@"))
-                    {
-                        string[] emailParts = email.Split('@');
-                        string emailWithoutDomain = emailParts[0];
-                        string domainWithAt = "@" + emailParts[1];
-
-                        textBox5.Text = emailWithoutDomain;
-
-                        int domainIndex = comboBox2.FindString(domainWithAt);
-
-                        if (domainIndex >= 0)
+                        string firstName = dataSecurity.GetOriginalFirstName(selectedClientID);
+                        if (firstName != null)
                         {
-                            comboBox2.SelectedIndex = domainIndex;
+                            textBox3.Text = firstName;
                         }
                         else
                         {
-                            if (!comboBox2.Items.Contains(domainWithAt))
-                            {
-                                comboBox2.Items.Add(domainWithAt);
-                            }
-                            comboBox2.SelectedItem = domainWithAt;
+                            textBox3.Text = dataGridView1.Rows[i].Cells["FirstName"].Value.ToString();
                         }
+
+                        string middleName = dataSecurity.GetOriginalMiddleName(selectedClientID);
+                        if (middleName != null)
+                        {
+                            textBox4.Text = middleName;
+                        }
+                        else
+                        {
+                            textBox4.Text = dataGridView1.Rows[i].Cells["MiddleName"].Value.ToString();
+                        }
+
+                        string phoneNumber = dataSecurity.GetOriginalPhone(selectedClientID);
+                        if (phoneNumber != null)
+                        {
+                            maskedTextBox1.Text = phoneNumber;
+                        }
+                        else
+                        {
+                            maskedTextBox1.Text = dataGridView1.Rows[i].Cells["PhoneNumber"].Value.ToString();
+                        }
+
+                        string email = dataGridView1.Rows[i].Cells["Email"].Value.ToString();
+
+                        if (email.Contains("@"))
+                        {
+                            string[] emailParts = email.Split('@');
+                            string emailWithoutDomain = emailParts[0];
+                            string domainWithAt = "@" + emailParts[1];
+
+                            textBox5.Text = emailWithoutDomain;
+
+                            int domainIndex = comboBox2.FindString(domainWithAt);
+
+                            if (domainIndex >= 0)
+                            {
+                                comboBox2.SelectedIndex = domainIndex;
+                            }
+                            else
+                            {
+                                if (!comboBox2.Items.Contains(domainWithAt))
+                                {
+                                    comboBox2.Items.Add(domainWithAt);
+                                }
+                                comboBox2.SelectedItem = domainWithAt;
+                            }
+                        }
+
+                        break;
                     }
                 }
             }
@@ -362,9 +383,9 @@ namespace WebSiteDev.ManagerForm
             {
                 MessageBox.Show("Клиент успешно удален!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 selectedClientID = -1;
-                textBox2.Clear();
                 GetDate();
                 dataGridView1.ClearSelection();
+                ClearClientFields();
             }
         }
 
@@ -375,11 +396,13 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            int clientID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ClientID"].Value);
+
             if (e.RowIndex == lastRevealedRowIndex)
             {
                 if (dataGridView1.Columns[e.ColumnIndex].Name == "PhoneNumber")
                 {
-                    string original = dataSecurity.GetOriginalPhone(e.RowIndex);
+                    string original = dataSecurity.GetOriginalPhone(clientID);
                     if (original != null)
                     {
                         e.Value = original;
@@ -388,7 +411,7 @@ namespace WebSiteDev.ManagerForm
                 }
                 else if (dataGridView1.Columns[e.ColumnIndex].Name == "FirstName")
                 {
-                    string original = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                    string original = dataSecurity.GetOriginalFirstName(clientID);
                     if (original != null)
                     {
                         e.Value = original;
@@ -397,7 +420,7 @@ namespace WebSiteDev.ManagerForm
                 }
                 else if (dataGridView1.Columns[e.ColumnIndex].Name == "MiddleName")
                 {
-                    string original = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                    string original = dataSecurity.GetOriginalMiddleName(clientID);
                     if (original != null)
                     {
                         e.Value = original;
@@ -409,7 +432,7 @@ namespace WebSiteDev.ManagerForm
 
             if (dataGridView1.Columns[e.ColumnIndex].Name == "PhoneNumber")
             {
-                string original = dataSecurity.GetOriginalPhone(e.RowIndex);
+                string original = dataSecurity.GetOriginalPhone(clientID);
                 if (e.Value != null && original != null)
                 {
                     e.Value = DataSecurity.MaskPhone(original);
@@ -418,7 +441,7 @@ namespace WebSiteDev.ManagerForm
             }
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "FirstName")
             {
-                string original = dataSecurity.GetOriginalFirstName(e.RowIndex);
+                string original = dataSecurity.GetOriginalFirstName(clientID);
                 if (e.Value != null && original != null)
                 {
                     e.Value = DataSecurity.MaskName(original);
@@ -427,7 +450,7 @@ namespace WebSiteDev.ManagerForm
             }
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "MiddleName")
             {
-                string original = dataSecurity.GetOriginalMiddleName(e.RowIndex);
+                string original = dataSecurity.GetOriginalMiddleName(clientID);
                 if (e.Value != null && original != null)
                 {
                     e.Value = DataSecurity.MaskName(original);
@@ -475,6 +498,28 @@ namespace WebSiteDev.ManagerForm
                 lastRevealedRowIndex = -1;
                 dataGridView1.InvalidateRow(rowToHide);
             }
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            InputRest.OnlyRussianAndDash(e, textBox1);
+        }
+
+        private void ClearClientFields()
+        {
+            selectedClientID = -1;
+            textBox2.Clear();
+            textBox3.Clear();
+            textBox4.Clear();
+            textBox5.Clear();
+            maskedTextBox1.Clear();
+
+            if (comboBox2.Items.Count > 0)
+            {
+                comboBox2.SelectedIndex = 0;
+            }
+
+            lastRevealedRowIndex = -1;
         }
     }
 }

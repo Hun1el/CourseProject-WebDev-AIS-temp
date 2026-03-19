@@ -51,6 +51,11 @@ namespace WebSiteDev.ManagerForm
             this.button5 = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.просмотрСоставаЗаказаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label3 = new System.Windows.Forms.Label();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -80,23 +85,29 @@ namespace WebSiteDev.ManagerForm
             // 
             // button1
             // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(390, 333);
             this.button1.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(106, 32);
             this.button1.TabIndex = 9;
             this.button1.Text = "Редактирование";
-            this.button1.UseVisualStyleBackColor = true;
+            this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.ForeColor = System.Drawing.Color.White;
             this.button2.Location = new System.Drawing.Point(191, 333);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(106, 32);
             this.button2.TabIndex = 10;
             this.button2.Text = "Оформить заказ";
-            this.button2.UseVisualStyleBackColor = true;
+            this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // textBox1
@@ -133,23 +144,29 @@ namespace WebSiteDev.ManagerForm
             // 
             // button3
             // 
+            this.button3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
+            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button3.ForeColor = System.Drawing.Color.White;
             this.button3.Location = new System.Drawing.Point(507, 333);
             this.button3.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(106, 32);
             this.button3.TabIndex = 19;
-            this.button3.Text = "<-Свернуть";
-            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Text = "<--Свернуть";
+            this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button6
             // 
+            this.button6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
+            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button6.ForeColor = System.Drawing.Color.White;
             this.button6.Location = new System.Drawing.Point(503, 284);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(154, 32);
             this.button6.TabIndex = 35;
             this.button6.Text = "Изменить данные";
-            this.button6.UseVisualStyleBackColor = true;
+            this.button6.UseVisualStyleBackColor = false;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // label6
@@ -210,13 +227,16 @@ namespace WebSiteDev.ManagerForm
             // 
             // button4
             // 
+            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
+            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button4.ForeColor = System.Drawing.Color.White;
             this.button4.Location = new System.Drawing.Point(434, 32);
             this.button4.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(62, 18);
             this.button4.TabIndex = 52;
             this.button4.Text = "Очистить";
-            this.button4.UseVisualStyleBackColor = true;
+            this.button4.UseVisualStyleBackColor = false;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // comboBox6
@@ -266,13 +286,16 @@ namespace WebSiteDev.ManagerForm
             // 
             // button5
             // 
+            this.button5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
             this.button5.Enabled = false;
-            this.button5.Location = new System.Drawing.Point(390, 297);
+            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button5.ForeColor = System.Drawing.Color.White;
+            this.button5.Location = new System.Drawing.Point(5, 333);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(106, 32);
             this.button5.TabIndex = 58;
             this.button5.Text = "Печать чека";
-            this.button5.UseVisualStyleBackColor = true;
+            this.button5.UseVisualStyleBackColor = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // contextMenuStrip1
@@ -289,10 +312,78 @@ namespace WebSiteDev.ManagerForm
             this.просмотрСоставаЗаказаToolStripMenuItem.Text = "Просмотр состава заказа";
             this.просмотрСоставаЗаказаToolStripMenuItem.Click += new System.EventHandler(this.просмотрСоставаЗаказаToolStripMenuItem_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(363, 311);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(52, 13);
+            this.label3.TabIndex = 120;
+            this.label3.Text = "Отменён";
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.Appearance = System.Windows.Forms.Appearance.Button;
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.BackColor = System.Drawing.Color.IndianRed;
+            this.radioButton2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.radioButton2.Enabled = false;
+            this.radioButton2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton2.Font = new System.Drawing.Font("Comic Sans MS", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.radioButton2.ForeColor = System.Drawing.SystemColors.Control;
+            this.radioButton2.Location = new System.Drawing.Point(341, 311);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(22, 27);
+            this.radioButton2.TabIndex = 119;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = " ";
+            this.radioButton2.UseVisualStyleBackColor = false;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(363, 294);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(58, 13);
+            this.label7.TabIndex = 118;
+            this.label7.Text = "Завершён";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(269, 294);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(66, 13);
+            this.label4.TabIndex = 117;
+            this.label4.Text = "Подсказка:";
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.Appearance = System.Windows.Forms.Appearance.Button;
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.BackColor = System.Drawing.Color.LightGreen;
+            this.radioButton1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.radioButton1.Enabled = false;
+            this.radioButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton1.Font = new System.Drawing.Font("Comic Sans MS", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.radioButton1.ForeColor = System.Drawing.SystemColors.Control;
+            this.radioButton1.Location = new System.Drawing.Point(341, 294);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(22, 27);
+            this.radioButton1.TabIndex = 116;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = " ";
+            this.radioButton1.UseVisualStyleBackColor = false;
+            // 
             // OrderControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.radioButton2);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
@@ -345,5 +436,10 @@ namespace WebSiteDev.ManagerForm
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem просмотрСоставаЗаказаToolStripMenuItem;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.RadioButton radioButton1;
     }
 }

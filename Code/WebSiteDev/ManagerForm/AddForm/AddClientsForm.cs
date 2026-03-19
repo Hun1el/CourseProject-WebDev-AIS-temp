@@ -46,12 +46,12 @@ namespace WebSiteDev.AddForm
 
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
-            InputRest.OnlyRussianAndDash(e);
+            InputRest.OnlyRussianAndDash(e, textBox2);
         }
 
         private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
         {
-            InputRest.OnlyRussianAndDash(e);
+            InputRest.OnlyRussianAndDash(e, textBox3);
         }
 
         private void textBox4_KeyPress(object sender, KeyPressEventArgs e)

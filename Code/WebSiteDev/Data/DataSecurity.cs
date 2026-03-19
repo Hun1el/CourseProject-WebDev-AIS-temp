@@ -13,9 +13,7 @@ namespace WebSiteDev
         private Dictionary<int, string> originalClientNames = new Dictionary<int, string>();
         private Dictionary<int, string> originalUserNames = new Dictionary<int, string>();
 
-        public void LoadOriginalData(DataTable dt, string loginColumn = "UserLogin",
-            string phoneColumn = "PhoneNumber", string firstNameColumn = "FirstName",
-            string middleNameColumn = "MiddleName")
+        public void LoadOriginalData(DataTable dt, string loginColumn = "UserLogin", string phoneColumn = "PhoneNumber", string firstNameColumn = "FirstName", string middleNameColumn = "MiddleName")
         {
             originalLogins.Clear();
             originalPhones.Clear();
@@ -24,21 +22,36 @@ namespace WebSiteDev
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
+                int id = -1;
+
+                if (dt.Columns.Contains("ClientID"))
+                {
+                    id = Convert.ToInt32(dt.Rows[i]["ClientID"]);
+                }
+                else if (dt.Columns.Contains("UserID"))
+                {
+                    id = Convert.ToInt32(dt.Rows[i]["UserID"]);
+                }
+                else
+                {
+                    id = i;
+                }
+
                 if (dt.Columns.Contains(loginColumn))
                 {
-                    originalLogins[i] = dt.Rows[i][loginColumn].ToString();
+                    originalLogins[id] = dt.Rows[i][loginColumn].ToString();
                 }
                 if (dt.Columns.Contains(phoneColumn))
                 {
-                    originalPhones[i] = dt.Rows[i][phoneColumn].ToString();
+                    originalPhones[id] = dt.Rows[i][phoneColumn].ToString();
                 }
                 if (dt.Columns.Contains(firstNameColumn))
                 {
-                    originalFirstNames[i] = dt.Rows[i][firstNameColumn].ToString();
+                    originalFirstNames[id] = dt.Rows[i][firstNameColumn].ToString();
                 }
                 if (dt.Columns.Contains(middleNameColumn))
                 {
-                    originalMiddleNames[i] = dt.Rows[i][middleNameColumn].ToString();
+                    originalMiddleNames[id] = dt.Rows[i][middleNameColumn].ToString();
                 }
             }
         }
@@ -49,9 +62,11 @@ namespace WebSiteDev
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
+                int clientID = Convert.ToInt32(dt.Rows[i]["OrderID"]);
+
                 if (dt.Columns.Contains(clientNameColumn))
                 {
-                    originalClientNames[i] = dt.Rows[i][clientNameColumn].ToString();
+                    originalClientNames[clientID] = dt.Rows[i][clientNameColumn].ToString();
                 }
             }
         }
@@ -62,63 +77,81 @@ namespace WebSiteDev
 
             for (int i = 0; i < dt.Rows.Count; i++)
             {
+                int orderID = Convert.ToInt32(dt.Rows[i]["OrderID"]);
+
                 if (dt.Columns.Contains(userNameColumn))
                 {
-                    originalUserNames[i] = dt.Rows[i][userNameColumn].ToString();
+                    originalUserNames[orderID] = dt.Rows[i][userNameColumn].ToString();
                 }
             }
         }
 
-        public string GetOriginalLogin(int rowIndex)
+        public void UpdateOriginalData(int clientID, DataRow row)
         {
-            if (originalLogins.ContainsKey(rowIndex))
+            if (row.Table.Columns.Contains("PhoneNumber"))
             {
-                return originalLogins[rowIndex];
+                originalPhones[clientID] = row["PhoneNumber"].ToString();
+            }
+            if (row.Table.Columns.Contains("FirstName"))
+            {
+                originalFirstNames[clientID] = row["FirstName"].ToString();
+            }
+            if (row.Table.Columns.Contains("MiddleName"))
+            {
+                originalMiddleNames[clientID] = row["MiddleName"].ToString();
+            }
+        }
+
+        public string GetOriginalLogin(int id)
+        {
+            if (originalLogins.ContainsKey(id))
+            {
+                return originalLogins[id];
             }
             return null;
         }
 
-        public string GetOriginalPhone(int rowIndex)
+        public string GetOriginalPhone(int id)
         {
-            if (originalPhones.ContainsKey(rowIndex))
+            if (originalPhones.ContainsKey(id))
             {
-                return originalPhones[rowIndex];
+                return originalPhones[id];
             }
             return null;
         }
 
-        public string GetOriginalFirstName(int rowIndex)
+        public string GetOriginalFirstName(int id)
         {
-            if (originalFirstNames.ContainsKey(rowIndex))
+            if (originalFirstNames.ContainsKey(id))
             {
-                return originalFirstNames[rowIndex];
+                return originalFirstNames[id];
             }
             return null;
         }
 
-        public string GetOriginalMiddleName(int rowIndex)
+        public string GetOriginalMiddleName(int id)
         {
-            if (originalMiddleNames.ContainsKey(rowIndex))
+            if (originalMiddleNames.ContainsKey(id))
             {
-                return originalMiddleNames[rowIndex];
+                return originalMiddleNames[id];
             }
             return null;
         }
 
-        public string GetOriginalClientName(int rowIndex)
+        public string GetOriginalClientName(int id)
         {
-            if (originalClientNames.ContainsKey(rowIndex))
+            if (originalClientNames.ContainsKey(id))
             {
-                return originalClientNames[rowIndex];
+                return originalClientNames[id];
             }
             return null;
         }
 
-        public string GetOriginalUserName(int rowIndex)
+        public string GetOriginalUserName(int id)
         {
-            if (originalUserNames.ContainsKey(rowIndex))
+            if (originalUserNames.ContainsKey(id))
             {
-                return originalUserNames[rowIndex];
+                return originalUserNames[id];
             }
             return null;
         }

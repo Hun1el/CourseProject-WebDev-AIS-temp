@@ -65,6 +65,11 @@ namespace WebSiteDev.AdminForm
             dataManipulation.ApplySearchStatus(textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
+
+            dataGridView1.ClearSelection();
+            textBox2.Clear();
+            selectedStatusID = -1;
+            selectedRowIndex = -1;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -92,6 +97,11 @@ namespace WebSiteDev.AdminForm
         private void button4_Click(object sender, EventArgs e)
         {
             dataManipulation.ResetFilters(textSearch: textBox1);
+
+            dataGridView1.ClearSelection();
+            textBox2.Clear();
+            selectedStatusID = -1;
+            selectedRowIndex = -1;
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)

@@ -10,10 +10,14 @@ namespace WebSiteDev.ManagerForm
     {
         private DataManipulation dataManipulation;
         private DataSecurity dataSecurity = new DataSecurity();
+        private int lastRevealedRowIndex = -1;
+        private Timer timer1 = new Timer();
 
         public DirectorOrderControl()
         {
             InitializeComponent();
+            timer1.Interval = 20000;
+            timer1.Tick += Timer1_Tick;
             GetDate();
         }
 
@@ -99,6 +103,7 @@ namespace WebSiteDev.ManagerForm
 
                 dataSecurity.LoadOriginalClientNames(dt, "ClientName");
                 dataSecurity.LoadOriginalUserNames(dt, "UserName");
+                lastRevealedRowIndex = -1;
 
                 dataGridView1.DataSource = dt;
                 dataGridView1.Columns["OrderID"].HeaderText = "№ заказа";
@@ -127,6 +132,8 @@ namespace WebSiteDev.ManagerForm
 
                 dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
                 dataManipulation.UpdateRecordCountLabel(label1);
+
+                ColorizeRowsByStatus();
             }
         }
 
@@ -135,12 +142,14 @@ namespace WebSiteDev.ManagerForm
             if (dataManipulation == null)
             {
                 return;
-
             }
 
             dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
+
+            dataGridView1.ClearSelection();
+            dataGridView1.Refresh();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -231,6 +240,9 @@ namespace WebSiteDev.ManagerForm
 
             dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
+
+            dataGridView1.ClearSelection();
+            dataGridView1.Refresh();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -242,6 +254,9 @@ namespace WebSiteDev.ManagerForm
 
             dataManipulation.ApplyAllDirector(comboBox3, comboBox1, textBox1);
             dataManipulation.UpdateRecordCountLabel(label1);
+
+            dataGridView1.ClearSelection();
+            dataGridView1.Refresh();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -249,6 +264,9 @@ namespace WebSiteDev.ManagerForm
             dataManipulation.ResetFilters(comboBox3, comboBox1, textBox1);
             SetDatePickerRange();
             GetDate();
+
+            dataGridView1.ClearSelection();
+            dataGridView1.Refresh();
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
@@ -297,11 +315,15 @@ namespace WebSiteDev.ManagerForm
         {
             dateTimePicker2.MinDate = dateTimePicker1.Value;
             GetDate();
+
+            dataGridView1.ClearSelection();
         }
 
         private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
         {
             GetDate();
+
+            dataGridView1.ClearSelection();
         }
 
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -311,9 +333,44 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            int orderID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["OrderID"].Value);
+            string status = dataGridView1.Rows[e.RowIndex].Cells["StatusName"].Value?.ToString();
+
+            if (status == "Завершён")
+            {
+                e.CellStyle.BackColor = System.Drawing.Color.LightGreen;
+            }
+            else if (status == "Отменён")
+            {
+                e.CellStyle.BackColor = System.Drawing.Color.IndianRed;
+            }
+
+            if (e.RowIndex == lastRevealedRowIndex)
+            {
+                if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
+                {
+                    string original = dataSecurity.GetOriginalClientName(orderID);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                else if (dataGridView1.Columns[e.ColumnIndex].Name == "UserName")
+                {
+                    string original = dataSecurity.GetOriginalUserName(orderID);
+                    if (original != null)
+                    {
+                        e.Value = original;
+                        e.FormattingApplied = true;
+                    }
+                }
+                return;
+            }
+
             if (dataGridView1.Columns[e.ColumnIndex].Name == "ClientName")
             {
-                string original = dataSecurity.GetOriginalClientName(e.RowIndex);
+                string original = dataSecurity.GetOriginalClientName(orderID);
                 if (e.Value != null && original != null)
                 {
                     e.Value = DataSecurity.MaskClientName(original);
@@ -323,11 +380,78 @@ namespace WebSiteDev.ManagerForm
 
             if (dataGridView1.Columns[e.ColumnIndex].Name == "UserName")
             {
-                string original = dataSecurity.GetOriginalUserName(e.RowIndex);
+                string original = dataSecurity.GetOriginalUserName(orderID);
                 if (e.Value != null && original != null)
                 {
                     e.Value = DataSecurity.MaskUserName(original);
                     e.FormattingApplied = true;
+                }
+            }
+        }
+
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
+            if (e.RowIndex == lastRevealedRowIndex)
+            {
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(e.RowIndex);
+                timer1.Stop();
+                return;
+            }
+
+            if (lastRevealedRowIndex >= 0)
+            {
+                int previousRow = lastRevealedRowIndex;
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(previousRow);
+            }
+
+            lastRevealedRowIndex = e.RowIndex;
+            dataGridView1.InvalidateRow(e.RowIndex);
+
+            timer1.Stop();
+            timer1.Start();
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+            timer1.Stop();
+
+            if (lastRevealedRowIndex >= 0)
+            {
+                int rowToHide = lastRevealedRowIndex;
+                lastRevealedRowIndex = -1;
+                dataGridView1.InvalidateRow(rowToHide);
+            }
+        }
+
+        private void ColorizeRowsByStatus()
+        {
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells["StatusName"].Value != null)
+                {
+                    string status = row.Cells["StatusName"].Value.ToString();
+
+                    if (status == "Завершён")
+                    {
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            cell.Style.BackColor = System.Drawing.Color.LightGreen;
+                        }
+                    }
+                    else if (status == "Отменён")
+                    {
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            cell.Style.BackColor = System.Drawing.Color.IndianRed;
+                        }
+                    }
                 }
             }
         }
