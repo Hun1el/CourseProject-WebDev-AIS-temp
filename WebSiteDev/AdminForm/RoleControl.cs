@@ -76,6 +76,7 @@ namespace WebSiteDev.AdminForm
             AddRoleForm addRoleForm = new AddRoleForm();
             addRoleForm.ShowDialog();
             GetDate();
+            dataGridView1.ClearSelection();
         }
 
         private void button4_Click(object sender, EventArgs e)

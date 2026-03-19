@@ -56,23 +56,28 @@
             // 
             // button2
             // 
+            this.button2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(156)))), ((int)(((byte)(219)))));
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.ForeColor = System.Drawing.Color.White;
             this.button2.Location = new System.Drawing.Point(12, 104);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(340, 43);
             this.button2.TabIndex = 52;
             this.button2.Text = "Добавить";
-            this.button2.UseVisualStyleBackColor = true;
+            this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
-            this.button1.ForeColor = System.Drawing.Color.Red;
+            this.button1.BackColor = System.Drawing.Color.Crimson;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.ForeColor = System.Drawing.Color.White;
             this.button1.Location = new System.Drawing.Point(12, 153);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(340, 43);
             this.button1.TabIndex = 53;
             this.button1.Text = "Вернуться";
-            this.button1.UseVisualStyleBackColor = true;
+            this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // AddCategoryForm

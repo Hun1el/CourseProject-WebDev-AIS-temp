@@ -113,31 +113,30 @@ INSERT INTO `Order` VALUES (1,2,5,'2025-01-05','2025-01-12',3,1200.00,0.00,0.00)
 UNLOCK TABLES;
 
 --
--- Table structure for table `orderproduct`
+-- Table structure for table `OrderProduct`
 --
 
-DROP TABLE IF EXISTS `orderproduct`;
+DROP TABLE IF EXISTS `OrderProduct`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `orderproduct` (
+CREATE TABLE `OrderProduct` (
   `OrderID` int NOT NULL,
   `ProductID` int NOT NULL,
   `ProductCount` int NOT NULL,
-  PRIMARY KEY (`OrderID`,`ProductID`),
   KEY `fk_orderproduct_product_idx` (`ProductID`),
-  CONSTRAINT `fk_orderproduct_order` FOREIGN KEY (`OrderID`) REFERENCES `order` (`OrderID`),
-  CONSTRAINT `fk_orderproduct_product` FOREIGN KEY (`ProductID`) REFERENCES `product` (`ProductID`)
+  KEY `fk_orderproduct_order_idx` (`OrderID`),
+  CONSTRAINT `fk_orderproduct_order` FOREIGN KEY (`OrderID`) REFERENCES `Order` (`OrderID`),
+  CONSTRAINT `fk_orderproduct_product` FOREIGN KEY (`ProductID`) REFERENCES `Product` (`ProductID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `orderproduct`
+-- Dumping data for table `OrderProduct`
 --
 
-LOCK TABLES `orderproduct` WRITE;
-/*!40000 ALTER TABLE `orderproduct` DISABLE KEYS */;
-INSERT INTO `orderproduct` VALUES (51,1,1),(52,2,1),(52,3,1),(52,4,1),(53,1,1),(54,1,1),(55,1,1),(56,1,1),(57,1,1),(57,2,1),(57,3,1),(57,6,1),(58,1,1),(59,1,1),(60,1,1),(61,1,1),(62,1,1),(63,1,1),(64,1,1),(64,2,1),(64,4,1),(64,5,1),(65,1,1),(65,2,1),(65,3,1),(65,4,1),(65,8,1),(65,9,1),(66,1,1),(67,1,1),(68,2,1),(69,1,1),(70,1,1),(70,2,1),(70,3,1),(71,1,1),(71,2,1),(71,3,1),(72,1,1),(72,5,1),(72,7,1),(72,52,1),(73,1,1),(73,2,1),(73,3,1);
-/*!40000 ALTER TABLE `orderproduct` ENABLE KEYS */;
+LOCK TABLES `OrderProduct` WRITE;
+/*!40000 ALTER TABLE `OrderProduct` DISABLE KEYS */;
+/*!40000 ALTER TABLE `OrderProduct` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -151,7 +150,7 @@ CREATE TABLE `Product` (
   `ProductID` int NOT NULL AUTO_INCREMENT,
   `ProductName` varchar(100) NOT NULL,
   `ProductDescription` text NOT NULL,
-  `ProductPhoto` varchar(255) DEFAULT NULL,
+  `ProductPhoto` text,
   `CategoryID` int NOT NULL,
   `BasePrice` decimal(12,2) NOT NULL,
   PRIMARY KEY (`ProductID`),
@@ -261,4 +260,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-03 22:25:38
+-- Dump completed on 2025-11-12 22:11:44

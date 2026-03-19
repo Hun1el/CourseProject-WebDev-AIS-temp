@@ -76,6 +76,7 @@ namespace WebSiteDev.AdminForm
             AddCategoryForm addCategoryForm = new AddCategoryForm();
             addCategoryForm.ShowDialog();
             GetDate();
+            dataGridView1.ClearSelection();
         }
 
         private void button4_Click(object sender, EventArgs e)
