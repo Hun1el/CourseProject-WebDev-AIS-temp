@@ -54,6 +54,7 @@ namespace WebSiteDev.AdminForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplySearchRole(textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
         }
 

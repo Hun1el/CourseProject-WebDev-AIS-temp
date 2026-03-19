@@ -10,6 +10,7 @@ namespace WebSiteDev
     public partial class ImageControl : UserControl
     {
         private string selectedImagePath;
+        private Image originalImage;
 
         public string CurrentImagePath { get; set; }
 
@@ -27,6 +28,15 @@ namespace WebSiteDev
         {
             CurrentImagePath = currentImagePath;
             LoadImage(currentImagePath);
+
+            if (pictureBox1.Image != null)
+            {
+                originalImage = new Bitmap(pictureBox1.Image);
+            }
+            else
+            {
+                originalImage = null;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -171,6 +181,11 @@ namespace WebSiteDev
                 LoadImage(finalFileName);
                 CurrentImagePath = finalFileName;
                 selectedImagePath = null;
+
+                if (pictureBox1.Image != null)
+                {
+                    originalImage = new Bitmap(pictureBox1.Image);
+                }
             }
             catch (Exception ex)
             {
@@ -181,6 +196,11 @@ namespace WebSiteDev
         public void CancelEdit()
         {
             selectedImagePath = null;
+
+            if (originalImage != null)
+            {
+                pictureBox1.Image = new Bitmap(originalImage);
+            }
         }
 
         public void LoadImage(string photoName)

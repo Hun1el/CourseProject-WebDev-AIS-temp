@@ -228,7 +228,7 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
-            DialogResult result = MessageBox.Show("Вы действительно хотите изменить услугу?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var result = MessageBox.Show("Вы действительно хотите изменить услугу?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (result != DialogResult.Yes)
             {
@@ -239,6 +239,7 @@ namespace WebSiteDev.ManagerForm
                     imgCancel.CancelEdit();
                     imgCancel.InitializeImage(card.RowData["ProductPhoto"].ToString());
                 }
+
                 editingProductID = -1;
                 card.button3.Click -= SaveProduct;
                 card.HideEditMode();
@@ -501,6 +502,7 @@ namespace WebSiteDev.ManagerForm
             dataManipulation.ApplyAllProduct(comboBox3, comboBox1, textBox1);
             currentIndex = 0;
             flowPanel.Controls.Clear();
+            dataManipulation.UpdateRecordCountLabel(label1);
             LoadNextBatch();
         }
 
@@ -571,12 +573,6 @@ namespace WebSiteDev.ManagerForm
             {
                 LoadNextBatch();
             }
-        }
-
-        private void ProductControl_Leave(object sender, EventArgs e)
-        {
-            CurrentOrder.Clear();
-            UpdateOrderButtonVisibility();
         }
     }
 }

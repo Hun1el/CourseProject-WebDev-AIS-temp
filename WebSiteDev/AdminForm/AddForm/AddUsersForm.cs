@@ -113,6 +113,18 @@ namespace WebSiteDev.AddForm
                         }
                     }
 
+                    string checkPhoneQuery = "SELECT COUNT(*) FROM `Users` WHERE PhoneNumber = '" + PhoneNumber + "'";
+                    using (MySqlCommand checkPhoneCmd = new MySqlCommand(checkPhoneQuery, con))
+                    {
+                        int phoneCount = Convert.ToInt32(checkPhoneCmd.ExecuteScalar());
+
+                        if (phoneCount > 0)
+                        {
+                            MessageBox.Show("Пользователь с таким номером телефона уже существует!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
                     string insertQuery = "INSERT INTO Users (Surname, FirstName, MiddleName, UserLogin, UserPassword, RoleID, PhoneNumber) " +
                                          "VALUES ('" + SurName + "', '" + FirstName + "', '" + MiddleName + "', '" + UserLogin + "', '" + hashedPassword + "', " + roleId + ", '" + PhoneNumber + "')";
                     using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, con))

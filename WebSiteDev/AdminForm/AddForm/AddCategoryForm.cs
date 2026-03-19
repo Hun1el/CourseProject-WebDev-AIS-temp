@@ -31,7 +31,7 @@ namespace WebSiteDev.AddForm
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            InputRest.OnlyRussian(e);
+            InputRest.CategoryInput(e);
         }
 
         private void button2_Click(object sender, EventArgs e)

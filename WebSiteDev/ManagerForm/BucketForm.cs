@@ -485,9 +485,19 @@ namespace WebSiteDev
                 return;
             }
 
-            if (CreateOrderWithProducts())
+            int newOrderID = 0;
+
+            if (CreateOrderWithProducts(out newOrderID))
             {
                 MessageBox.Show("Заказ успешно оформлен!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                var result = MessageBox.Show("Напечатать чек для этого заказа?", "Печать чека", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    Doc.CheckWord.CreateCheck(newOrderID);
+                }
+
                 ProductControl.CurrentOrder.Clear();
                 LoadCartItems();
                 comboBox1.SelectedIndex = 0;
@@ -500,8 +510,10 @@ namespace WebSiteDev
             }
         }
 
-        private bool CreateOrderWithProducts()
+        private bool CreateOrderWithProducts(out int createdOrderID)
         {
+            createdOrderID = 0;
+
             using (MySqlConnection con = new MySqlConnection(Data.GetConnectionString()))
             {
                 try
@@ -561,12 +573,12 @@ namespace WebSiteDev
                         cmdOrder.ExecuteNonQuery();
 
                         MySqlCommand cmdGetOrderID = new MySqlCommand("SELECT LAST_INSERT_ID()", con, transaction);
-                        int orderID = Convert.ToInt32(cmdGetOrderID.ExecuteScalar());
+                        createdOrderID = Convert.ToInt32(cmdGetOrderID.ExecuteScalar());
 
                         foreach (var item in ProductControl.CurrentOrder.Items)
                         {
                             string insertProductQuery = "INSERT INTO orderproduct (OrderID, ProductID, ProductCount) " +
-                                                        "VALUES (" + orderID + ", " + item.ProductID + ", " + item.Quantity + ")";
+                                                        "VALUES (" + createdOrderID + ", " + item.ProductID + ", " + item.Quantity + ")";
 
                             MySqlCommand cmdProduct = new MySqlCommand(insertProductQuery, con, transaction);
                             cmdProduct.ExecuteNonQuery();

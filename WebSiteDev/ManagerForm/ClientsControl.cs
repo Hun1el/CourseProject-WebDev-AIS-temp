@@ -1,17 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebSiteDev.AddForm;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WebSiteDev.ManagerForm
 {
@@ -67,6 +58,7 @@ namespace WebSiteDev.ManagerForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllClient(comboBox3, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
             InputRest.FirstLetter(textBox1);
         }
 
@@ -103,6 +95,7 @@ namespace WebSiteDev.ManagerForm
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataManipulation.ApplyAllClient(comboBox3, textBox1);
+            dataManipulation.UpdateRecordCountLabel(label1);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -161,10 +154,12 @@ namespace WebSiteDev.ManagerForm
                 if (email.Contains("@"))
                 {
                     string[] emailParts = email.Split('@');
-                    textBox5.Text = emailParts[0];
+                    string emailWithoutDomain = emailParts[0];
+                    string domainWithAt = "@" + emailParts[1];
 
-                    string domain = emailParts[1];
-                    int domainIndex = comboBox2.FindString(domain);
+                    textBox5.Text = emailWithoutDomain;
+
+                    int domainIndex = comboBox2.FindString(domainWithAt);
 
                     if (domainIndex >= 0)
                     {
@@ -172,8 +167,8 @@ namespace WebSiteDev.ManagerForm
                     }
                     else
                     {
-                        comboBox2.Items.Add(domain);
-                        comboBox2.SelectedItem = domain;
+                        comboBox2.Items.Add(domainWithAt);
+                        comboBox2.SelectedItem = domainWithAt;
                     }
                 }
                 else
@@ -184,6 +179,7 @@ namespace WebSiteDev.ManagerForm
             }
         }
 
+
         private void button6_Click(object sender, EventArgs e)
         {
             if (selectedClientID == -1 || string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrWhiteSpace(textBox3.Text) || string.IsNullOrWhiteSpace(textBox5.Text) || comboBox2.SelectedIndex < 0)
@@ -192,9 +188,24 @@ namespace WebSiteDev.ManagerForm
                 return;
             }
 
+            if (comboBox2.SelectedIndex <= 0)
+            {
+                MessageBox.Show("Выберите домен электронной почты!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             string phone = maskedTextBox1.Text;
             string domain = comboBox2.SelectedItem.ToString();
-            string fullEmail = $"{textBox5.Text}@{domain}";
+
+            string fullEmail;
+            if (textBox5.Text.Contains("@"))
+            {
+                fullEmail = textBox5.Text;
+            }
+            else
+            {
+                fullEmail = $"{textBox5.Text}{domain}";
+            }
 
             var result = MessageBox.Show("Вы действительно хотите изменить клиента?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -227,10 +238,12 @@ namespace WebSiteDev.ManagerForm
                     if (email.Contains("@"))
                     {
                         string[] emailParts = email.Split('@');
-                        textBox5.Text = emailParts[0];
+                        string emailWithoutDomain = emailParts[0];
+                        string domainWithAt = "@" + emailParts[1];
 
-                        string domain2 = emailParts[1];
-                        int domainIndex = comboBox2.FindString(domain2);
+                        textBox5.Text = emailWithoutDomain;
+
+                        int domainIndex = comboBox2.FindString(domainWithAt);
 
                         if (domainIndex >= 0)
                         {
@@ -238,11 +251,11 @@ namespace WebSiteDev.ManagerForm
                         }
                         else
                         {
-                            if (!comboBox2.Items.Contains(domain2))
+                            if (!comboBox2.Items.Contains(domainWithAt))
                             {
-                                comboBox2.Items.Add(domain2);
+                                comboBox2.Items.Add(domainWithAt);
                             }
-                            comboBox2.SelectedItem = domain2;
+                            comboBox2.SelectedItem = domainWithAt;
                         }
                     }
 
